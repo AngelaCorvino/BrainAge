@@ -6,9 +6,9 @@ class Utilities():
 	'''
 	
 	def __init__(self, df):
-        """
+        '''
         Initialize the class.
-        """
+        '''
         self.df= df
         
 	def file_reader(self, file_url):
