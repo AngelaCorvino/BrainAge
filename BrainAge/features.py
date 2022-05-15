@@ -9,12 +9,12 @@ class Utilities():
         '''
         Initialize the class.
         '''
-        self.df= df
+        	self.df= df
         
 	def file_reader(self, file_url):
   	'''
  	Read data features from url and return them in a dataframe
   	'''
-  	dataset_file = file_url
-  	self.df = pd.read_csv(dataset_file, sep=';')
-  	return self.df
+  		dataset_file = file_url
+  		self.df = pd.read_csv(dataset_file, sep=';')
+  		return self.df
