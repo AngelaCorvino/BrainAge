@@ -5,11 +5,11 @@ class Utilities():
 	Basic utilities functions for data
 	'''
 	
-	def __init__(self, df):
+	def __init__(self):
 		'''
 		Initialize the class.
 		'''
-		self.df= df
+		#self.df= df
         
 	def file_reader(self, file_url):
 		'''
