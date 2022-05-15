@@ -16,5 +16,5 @@ class Utilities():
 		Read data features from url and return them in a dataframe
 		'''
 		dataset_file = file_url
-		self.df = pd.read_csv(dataset_file, sep=';')
+		df = pd.read_csv(dataset_file, sep=';')
 		return self.df
