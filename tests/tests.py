@@ -4,7 +4,7 @@ sys.path.insert(0, 'BrainAge')
 #import os
 #import numpy as np
 
-from features import Utilities
+from features import Utilities as util
 
 class TestBrainAge(unittest.TestCase):
 	'''
