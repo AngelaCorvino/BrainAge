@@ -1,0 +1,10 @@
+sphinx
+scikit-image
+scikit-learn
+pandas
+matplotlib
+tensorflow
+nibabel
+seaborn
+scipy
+numpy
