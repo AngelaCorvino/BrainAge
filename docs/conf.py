@@ -11,7 +11,7 @@
 #
 import os
 import sys
-package_name = 'program'
+package_name = 'BrainAge'
 package_root = os.path.abspath('..')
 sys.path.insert(0, package_root)
 sys.path.insert(0, os.path.join(package_root, package_name))
@@ -109,7 +109,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'programdoc'
+htmlhelp_basename = 'BrainAgedoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -136,7 +136,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'program.tex', u'program Documentation',
+    (master_doc, 'BrainAge.tex', u'BrainAge Documentation',
      u'Angela Corvino & Agata Minnocci', 'manual'),
 ]
 
@@ -146,7 +146,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'program', u'program Documentation',
+    (master_doc, 'BrainAge', u'BrainAge Documentation',
      [author], 1)
 ]
 
@@ -157,8 +157,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'program', u'program Documentation',
-     author, 'program', 'One line description of project.',
+    (master_doc, 'BrainAge', u'BrainAge Documentation',
+     author, 'BrainAge', 'One line description of project.',
      'Miscellaneous'),
 ]
 
