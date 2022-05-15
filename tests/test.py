@@ -5,6 +5,5 @@
 #import os
 #import numpy as np
 
-def try(a):
-
+def prova(a):
 	print(a, "trial success")

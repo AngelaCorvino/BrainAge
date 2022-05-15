@@ -1,3 +1,4 @@
-from tests.tests import try
+from tests.test import prova
 
-try()
+
+prova(1)
