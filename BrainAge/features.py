@@ -17,4 +17,4 @@ class Utilities():
 		'''
 		dataset_file = file_url
 		df = pd.read_csv(dataset_file, sep=';')
-		return self.df
+		return df
