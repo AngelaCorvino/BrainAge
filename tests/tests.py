@@ -1,6 +1,6 @@
 import unittest
-#import sys
-#sys.path.insert(0, 'BrainAge/')
+import sys
+sys.path.insert(0, 'BrainAge/')
 #import os
 #import numpy as np
 
