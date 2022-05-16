@@ -20,9 +20,8 @@ class Utilities:
         """
         dataset_file = self.file_url
         df = pd.read_csv(dataset_file, sep=";")
-		df['Site'] =df.FILE_ID.apply(lambda x: x.split('_')[0])
+        df["Site"] = df.FILE_ID.apply(lambda x: x.split("_")[0])
         return df
-
 
     def file_split(self):
         """

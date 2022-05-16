@@ -5,25 +5,37 @@ sys.path.insert(0, 'BrainAge')
 #import numpy as np
 
 from features import Utilities
+from regression import Regression
 
 class TestBrainAge(unittest.TestCase):
 	'''
 	Class for testing our code
 	'''
+	def __init__(self):
+		self.util=self.test_file_reader()
+
 	def test_file_reader(self):
-		util = Utilities('https://raw.githubusercontent.com/AngelaCorvino/BrainAge/main/BrainAge/data/FS_features_ABIDE_males.csv')
+		util = Utilities('/data/FS_features_ABIDE_males.csv')
 		dataframe = util.file_reader()
 		df_AS,df_TD=util.file_split()
 		assert dataframe.size == 388875
 		assert dataframe.shape == (915, 425)
 		assert df_AS.shape == (451, 425)
 		assert df_TD.shape == (464, 425)
+		return util
+
 
 	def test_file_split(self):
-		util = Utilities('https://raw.githubusercontent.com/AngelaCorvino/BrainAge/main/BrainAge/data/FS_features_ABIDE_males.csv')
-		df_AS,df_TD=util.file_split()
+		df_AS,df_TD=self.util.file_split()
 		assert df_AS.shape == (451, 425)
 		assert df_TD.shape == (464, 425)
+
+	def test_feature_selection(self):
+		util=Regression('/data/FS_features_ABIDE_males.csv')
+		features=util.feature_selection()
+		assert features.shape == (17,)
+
+
 
 
 if __name__=='__main__':
