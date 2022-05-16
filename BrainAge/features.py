@@ -10,7 +10,7 @@ class Utilities():
 		Initialize the class.
 		'''
 		self.file_url = file_url
-		self.df = file_reader(self.file_url)
+		self.df = file_reader()
 
 	def file_reader(self):
 		'''
