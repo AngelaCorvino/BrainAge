@@ -3,9 +3,11 @@ import os
 import sys
 
 package_name = "BrainAge"
-package_root = os.path.abspath("..")
-sys.path.insert(0, package_root)
-sys.path.insert(0, os.path.join(package_root, package_name))
+# package_root = os.path.abspath("..")
+# sys.path.insert(0, package_root)
+# sys.path.insert(0, os.path.join(package_root, package_name))
+
+sys.path.insert(0,package_name)
 
 from features import Utilities
 from regression import Regression
@@ -19,7 +21,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_file_reader(self):
         util = Utilities(
-            "/Users/angelacorvino/Documents/GitHub/BrainAge/data/FS_features_ABIDE_males.csv"
+            "data/FS_features_ABIDE_males.csv"
         )
         dataframe = util.file_reader()
         df_AS, df_TD = util.file_split()
@@ -31,7 +33,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_file_split(self):
         util = Utilities(
-            "/Users/angelacorvino/Documents/GitHub/BrainAge/data/FS_features_ABIDE_males.csv"
+            "data/FS_features_ABIDE_males.csv"
         )
         df_AS, df_TD = util.file_split()
         assert df_AS.shape == (451, 425)
