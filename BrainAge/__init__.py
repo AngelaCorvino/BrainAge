@@ -1,3 +1,3 @@
 """
-This cab be an empty file
+This can be an empty file
 """

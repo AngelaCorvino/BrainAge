@@ -1,10 +1,10 @@
 import unittest
-# import sys
-# sys.path.insert(1, 'BrainAge')
+import sys
+sys.path.insert(0, 'BrainAge')
 #import os
 #import numpy as np
 
-from BrainAge.features import Utilities
+from features import Utilities
 
 class TestBrainAge(unittest.TestCase):
 	'''
