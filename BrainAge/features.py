@@ -11,8 +11,8 @@ class Utilities:
         Initialize the class.
         """
         self.file_url = file_url
-        self.df = file_reader()
-        (self.df_AS, self.df_TD) = file_split()
+        self.df = self.file_reader()
+        (self.df_AS, self.df_TD) = self.file_split()
 
     def file_reader(self):
         """
