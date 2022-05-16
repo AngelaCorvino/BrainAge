@@ -41,7 +41,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_feature_selection(self):
         util = Regression(
-            "/Users/angelacorvino/Documents/GitHub/BrainAge/data/FS_features_ABIDE_males.csv"
+            "data/FS_features_ABIDE_males.csv"
         )
         features = util.feature_selection(heatmap=False)
         assert features.shape == (16, )
