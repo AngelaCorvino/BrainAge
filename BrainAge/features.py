@@ -11,8 +11,8 @@ class Utilities:
         Initialize the class.
         """
         self.file_url = file_url
-        self.df = file_reader()
-        (self.df_AS, self.df_TD) = file_split()
+        self.df = self.file_reader()
+        (self.df_AS, self.df_TD) = self.file_split()
 
     def file_reader(self):
         """
@@ -28,6 +28,6 @@ class Utilities:
         """
         Split dataframe in healthy(control) and autistic subjects
         """
-        df_AS = self.df.loc[df.DX_GROUP == 1]
-        df_TD = self.df.loc[df.DX_GROUP == -1]
+        df_AS = self.df.loc[self.df.DX_GROUP == 1]
+        df_TD = self.df.loc[self.df.DX_GROUP == -1]
         return df_AS, df_TD
