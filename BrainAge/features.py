@@ -28,6 +28,6 @@ class Utilities:
         """
         Split dataframe in healthy(control) and autistic subjects
         """
-        df_AS = self.df.loc[df.DX_GROUP == 1]
-        df_TD = self.df.loc[df.DX_GROUP == -1]
+        df_AS = self.df.loc[self.df.DX_GROUP == 1]
+        df_TD = self.df.loc[self.df.DX_GROUP == -1]
         return df_AS, df_TD
