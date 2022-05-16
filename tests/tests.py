@@ -21,7 +21,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_file_reader(self):
         util = Utilities(
-            "data/FS_features_ABIDE_males.csv"
+            "/data/FS_features_ABIDE_males.csv"
         )
         dataframe = util.file_reader()
         df_AS, df_TD = util.file_split()
@@ -33,7 +33,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_file_split(self):
         util = Utilities(
-            "data/FS_features_ABIDE_males.csv"
+            "/data/FS_features_ABIDE_males.csv"
         )
         df_AS, df_TD = util.file_split()
         assert df_AS.shape == (451, 425)
@@ -41,7 +41,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_feature_selection(self):
         util = Regression(
-            "data/FS_features_ABIDE_males.csv"
+            "/data/FS_features_ABIDE_males.csv"
         )
         features = util.feature_selection(heatmap=False)
         assert features.shape == (16, )
