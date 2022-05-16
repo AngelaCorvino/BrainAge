@@ -1,8 +1,10 @@
 import unittest
+import os
 import sys
-sys.path.insert(0, 'BrainAge')
-#import os
-#import numpy as np
+package_name = 'BrainAge'
+package_root = os.path.abspath('..')
+sys.path.insert(0, package_root)
+sys.path.insert(0, os.path.join(package_root, package_name))
 
 from features import Utilities
 from regression import Regression
@@ -12,6 +14,7 @@ class TestBrainAge(unittest.TestCase):
 	Class for testing our code
 	'''
 	def __init__(self):
+		
 		self.util=self.test_file_reader()
 
 	def test_file_reader(self):
