@@ -1,1 +1,3 @@
-from BrainAge.version import __version__
+"""
+This cab be an empty file
+"""
