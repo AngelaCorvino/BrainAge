@@ -20,16 +20,10 @@ class Utilities:
         """
         dataset_file = self.file_url
         df = pd.read_csv(dataset_file, sep=";")
-<<<<<<< HEAD
         df['Site'] =df.FILE_ID.apply(lambda x: x.split('_')[0])
         return df
 
 
-=======
-        df["Site"] = df.FILE_ID.apply(lambda x: x.split("_")[0])
-        return df
-
->>>>>>> angela
     def file_split(self):
         """
         Split dataframe in healthy(control) and autistic subjects
