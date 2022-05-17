@@ -2,6 +2,8 @@ import unittest
 import os
 import sys
 
+#to run locally
+#package_name = "../BrainAge" 
 package_name = "BrainAge"
 # package_root = os.path.abspath("..")
 # sys.path.insert(0, package_root)
@@ -17,9 +19,11 @@ class TestBrainAge(unittest.TestCase):
     """
     Class for testing our code
     """
+    #data = "../BrainAge/data/FS_features_ABIDE_males.csv"
+    data = "BrainAge/data/FS_features_ABIDE_males.csv"
     def test_file_reader(self):
         util = Utilities(
-            "BrainAge/data/FS_features_ABIDE_males.csv"
+            data
         )
         dataframe = util.file_reader()
         df_AS, df_TD = util.file_split()
@@ -30,7 +34,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_file_split(self):
         util = Utilities(
-            "BrainAge/data/FS_features_ABIDE_males.csv"
+            data
         )
         df_AS, df_TD = util.file_split()
         assert df_AS.shape == (451, 424)
@@ -38,7 +42,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_feature_selection(self):
         util = Regression(
-            "BrainAge/data/FS_features_ABIDE_males.csv"
+            data
         )
         features = util.feature_selection(heatmap=False)
         assert features.shape == (16, )
