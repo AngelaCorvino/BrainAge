@@ -25,10 +25,10 @@ copyright = u'2022, Angela Corvino & Agata Minnocci'
 author = u'Angela Corvino & Agata Minnocci'
 
 # The short X.Y version
-from version import __version__
-version = __version__
+
+version = '0.0.1'
 # The full version, including alpha/beta/rc tags
-release = __version__
+release = '0.0.1'
 
 
 
