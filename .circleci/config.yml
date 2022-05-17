@@ -14,10 +14,10 @@ jobs:
       - checkout
       - python/install-packages:
          pkg-manager: pip
-         pip-dependency-file: ~/requirements.txt
+         pip-dependency-file: BrainAge/requirements.txt
       - run:
           name: Run tests
-          command: python tests/tests.py
+          command: python tests.py
 workflows:
   main:
     jobs:
