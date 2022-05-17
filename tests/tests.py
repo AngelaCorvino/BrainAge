@@ -19,12 +19,13 @@ class TestBrainAge(unittest.TestCase):
     """
     Class for testing our code
     """
-    def __init__(self):
+    def setUp(self):
         """
         Initialize the class.
         """
         #self.data = "../BrainAge/data/FS_features_ABIDE_males.csv"
         self.data = "BrainAge/data/FS_features_ABIDE_males.csv"
+        
     def test_file_reader(self):
         util = Utilities(
             self.data
