@@ -19,7 +19,7 @@ class TestBrainAge(unittest.TestCase):
     """
     Class for testing our code
     """
-    def __init__(self, file_url):
+    def __init__(self):
         """
         Initialize the class.
         """
