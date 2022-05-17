@@ -19,11 +19,15 @@ class TestBrainAge(unittest.TestCase):
     """
     Class for testing our code
     """
-    #data = "../BrainAge/data/FS_features_ABIDE_males.csv"
-    data = "BrainAge/data/FS_features_ABIDE_males.csv"
+    def __init__(self, file_url):
+        """
+        Initialize the class.
+        """
+        #self.data = "../BrainAge/data/FS_features_ABIDE_males.csv"
+        self.data = "BrainAge/data/FS_features_ABIDE_males.csv"
     def test_file_reader(self):
         util = Utilities(
-            data
+            self.data
         )
         dataframe = util.file_reader()
         df_AS, df_TD = util.file_split()
@@ -34,7 +38,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_file_split(self):
         util = Utilities(
-            data
+            self.data
         )
         df_AS, df_TD = util.file_split()
         assert df_AS.shape == (451, 424)
@@ -42,7 +46,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_feature_selection(self):
         util = Regression(
-            data
+            self.data
         )
         features = util.feature_selection(heatmap=False)
         assert features.shape == (16, )
