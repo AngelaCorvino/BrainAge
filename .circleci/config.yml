@@ -7,7 +7,7 @@ orbs:
 jobs:
   build-and-test:
     executor: python/default
-    working_directory: tests
+    working_directory: ~/tests
     docker:
       - image: cimg/python:3.8
     steps:
