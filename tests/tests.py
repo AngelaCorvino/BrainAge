@@ -2,7 +2,7 @@ import unittest
 import os
 import sys
 
-package_name = "../BrainAge/"
+package_name = "BrainAge"
 # package_root = os.path.abspath("..")
 # sys.path.insert(0, package_root)
 # sys.path.insert(0, os.path.join(package_root, package_name))
@@ -19,7 +19,7 @@ class TestBrainAge(unittest.TestCase):
     """
     def test_file_reader(self):
         util = Utilities(
-            "../BrainAge/data/FS_features_ABIDE_males.csv"
+            "BrainAge/data/FS_features_ABIDE_males.csv"
         )
         dataframe = util.file_reader()
         df_AS, df_TD = util.file_split()
@@ -30,7 +30,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_file_split(self):
         util = Utilities(
-            "../BrainAge/data/FS_features_ABIDE_males.csv"
+            "BrainAge/data/FS_features_ABIDE_males.csv"
         )
         df_AS, df_TD = util.file_split()
         assert df_AS.shape == (451, 424)
@@ -38,7 +38,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_feature_selection(self):
         util = Regression(
-            "../BrainAge/data/FS_features_ABIDE_males.csv"
+            "BrainAge/data/FS_features_ABIDE_males.csv"
         )
         features = util.feature_selection(heatmap=False)
         assert features.shape == (16, )
