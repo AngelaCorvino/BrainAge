@@ -1,5 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
 
 class Utilities:
     """
@@ -26,7 +28,7 @@ class Utilities:
         """
         self.df['TotalWhiteVol'] = self.df.lhCerebralWhiteMatterVol+self.df.rhCerebralWhiteMatterVol
         self.df['Site'] = self.df.FILE_ID.apply(lambda x: x.split('_')[0])
-        return
+        return self.df
 
     def file_split(self):
         """
@@ -43,12 +45,46 @@ class Utilities:
         if control == True:
             self.df_TD[self.df_TD.loc[:, feature]>0].hist([feature])
         elif control == False:
-            self.df_ASD[self.gdf_ASD.loc[:, feature]>0].hist([feature])
+            self.df_ASD[self.gdf_AS.loc[:, feature]>0].hist([feature])
+        plt.show()
+        return
+    
+    def plot_boxplot(self, featurex, featurey, control = True):
+        """
+        Boxplot of featurey by featurex
+        """
+        if control == True:
+            sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=self.df_TD)
+        if control == False:
+            sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=self.df_AS)
+        sns_boxplot.set_xticklabels(labels=sns_boxplot.get_xticklabels(), rotation=50)
+        sns_boxplot.grid()
+        sns_boxplot.set_title('Box plot of '+ featurey + 'by ' + featurex)
+        sns_boxplot.set_ylabel(featurey)
         plt.show()
         return
         
+    def feature_selection(self, feature= 'AGE_AT_SCAN', plot_heatmap = True):
+        """
+        Gives a list of the feature whose correlation with the given feature is higher than 0.5
+        """
+        agecorr_TD = self.df_TD.corr()[feature] #we acces to the column relative to age
+        listoffeatures = agecorr_TD[np.abs(agecorr_TD)>0.5].keys() #we decide to use the feautures whose correlation with age at scan is >0.5
+        if plot_heatmap == True:
+            df_TDrestricted = self.df_TD[listoffeatures]
+            heatmap = sns.heatmap(df_TDrestricted.corr(), annot=True)
+            plt.show
+        listoffeatures = listoffeatures.drop(feature)
+        return listoffeatures
+        
 if __name__ == "__main__":
     util = Utilities("data/FS_features_ABIDE_males.csv")
+    print(util.df.shape)
     util.add_features()
-    util.file_split()
+    print(util.df.shape)
+    util.df_AS, util.df_TD = util.file_split()
+    print(util.df_TD.shape)
+    print(util.df_AS.shape)
     util.plot_histogram('AGE_AT_SCAN')
+    util.plot_boxplot('Site', 'AGE_AT_SCAN', True)
+    print(util.feature_selection('AGE_AT_SCAN', True).format())
