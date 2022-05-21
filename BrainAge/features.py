@@ -5,8 +5,14 @@ import numpy as np
 
 class Utilities:
     """
-    Basic utilities functions for data
+    Class containing functions for data
+    
+     Parameters
+    ----------
+    file_url : string-like
+        The string containing data adress to be passed to Utilities .
     """
+    
     def __init__(self, file_url):
         """
         Initialize the class.
