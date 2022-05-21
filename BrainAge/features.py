@@ -6,19 +6,20 @@ import numpy as np
 class Utilities:
     """
     Class containing functions for data
-    
+
      Parameters
     ----------
     file_url : string-like
         The string containing data adress to be passed to Utilities .
     """
-    
+
     def __init__(self, file_url):
         """
         Initialize the class.
         """
         self.file_url = file_url
         self.df = self.file_reader()
+        self.df = self.add_features()
         (self.df_AS, self.df_TD) = self.file_split()
 
     def file_reader(self):
@@ -27,12 +28,12 @@ class Utilities:
         """
         df = pd.read_csv(self.file_url, sep = ";")
         return df
-        
+
     def add_features(self):
         """
         Add columns with derived features
         """
-        self.df['TotalWhiteVol'] = self.df.lhCerebralWhiteMatterVol+self.df.rhCerebralWhiteMatterVol
+        self.df['TotalWhiteVol'] = self.df.lhCerebralWhiteMatterVol + self.df.rhCerebralWhiteMatterVol
         self.df['Site'] = self.df.FILE_ID.apply(lambda x: x.split('_')[0])
         return self.df
 
@@ -43,7 +44,7 @@ class Utilities:
         df_AS = self.df.loc[self.df.DX_GROUP == 1]
         df_TD = self.df.loc[self.df.DX_GROUP == -1]
         return df_AS, df_TD
-        
+
     def plot_histogram(self, feature, control = True):
         """
         Plot histogram of a given feature on the indicated group, masking values <0
@@ -54,7 +55,7 @@ class Utilities:
             self.df_ASD[self.gdf_AS.loc[:, feature]>0].hist([feature])
         plt.show()
         return
-    
+
     def plot_boxplot(self, featurex, featurey, control = True):
         """
         Boxplot of featurey by featurex
@@ -69,8 +70,8 @@ class Utilities:
         sns_boxplot.set_ylabel(featurey)
         plt.show()
         return
-        
-    def feature_selection(self, feature= 'AGE_AT_SCAN', plot_heatmap = True):
+
+    def feature_selection(self, feature = 'AGE_AT_SCAN', plot_heatmap = True):
         """
         Gives a list of the feature whose correlation with the given feature is higher than 0.5
         """
@@ -79,10 +80,10 @@ class Utilities:
         if plot_heatmap == True:
             df_TDrestricted = self.df_TD[listoffeatures]
             heatmap = sns.heatmap(df_TDrestricted.corr(), annot=True)
-            plt.show
+            plt.show()
         listoffeatures = listoffeatures.drop(feature)
         return listoffeatures
-        
+
 if __name__ == "__main__":
     util = Utilities("data/FS_features_ABIDE_males.csv")
     print(util.df.shape)
