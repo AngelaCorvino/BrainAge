@@ -21,6 +21,9 @@ class Utilities:
         self.df = self.file_reader()
         self.df = self.add_features()
         (self.df_AS, self.df_TD) = self.file_split()
+        
+    def __str__(self):
+        return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(self.df.size, self.df.shape, self.df.head(5))
 
     def file_reader(self):
         """
@@ -87,11 +90,11 @@ class Utilities:
 if __name__ == "__main__":
     util = Utilities("data/FS_features_ABIDE_males.csv")
     print(util.df.shape)
-    util.add_features()
-    print(util.df.shape)
-    util.df_AS, util.df_TD = util.file_split()
+    #util.add_features()
+    #util.df_AS, util.df_TD = util.file_split()
     print(util.df_TD.shape)
     print(util.df_AS.shape)
-    util.plot_histogram('AGE_AT_SCAN')
-    util.plot_boxplot('Site', 'AGE_AT_SCAN', True)
-    print(util.feature_selection('AGE_AT_SCAN', True).format())
+    #util.plot_histogram('AGE_AT_SCAN')
+    #util.plot_boxplot('Site', 'AGE_AT_SCAN', True)
+    print(util.feature_selection('AGE_AT_SCAN', False).format())
+    print(util)
