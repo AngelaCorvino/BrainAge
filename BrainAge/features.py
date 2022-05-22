@@ -38,7 +38,15 @@ class Utilities:
         """
         self.df['TotalWhiteVol'] = self.df.lhCerebralWhiteMatterVol + self.df.rhCerebralWhiteMatterVol
         self.df['Site'] = self.df.FILE_ID.apply(lambda x: x.split('_')[0])
+        bins = [0,1,2,3,4,5]
         return self.df
+        
+    def add_binning(self):
+        """
+        Add a column with AGE_AT_SCAN binning
+        """
+        self.df['AGE_CLASS'] = pd.cut(self.df.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
+        return self.df.AGE_CLASS
 
     def file_split(self):
         """
@@ -94,6 +102,7 @@ if __name__ == "__main__":
     #util.df_AS, util.df_TD = util.file_split()
     print(util.df_TD.shape)
     print(util.df_AS.shape)
+    print(util)
     #util.plot_histogram('AGE_AT_SCAN')
     #util.plot_boxplot('Site', 'AGE_AT_SCAN', True)
     print(util.feature_selection('AGE_AT_SCAN', False).format())
