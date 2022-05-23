@@ -21,7 +21,7 @@ class Utilities:
         self.df = self.file_reader()
         self.df = self.add_features()
         (self.df_AS, self.df_TD) = self.file_split()
-        
+
     def __str__(self):
         return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(self.df.size, self.df.shape, self.df.head(5))
 
@@ -38,15 +38,16 @@ class Utilities:
         """
         self.df['TotalWhiteVol'] = self.df.lhCerebralWhiteMatterVol + self.df.rhCerebralWhiteMatterVol
         self.df['Site'] = self.df.FILE_ID.apply(lambda x: x.split('_')[0])
-        bins = [0,1,2,3,4,5]
+
         return self.df
-        
-    def add_binning(self):
+
+    def add_binning(self, dataframe):
         """
-        Add a column with AGE_AT_SCAN binning
+        Add a column to control  with AGE_AT_SCAN binning
         """
-        self.df['AGE_CLASS'] = pd.cut(self.df.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
-        return self.df.AGE_CLASS
+        #self.df['AGE_CLASS'] = pd.cut(self.df.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
+        getattr(self, dataframe)['AGE_CLASS'] = pd.cut(getattr(self, dataframe).AGE_AT_SCAN, 4, labels = [x for x in range(4)])
+        return getattr(self, dataframe).AGE_CLASS
 
     def file_split(self):
         """
@@ -97,13 +98,8 @@ class Utilities:
 
 if __name__ == "__main__":
     util = Utilities("data/FS_features_ABIDE_males.csv")
-    print(util.df.shape)
-    #util.add_features()
-    #util.df_AS, util.df_TD = util.file_split()
-    print(util.df_TD.shape)
-    print(util.df_AS.shape)
-    print(util)
     #util.plot_histogram('AGE_AT_SCAN')
     #util.plot_boxplot('Site', 'AGE_AT_SCAN', True)
     print(util.feature_selection('AGE_AT_SCAN', False).format())
-    print(util)
+    b=util.add_binning()
+    print(b)
