@@ -21,10 +21,23 @@ The features were computed by means of the FreeSurfer segmentation software. A s
 Several feature selection techniques can be applied to remove irrelevant, noisy, and redundant features, avoiding overfitting and improving prediction performance, reducing the computational complexity of the learning algorithm, and proving a deeper insight into the data, which highlights which of the features are most informative for age prediction [[An Introduction to Variable and Feature Selection](https://www.jmlr.org/papers/volume3/guyon03a/guyon03a.pdf?ref=driverlayer.com/web)]
 
 ## Data Agumentation
-we use K-fold.
+We use K-fold. Ten re-sampling of a 10-fold cross-validation were executed producing 100 bootsraps of each datasets. In each iteration, nine-folds of the original data sets were input to each of trhe five regression models 
+
+
 When implementing K-fold we want the class distribution in the dataset to be preserved in the training and test splits. This means that if, for example, the ratio of <20 years subjects (class0) to >20 years (class1)subject is 1/3. If we set k=4, then the test sets include three data points from class1 and one data point from class 0. Thus, training sets include three data points from class 0 and nine data points from class 1.
 This can be done with Stratified Kfold.
-We can also extend the. inary concept of classo 0 and 1 to multiclass .
+We can also extend the binary concept of classo 0 and 1 to multiclass . In particular we are going to divede the dataset in four class.
+
+## Data Harmonization 
+To mitigate the effect of the different acquisition sites on the features, we have to harmonize data across sites. Wecan use different models , in particular we want to follow Lombardi et al(https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7349402/#B40-brainsci-10-00364).
+
+For the removal of site effects, three different harmonization procedures were compared: 
+(i) absence of harmonization ;
+(ii) removal of site effects using ComBat with age as biological covariate of interest (age covariate); 
+(iii) removal of site effects using ComBat without specifying the age as a biological covariate to be preserved (no age covariate). 
+Why do we have to use the age as covariare ?
+We have to consider the interaction between the site variable and the age of the subjects.
+If some sites only include subjects with age in specific ranges( this is our case) , it is therefore important to ensure that the harmonization of the site effect does not affect the age-related biological variability of the dataset. 
 
 ## Requirements
 
