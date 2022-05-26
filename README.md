@@ -20,6 +20,12 @@ The features were computed by means of the FreeSurfer segmentation software. A s
 
 Several feature selection techniques can be applied to remove irrelevant, noisy, and redundant features, avoiding overfitting and improving prediction performance, reducing the computational complexity of the learning algorithm, and proving a deeper insight into the data, which highlights which of the features are most informative for age prediction [[An Introduction to Variable and Feature Selection](https://www.jmlr.org/papers/volume3/guyon03a/guyon03a.pdf?ref=driverlayer.com/web)]
 
+## Outliers 
+Various statistical criteria exist for the classification of multivariate outliers , but the majority of them requires the knowledge of the feature distributions (e.g. Mahalanobis’ distance, Cook’s distance), while the distributions of the anatomical brain feature values are not a priori known and are not easily understandable from the data (Ferrari et alt.)
+
+One of the most commonly used tools in determining outliers is the Z-score. Z-score is just the number of standard deviations away from the mean that a certain data point is.
+It is also possible to use the Interquartile Range to Create Outlier Fences.
+
 ## Data Agumentation
 We use K-fold. Ten re-sampling of a 10-fold cross-validation were executed producing 100 bootsraps of each datasets. In each iteration, nine-folds of the original data sets were input to each of trhe five regression models 
 
