@@ -47,7 +47,7 @@ class TestBrainAge(unittest.TestCase):
 
     def test_feature_selection(self):
         util = Utilities(self.data)
-        features = util.feature_selection('AGE_AT_SCAN', False)
+        features, X, y = util.feature_selection('AGE_AT_SCAN', False)
         assert features.shape == (16, )
 
 if __name__ == "__main__":
