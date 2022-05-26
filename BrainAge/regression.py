@@ -67,7 +67,7 @@ class Regression:
 
         df_TDharmonized = self.df_TD[self.features]
         df_TDharmonized.loc[:, (self.features)] = df_combat.transpose()
-
+        # the following line has to be inseting in the next function
         X_train, X_test, y_train, y_test = train_test_split(
             df_TDharmonized, self.df_TD["AGE_AT_SCAN"], test_size=0.3
         )
