@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
+
 class Utilities:
     """
     Class containing functions for data
@@ -21,6 +22,7 @@ class Utilities:
         self.df = self.file_reader()
         self.df = self.add_features()
         (self.df_AS, self.df_TD) = self.file_split()
+        self.features,self.X,self.y=self.feature_selection()
 
     def __str__(self):
         return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(self.df.size, self.df.shape, self.df.head(5))
@@ -38,6 +40,7 @@ class Utilities:
         """
         self.df['TotalWhiteVol'] = self.df.lhCerebralWhiteMatterVol + self.df.rhCerebralWhiteMatterVol
         self.df['Site'] = self.df.FILE_ID.apply(lambda x: x.split('_')[0])
+
 
         return self.df
 
@@ -83,7 +86,7 @@ class Utilities:
         plt.show()
         return
 
-    def feature_selection(self, feature = 'AGE_AT_SCAN', plot_heatmap = True):
+    def feature_selection(self, feature = 'AGE_AT_SCAN', plot_heatmap = False):
         """
         Gives a list of the feature whose correlation with the given feature is higher than 0.5
         """
@@ -94,12 +97,15 @@ class Utilities:
             heatmap = sns.heatmap(df_TDrestricted.corr(), annot=True)
             plt.show()
         listoffeatures = listoffeatures.drop(feature)
-        return listoffeatures
+        X = self.df_TD[listoffeatures]
+        y = self.df_TD[feature]
+
+        return listoffeatures,X,y
+
+
+
 
 if __name__ == "__main__":
     util = Utilities("data/FS_features_ABIDE_males.csv")
     #util.plot_histogram('AGE_AT_SCAN')
     #util.plot_boxplot('Site', 'AGE_AT_SCAN', True)
-    print(util.feature_selection('AGE_AT_SCAN', False).format())
-    b=util.add_binning()
-    print(b)
