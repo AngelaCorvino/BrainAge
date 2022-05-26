@@ -6,3 +6,5 @@ tensorflow
 seaborn
 scipy
 numpy
+neuroCombat
+keras
