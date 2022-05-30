@@ -6,7 +6,6 @@
 
 # -- Path setup --------------------------------------------------------------
 
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -14,22 +13,19 @@
 import os
 import sys
 package_name = 'BrainAge'
-package_root = os.path.abspath('../')
+package_root = os.path.abspath('../../')
 sys.path.insert(0, package_root)
 sys.path.insert(0, os.path.join(package_root, package_name))
 
+
 # -- Project information -----------------------------------------------------
 
-project = package_name
-copyright = u'2022, Angela Corvino & Agata Minnocci'
-author = u'Angela Corvino & Agata Minnocci'
+project = 'BrainAge'
+copyright = '2022, Angela Corvino & Agata Minnocci'
+author = 'Angela Corvino & Agata Minnocci'
 
-# The short X.Y version
-
-version = '0.0.1'
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
-
 
 
 # -- General configuration ---------------------------------------------------
@@ -55,12 +51,12 @@ templates_path = ['_templates']
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = 'None'
+language = 'english'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = []
 
 
 # -- Options for HTML output -------------------------------------------------
