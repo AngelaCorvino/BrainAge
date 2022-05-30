@@ -26,6 +26,7 @@ Various statistical criteria exist for the classification of multivariate outlie
 One of the most commonly used tools in determining outliers is the Z-score. Z-score is just the number of standard deviations away from the mean that a certain data point is.
 It is also possible to use the Interquartile Range to Create Outlier Fences.
 
+<<<<<<< HEAD
 ## Data Augmentation
 We use K-fold. Ten re-sampling of a 10-fold cross-validation were executed producing 100 bootstraps of each datasets. In each iteration, nine-folds of the original data sets were input to each of the five regression models
 
@@ -36,6 +37,24 @@ We can also extend the binary concept of classo 0 and 1 to multiclass. In partic
 ## Data Harmonization
 
 As explained by Ferrari et al. the CI of a categorical variable is a score between 0 and 1 representing its impact on a binary classification study.
+=======
+
+
+## Data Agumentation
+We use K-fold. Ten re-sampling of a 10-fold cross-validation were executed producing 100 bootsraps of each datasets. In each iteration, nine-folds of the original data sets were input to each of trhe five regression models 
+
+
+When implementing K-fold we want the class distribution in the dataset to be preserved in the training and test splits. This means that if, for example, the ratio of <20 years subjects (class0) to >20 years (class1)subject is 1/3. If we set k=4, then the test sets include three data points from class1 and one data point from class 0. Thus, training sets include three data points from class 0 and nine data points from class 1.
+This can be done with Stratified Kfold.
+We can also extend the binary concept of classo 0 and 1 to multiclass . In particular we are going to divede the dataset in four class.
+## Finding counfounders
+
+For our application, we adapted the autoencoder described in 'S. Hawkins, H. He, G. Williams, R. Baxter, Outlier detection using repli-
+ cator neural networks' to our data, building a symmetric, four-linear-layer network with N = 424 (the number of features under examination). The three inner layers have 30, 2 and 30 neurons respectively, their activation functions are a hyperbolic tangent, a step-wise function and a hyperbolic tangent again. The fourth layer generates an output with the same dimensions as the input and a sigmoid filter maps the output into the final vector. We trained the autoencoder comparing the output vector with the input features using the Mean Squared Error (MSE) as the loss function.
+ 
+## Data Harmonization 
+As explained by Ferrai et al() The CI of a categorical variable is a score between 0 and 1 representing its impact on a binary classification study.
+>>>>>>> f967aafa673f6aea7d54672dcea01a44815dc25b
 Can we use this figure of merit for a non classification study?
 
 This score is calculated by replicating the desired classification study (i.e. same task and same classifier) using different degrees of bias in the training set with respect to the hypothetically confounding variable. The CI value summarizes how much the performances of the classifiers change among the various trainings. The CI can be calculated also for continuous variables by binning their values and, in this scenario, it is useful to identify the widest range of values for which the effect of such variables can be ignored.
