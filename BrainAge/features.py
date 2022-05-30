@@ -25,9 +25,9 @@ class Utilities:
         self.features,self.X,self.y=self.feature_selection()
         self.harmonization=harmonization
 
-    if self.harmonization==True:
-        self.df_TDharmonized=self.com_harmonization()
-        self.df_TD=self.df_TDharmonized
+        if self.harmonization==True:
+            self.df_TDharmonized=self.com_harmonization()
+            self.df_TD=self.df_TDharmonized
 
     def __str__(self):
         return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(self.df.size, self.df.shape, self.df.head(5))
