@@ -46,7 +46,7 @@ class TestBrainAge(unittest.TestCase):
         assert df_TD.shape == (464, 426)
 
     def test_feature_selection(self):
-        util = Utilities(self.data)
+        util = Utilities(self.data,False)
         features, X, y = util.feature_selection('AGE_AT_SCAN', False)
         assert features.shape == (16, )
 
