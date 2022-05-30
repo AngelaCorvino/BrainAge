@@ -14,7 +14,7 @@ class Utilities:
         The string containing data adress to be passed to Utilities .
     """
 
-    def __init__(self, file_url):
+    def __init__(self, file_url,harmonization):
         """
         Initialize the class.
         """
@@ -23,6 +23,11 @@ class Utilities:
         self.df = self.add_features()
         (self.df_AS, self.df_TD) = self.file_split()
         self.features,self.X,self.y=self.feature_selection()
+        self.harmonization=harmonization
+
+    if self.harmonization==True:
+        self.df_TDharmonized=self.com_harmonization()
+        self.df_TD=self.df_TDharmonized
 
     def __str__(self):
         return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(self.df.size, self.df.shape, self.df.head(5))
@@ -85,6 +90,27 @@ class Utilities:
         sns_boxplot.set_ylabel(featurey)
         plt.show()
         return
+
+    def com_harmonization(self, confounder="Site", covariate="AGE_AT_SCAN"):
+        """
+        Harmonize dataset with ComBat model
+        """
+
+        df_combat = neuroCombat(
+            dat=self.df_TD.transpose(),
+            covars=self.df_TD[[confounder, covariate]],
+            batch_col=confounder,
+        )["data"]
+
+        df_TDharmonized = df_combat.transpose()
+        #df_TDharmonized = self.df_TD[self.features]
+        #df_TDharmonized.loc[:, (self.features)] = df_combat.transpose()
+        # the following line has to be inseting in the next function
+        #X_train, X_test, y_train, y_test = train_test_split(
+        #    df_TDharmonized, self.df_TD["AGE_AT_SCAN"], test_size=0.3
+        #)
+
+        return df_TDharmonized
 
     def feature_selection(self, feature = 'AGE_AT_SCAN', plot_heatmap = False):
         """

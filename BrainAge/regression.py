@@ -36,7 +36,7 @@ class Regression:
         Constructor.
         """
         self.file_url = file_url
-        self.util = Utilities(file_url)
+        self.util = Utilities(file_url,harmonization==False)
         (self.df_AS, self.df_TD) = self.util.file_split()
         self.features, self.X, self.y = self.util.feature_selection(
             "AGE_AT_SCAN", False
@@ -54,25 +54,7 @@ class Regression:
             pass
         return X, y
 
-    def com_harmonization(self, confounder="Site", covariate="AGE_AT_SCAN"):
-        """
-        Harmonize dataset with ComBat model
-        """
 
-        df_combat = neuroCombat(
-            dat=self.df_TD[self.features].transpose(),
-            covars=self.df_TD[[confounder, covariate]],
-            batch_col=confounder,
-        )["data"]
-
-        df_TDharmonized = self.df_TD[self.features]
-        df_TDharmonized.loc[:, (self.features)] = df_combat.transpose()
-        # the following line has to be inseting in the next function
-        X_train, X_test, y_train, y_test = train_test_split(
-            df_TDharmonized, self.df_TD["AGE_AT_SCAN"], test_size=0.3
-        )
-
-        return df_TDharmonized
 
     def k_Fold(self, n_splits, model):
         """
@@ -121,5 +103,3 @@ class Regression:
 
 if __name__ == "__main__":
     a = Regression("data/FS_features_ABIDE_males.csv")
-
-    a.com_harmonization()
