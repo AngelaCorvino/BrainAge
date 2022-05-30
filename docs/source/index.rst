@@ -1,5 +1,5 @@
 .. BrainAge documentation master file, created by
-   sphinx-quickstart on Sun May 15 20:04:07 2022.
+   sphinx-quickstart on Mon May 30 23:29:46 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -7,8 +7,8 @@ Welcome to BrainAge's documentation!
 ====================================
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Contents:Subcontents:
+   :maxdepth: 2
+   :caption: Contents:
 
 
 
