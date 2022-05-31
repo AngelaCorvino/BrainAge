@@ -18,9 +18,14 @@ class Utilities:
         """
         Initialize the class.
         """
-        self.file_url = file_url
-        self.df = self.file_reader()
+
+
+        self.df = pd.read_csv(file_url, sep = ";")
+
+
+
         self.df = self.add_features()
+
         (self.df_AS, self.df_TD) = self.file_split()
         self.features,self.X,self.y=self.feature_selection()
         self.harmonization=harmonization
@@ -32,12 +37,7 @@ class Utilities:
     def __str__(self):
         return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(self.df.size, self.df.shape, self.df.head(5))
 
-    def file_reader(self):
-        """
-        Read data features from url and return them in a dataframe
-        """
-        df = pd.read_csv(self.file_url, sep = ";")
-        return df
+
 
     def add_features(self):
         """
@@ -46,8 +46,6 @@ class Utilities:
         self.df['TotalWhiteVol'] = self.df.lhCerebralWhiteMatterVol + self.df.rhCerebralWhiteMatterVol
         self.df['Site'] = self.df.FILE_ID.apply(lambda x: x.split('_')[0])
 
-
-        return self.df
 
     def add_binning(self, dataframe):
         """
