@@ -107,7 +107,7 @@ class Preprocessing:
         X = dataframe[listoffeatures]
         y = dataframe[feature]
 
-        return listoffeatures, X, y
+        return  X, y
 
 
 if __name__ == "__main__":
@@ -127,4 +127,3 @@ if __name__ == "__main__":
     if harmonization == True:
         df_TD = prep.com_harmonization(df_TD)
         print(df_TD)
-
