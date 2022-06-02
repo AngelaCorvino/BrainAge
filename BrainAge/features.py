@@ -23,27 +23,12 @@ class Preprocessing:
     #def __str__(self):
     #    return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(df.size, df.shape, df.head(5))
 
-        self.df = pd.read_csv(file_url, sep = ";")
-
-
-
-        self.df = self.add_features()
-
-        (self.df_AS, self.df_TD) = self.file_split()
-
-
-
-        self.features,self.X,self.y=self.feature_selection()
-        self.harmonization=harmonization
-
-        if self.harmonization==True:
-            self.df_TDharmonized=self.com_harmonization()
-            self.df_TD=self.df_TDharmonized
-
-    def __str__(self):
-        return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(self.df.size, self.df.shape, self.df.head(5))
-
-
+    def file_reader(self, file_url):
+        """
+        Read data features from url and return them in a dataframe
+        """
+        df = pd.read_csv(file_url, sep = ";")
+        return df
 
     def add_features(self, df):
         """
@@ -142,3 +127,4 @@ if __name__ == "__main__":
     if harmonization == True:
         df_TD = prep.com_harmonization(df_TD)
         print(df_TD)
+
