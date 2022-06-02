@@ -11,7 +11,8 @@ class Preprocessing:
      Parameters
     ----------
     file_url : string-like
-        The string containing data adress to be passed to Utilities .
+        The string containing data adress to be passed to Preprocessing.
+    df : dataframe containing data to preprocess.
     """
 
     def __init__(self):
@@ -43,8 +44,8 @@ class Preprocessing:
         Add a column to control  with AGE_AT_SCAN binning
         """
         #self.df['AGE_CLASS'] = pd.cut(self.df.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
-        dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, 4, labels = [x for x in range(4)])
-        return
+        dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
+        return dataframe['AGE_CLASS']
 
     def file_split(self, df):
         """
@@ -112,15 +113,16 @@ class Preprocessing:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-    print(df)
+    print(df.shape)
     prep.add_features(df)
+    print(df.shape)
     prep.plot_histogram(df, 'AGE_AT_SCAN')
     (df_AS, df_TD) = prep.file_split(df)
-    print(df_TD)
     prep.plot_boxplot(df_TD, 'Site', 'AGE_AT_SCAN')
-    #prep.add_binning(df_TD)
+    prep.add_binning(df)
+    print(df)
     features, X, y = prep.feature_selection(df_TD)
-    print(features)
+    print(features.shape)
     harmonization = False
     if harmonization == True:
         df_TD = prep.com_harmonization(df_TD)
