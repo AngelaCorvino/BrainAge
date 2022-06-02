@@ -35,17 +35,6 @@ class Regression:
         Constructor.
         """
 
-    def rescale(self, scaler=None):
-        """
-        Rescale data column-wise to have them in the same range
-        """
-        if scaler == "Standard":
-            X = StandardScaler().fit_transform(X)
-        if scaler == "Robust":
-            X = RobustScaler().fit_transform(X)
-        else:
-            pass
-        return X, y
 
     def k_fold(self, X, y, n_splits, model):
         """
@@ -69,6 +58,7 @@ class Regression:
     def stratified_k_fold(self, X, y, y_bins, n_splits, model):
         """
         Split the data preserving distribution and test it on a model chosen by the user
+        model is the pipeline
         """
         try:
             y = y.to_numpy()
@@ -104,5 +94,5 @@ if __name__ == "__main__":
     stratified = True
     if stratified == True:
         predict_y, MSE, MAE = reg.stratified_k_fold(X, y, y_bins, 10, model)
-    else: 
+    else:
         predict_y, MSE, MAE = reg.k_Fold(X, y, 10, model)

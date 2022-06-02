@@ -52,13 +52,28 @@ y_bins = df['AGE_CLASS']
 
 
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+#
+# for model in models:
+#     pipe = Pipeline(steps=[('Feautureselection',prep.feature_selection(df_TD))
+#                         ('Scaler', RobustScaler()),
+#                       ('regressionmodel', model)])
+#     #pipe = pipe.fit(X.reshape(-1,1), y)
+#     pipe.fit(X_train, y_train)
+#     print(model)
+#     print("model score: %.3f" % pipe.score(X_test, y_test))
 
-for model in models:
-    pipe = Pipeline(steps=[('Feautureselection',prep.feature_selection(df_TD))
-                        ('Scaler', RobustScaler()),
-                      ('regressionmodel', model)])
-    #pipe = pipe.fit(X.reshape(-1,1), y)
-    pipe.fit(X_train, y_train)
-    print(model)
-    print("model score: %.3f" % pipe.score(X_test, y_test))
+
+
+
+X, y = prep.feature_selection(df_TD)
+def run_models(models, model_results = []):
+    for model in models:
+        pipe = Pipeline(steps=[('Scaler', RobustScaler()),
+                          ('regressionmodel', model)])
+        predict_age1, MSE1, MAE1 = a.k_Fold(10, pipe)
+        predict_ag2, MSE2, MAE2 = a.Stratifiedk_Fold(10, pipe)
+        model_results.append([MSE1, MAE1,MSE2,MAE2])
+
+    return model_results
+m=run_models(models)
