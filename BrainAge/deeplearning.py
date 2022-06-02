@@ -34,7 +34,7 @@ class Deep:
         hidden = Dense(12, activation ='relu')(hidden)
         hidden = Dense(12, activation ='relu')(hidden)
         hidden = Dense(12, activation ='relu')(hidden)
-        outputs = Dense(1, activation ='sigmoid')(hidden)
+        outputs = Dense(1, activation ='linear')(hidden)
 
         deepmodel = Model(inputs=inputs, outputs=outputs)
         deepmodel.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MSE'])
@@ -54,18 +54,19 @@ class Deep:
         """
         Autoenoder trained comparing the output vector with the input features
         using the Mean Squared Error (MSE)  loss function.
-        """
+        git"""
         inputs = Input(shape=(424))
         hidden = Dense(30, activation ='tanh')(inputs)
         hidden = Dense(2, activation ='sigmoid')(hidden) #this should be a stepwise function
         hidden = Dense(30, activation ='tanh')(hidden)
-        outputs = Dense(424, activation ='sigmoid')(hidden)
+        outputs = Dense(424, activation ='linear')(hidden)
 
         rnn = Model(inputs=inputs, outputs=outputs)
         rnn.compile(loss = 'mean_squared_error', optimizer = 'adam', metrics=['MSE'])
         rnn.summary()
-        rnn_hist = rnn.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 1000, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
+        rnn_hist = rnn.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 10, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
 
+        
         plt.plot(rnn_hist.history["val_loss"],label = 'val')
         plt.plot(rnn_hist.history["loss"],label = 'train')
         plt.legend()

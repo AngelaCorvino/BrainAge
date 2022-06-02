@@ -6,12 +6,9 @@ import sys
 #package_name = "../BrainAge"
 package_name = "BrainAge"
 
-
 sys.path.insert(0, package_name)
 
-from features import Utilities
-from regression import Regression
-
+from features import Preprocessing
 
 class TestBrainAge(unittest.TestCase):
     """
@@ -24,31 +21,39 @@ class TestBrainAge(unittest.TestCase):
         self.data = package_name + "/data/FS_features_ABIDE_males.csv"
 
     def test_file_reader(self):
-        util = Utilities(self.data,False)
-        dataframe = util.file_reader()
-        df_AS, df_TD = util.file_split()
+        prep = Preprocessing()
+        dataframe = prep.file_reader(self.data)
         assert dataframe.size == 387960
         assert dataframe.shape == (915, 424)
-        assert df_AS.shape == (451, 426)
-        assert df_TD.shape == (464, 426)
 
-    def test_add_feature(self):
-        util = Utilities(self.data,False)
-        dataframe = util.file_reader()
-        dataframe = util.add_features()
+    def test_add_features(self):
+        prep = Preprocessing()
+        dataframe = prep.file_reader(self.data)
+        prep.add_features(dataframe)
         assert 'Site' in dataframe.keys()
         assert 'TotalWhiteVol' in dataframe.keys()
+        
+    def test_add_binning(self):
+        prep = Preprocessing()
+        dataframe = prep.file_reader(self.data)
+        prep.add_binning(dataframe)
+        assert dataframe.shape == (915, 425)
 
     def test_file_split(self):
-        util = Utilities(self.data,False)
-        df_AS, df_TD = util.file_split()
-        assert df_AS.shape == (451, 426)
-        assert df_TD.shape == (464, 426)
+        prep = Preprocessing()
+        dataframe = prep.file_reader(self.data)
+        df_AS, df_TD = prep.file_split(dataframe)
+        assert df_AS.shape == (451, 424)
+        assert df_TD.shape == (464, 424)
 
     def test_feature_selection(self):
-        util = Utilities(self.data,False)
-        features, X, y = util.feature_selection('AGE_AT_SCAN', False)
-        assert features.shape == (16, )
+        prep = Preprocessing()
+        dataframe = prep.file_reader(self.data)
+        features, _, _ = prep.feature_selection(dataframe, 'AGE_AT_SCAN', False)
+        assert features.shape == (13, )
+        _, df_TD = prep.file_split(dataframe)
+        features_TD, _, _ = prep.feature_selection(df_TD, 'AGE_AT_SCAN', False)
+        assert features_TD.shape == (16, )
 
 if __name__ == "__main__":
     unittest.main()

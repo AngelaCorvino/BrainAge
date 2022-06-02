@@ -17,8 +17,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.linear_model import LinearRegression
 from neuroCombat import neuroCombat
 
-
-from features import Utilities
+from features import Preprocessing
 
 
 class Regression:
@@ -35,16 +34,10 @@ class Regression:
         """
         Constructor.
         """
-        self.file_url = file_url
-        self.util = Utilities(file_url,harmonization==False)
-        (self.df_AS, self.df_TD) = self.util.file_split()
-        self.features, self.X, self.y = self.util.feature_selection(
-            "AGE_AT_SCAN", False
-        )
 
     def rescale(self, scaler=None):
         """
-        rescale data column-wise to have them in the same range
+        Rescale data column-wise to have them in the same range
         """
         if scaler == "Standard":
             X = StandardScaler().fit_transform(X)
@@ -54,52 +47,62 @@ class Regression:
             pass
         return X, y
 
-
-
-    def k_Fold(self, n_splits, model):
+    def k_fold(self, X, y, n_splits, model):
         """
         Split the data and test it on a model chosen by the user
         """
-
         try:
-            self.y = self.y.to_numpy()
-            self.X = self.X.to_numpy()
+            y = y.to_numpy()
+            X = X.to_numpy()
         except AttributeError:
             pass
-
         kf = KFold(n_splits)
-        for train_index, test_index in kf.split(self.X):
+        for train_index, test_index in kf.split(X):
             # print("TRAIN:", train_index, "TEST:", test_index)
             # X_train, X_test = self.X[train_index],self. X[test_index]
             # y_train, y_test = self.y[train_index], self.y[test_index]
-            predict_y = model.fit(self.X[train_index], self.y[train_index]).predict(
-                self.X[test_index]
-            )
-            MSE = mean_squared_error(self.y[test_index], predict_y, squared=False)
-            MAE = mean_absolute_error(self.y[test_index], predict_y)
+            predict_y = model.fit(X[train_index], y[train_index]).predict(X[test_index])
+            MSE = mean_squared_error(y[test_index], predict_y, squared=False)
+            MAE = mean_absolute_error(y[test_index], predict_y)
         return predict_y, MSE, MAE
 
-    def Stratifiedk_Fold(self, n_splits, model):
+    def stratified_k_fold(self, X, y, y_bins, n_splits, model):
         """
         Split the data preserving distribution and test it on a model chosen by the user
         """
-        self.ybinning = self.util.add_binning("df_TD")
         try:
-            self.y = self.y.to_numpy()
-            self.ybinning = self.ybinning.to_numpy()
-            self.X = self.X.to_numpy()
+            y = y.to_numpy()
+            y_bins = y_bins.to_numpy()
+            X = X.to_numpy()
         except AttributeError:
             pass
         cv = StratifiedKFold(n_splits)
-        for train_index, test_index in cv.split(self.X, self.ybinning):
-            predict_y = model.fit(self.X[train_index], self.y[train_index]).predict(
-                self.X[test_index]
-            )
-            MSE = mean_squared_error(self.y[test_index], predict_y, squared=False)
-            MAE = mean_absolute_error(self.y[test_index], predict_y)
+        for train_index, test_index in cv.split(X, y_bins):
+            predict_y = model.fit(X[train_index], y[train_index]).predict(X[test_index])
+            MSE = mean_squared_error(y[test_index], predict_y, squared=False)
+            MAE = mean_absolute_error(y[test_index], predict_y)
 
         return predict_y, MSE, MAE
 
 
 if __name__ == "__main__":
-    a = Regression("data/FS_features_ABIDE_males.csv")
+    prep = Preprocessing()
+    df = prep.file_reader("data/FS_features_ABIDE_males.csv")
+    prep.add_features(df)
+    prep.add_binning(df)
+    y_bins = df['AGE_CLASS']
+    prep.plot_histogram(df, 'AGE_AT_SCAN')
+    (df_AS, df_TD) = prep.file_split(df)
+    prep.plot_boxplot(df_TD, 'Site', 'AGE_AT_SCAN')
+    features, X, y = prep.feature_selection(df_TD)
+    harmonization = False
+    if harmonization == True:
+        df_TD = prep.com_harmonization(df_TD)
+        print(df_TD)
+    reg = Regression("data/FS_features_ABIDE_males.csv")
+    model = LinearRegression()
+    stratified = True
+    if stratified == True:
+        predict_y, MSE, MAE = reg.stratified_k_fold(X, y, y_bins, 10, model)
+    else: 
+        predict_y, MSE, MAE = reg.k_Fold(X, y, 10, model)

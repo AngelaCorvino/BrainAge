@@ -17,7 +17,7 @@ from sklearn.metrics import mean_absolute_error
 
 
 from regression import Regression
-from features import Utilities
+from features import Preprocessing
 #
 a = Regression("data/FS_features_ABIDE_males.csv")
 
