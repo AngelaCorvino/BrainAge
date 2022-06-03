@@ -38,16 +38,14 @@ For our application, we adapted the autoencoder described in 'S. Hawkins, H. He,
  cator neural networks' to our data, building a symmetric, four-linear-layer network with N = 424 (the number of features under examination). The three inner layers have 30, 2 and 30 neurons respectively, their activation functions are a hyperbolic tangent, a step-wise function and a hyperbolic tangent again. The fourth layer generates an output with the same dimensions as the input and a sigmoid filter maps the output into the final vector. We trained the autoencoder comparing the output vector with the input features using the Mean Squared Error (MSE) as the loss function.
  
 ## Data Harmonization 
-As explained by Ferrai et al() The CI of a categorical variable is a score between 0 and 1 representing its impact on a binary classification study.
->>>>>>> f967aafa673f6aea7d54672dcea01a44815dc25b
-Can we use this figure of merit for a non classification study?
-
-This score is calculated by replicating the desired classification study (i.e. same task and same classifier) using different degrees of bias in the training set with respect to the hypothetically confounding variable. The CI value summarizes how much the performances of the classifiers change among the various trainings. The CI can be calculated also for continuous variables by binning their values and, in this scenario, it is useful to identify the widest range of values for which the effect of such variables can be ignored.
-
-The paper we are referring to describes the implementation of a classifier. We instead want to predict a value (the age) and we want to examine the confounding effect of a categorical feature ( acquisition site) using the CI index.
 
 
-To mitigate the effect of the different acquisition sites on the features, we have to harmonize data across sites. We can use different models , in particular we want to follow Lombardi et al (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7349402/#B40-brainsci-10-00364).
+To mitigate the effect of the different acquisition sites on the features, we have to harmonize data across sites. 
+
+We define harmonization as the explicit removal of site-related effects in multi-site data (cit Pomponio https://www.sciencedirect.com/science/article/pii/S1053811919310419?via%3Dihub#!)
+
+
+We can use different models , in particular we want to follow Lombardi et al (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7349402/#B40-brainsci-10-00364).
 
 For the removal of site effects, different harmonization procedures were compared:
 (i) absence of harmonization ;
