@@ -1,0 +1,10 @@
+sphinx
+scikit-learn
+pandas
+matplotlib
+tensorflow
+seaborn
+scipy
+numpy
+neuroCombat
+keras

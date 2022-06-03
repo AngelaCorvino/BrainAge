@@ -1,0 +1,23 @@
+#config file for circleci
+version: 2.1
+
+orbs:
+  python: circleci/python@1.2
+
+jobs:
+  build-and-test:
+    executor: python/default
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - python/install-packages:
+         pkg-manager: pip
+         pip-dependency-file: requirements.txt
+      - run:
+          name: Run tests
+          command: python tests/tests.py
+workflows:
+  main:
+    jobs:
+      - build-and-test
