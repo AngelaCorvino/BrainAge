@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from neuroCombat import neuroCombat
 
 
 class Preprocessing:
@@ -39,13 +40,30 @@ class Preprocessing:
         return
 
 
-    def add_binning(self, dataframe):
+    def create_binning(self, dataframe):
         """
-        Add a column to control  with AGE_AT_SCAN binning
+        Create a column to control  with AGE_AT_SCAN binning and attach to dataframe
         """
-        #self.df['AGE_CLASS'] = pd.cut(self.df.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
         dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
         return dataframe['AGE_CLASS']
+
+    def add_binning(self, dataframe):
+        """
+        Create a map  where Site is binned and then merge it withe dataframe
+        """
+        try :
+            grouping_lists=['Caltech','CMU','KKI','Leuven','MaxMun','NYU',
+        'OHSU','Olin','Pitt','SBL','Stanford','Trinity','UCLA', 'UM','USM','Yale']
+            labels=[x for x in range(16)]
+
+            maps = (pd.DataFrame({'Site_CLASS': labels, 'Site': grouping_lists})
+            .explode('Site')
+            .reset_index(drop=True))
+
+            dataframe = dataframe.merge(maps, on = 'Site', how='left').fillna("Other")
+        except KeyError:
+             print("Column Site does not exist")
+        return dataframe
 
     def file_split(self, df):
         """
@@ -79,19 +97,21 @@ class Preprocessing:
         """
         Harmonize dataset with ComBat model
         """
+
+        dataframe = datafram.drop([ 'FILE_ID','Site'], axis = 1)
         df_combat = neuroCombat(
             dat = dataframe.transpose(),
             covars = dataframe[[confounder, covariate]],
             batch_col = confounder,
         )["data"]
-        dataframe_harmonized = df_combat.transpose()
+        df_combatharmonized = df_combat.transpose()
         #df_TDharmonized = self.df_TD[self.features]
         #df_TDharmonized.loc[:, (self.features)] = df_combat.transpose()
         # the following line has to be inseting in the next function
         #X_train, X_test, y_train, y_test = train_test_split(
         #    df_TDharmonized, self.df_TD["AGE_AT_SCAN"], test_size=0.3
         #)
-        return dataframe_harmonized
+        return df_combatharmonized
 
     def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
         """
@@ -113,17 +133,23 @@ class Preprocessing:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-    print(df.shape)
     prep.add_features(df)
-    print(df.shape)
-    prep.plot_histogram(df, 'AGE_AT_SCAN')
-    (df_AS, df_TD) = prep.file_split(df)
-    prep.plot_boxplot(df_TD, 'Site', 'AGE_AT_SCAN')
     prep.add_binning(df)
-    print(df)
-    features, X, y = prep.feature_selection(df_TD)
-    print(features.shape)
-    harmonization = False
-    if harmonization == True:
-        df_TD = prep.com_harmonization(df_TD)
-        print(df_TD)
+    grouping_lists=['Caltech','CMU','KKI','Leuven','MaxMun','NYU',
+'OHSU','Olin','Pitt','SBL','Stanford','Trinity','UCLA', 'UM','USM','Yale']
+    for x,words in enumerate(df.Site.values().tolist()):
+        print(x,words)
+    # grouping_lists=[x for x in enumerate (df.Site.keys())]
+    # print(grouping_lists)
+    #
+    # df = df.drop([ 'FILE_ID','Site'], axis = 1)
+    # print(df)
+    # df_combatharmonized= prep.com_harmonization(df)
+    # print(df_combatharmonized)
+
+
+    # prep.plot_histogram(df, 'AGE_AT_SCAN')
+    # (df_AS, df_TD) = prep.file_split(df)
+    #prep.plot_boxplot(df_TD, 'Site', 'AGE_AT_SCAN')
+    # prep.add_binning(df)
+    # features, X, y = prep.feature_selection(df_TD)
