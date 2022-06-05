@@ -20,7 +20,18 @@ class Preprocessing:
         """
         Initialize the class.
         """
-
+        
+    def __call__(self, df):
+        """
+        
+        """
+        self.add_features(df)
+        self.create_binning(df)
+        (df_AS, df_TD) = self.file_split(df)
+        features, X, y = self.feature_selection(df_TD)
+        print(features)
+        prep.plot_histogram(df, 'AGE_AT_SCAN')
+        return
     #def __str__(self):
     #    return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(df.size, df.shape, df.head(5))
 
@@ -39,10 +50,9 @@ class Preprocessing:
         df['Site'] = df.FILE_ID.apply(lambda x: x.split('_')[0])
         return
 
-
     def create_binning(self, dataframe):
         """
-        Create a column to control  with AGE_AT_SCAN binning and attach to dataframe
+        Create a column with AGE_AT_SCAN binning and attach to dataframe
         """
         dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
         return dataframe['AGE_CLASS']
@@ -55,7 +65,6 @@ class Preprocessing:
             grouping_lists=['Caltech','CMU','KKI','Leuven','MaxMun','NYU',
         'OHSU','Olin','Pitt','SBL','Stanford','Trinity','UCLA', 'UM','USM','Yale']
             labels=[x for x in range(16)]
-
             maps = (pd.DataFrame({'Site_CLASS': labels, 'Site': grouping_lists})
             .explode('Site')
             .reset_index(drop=True))
@@ -97,8 +106,7 @@ class Preprocessing:
         """
         Harmonize dataset with ComBat model
         """
-
-        dataframe = datafram.drop([ 'FILE_ID','Site'], axis = 1)
+        dataframe = dataframe.drop([ 'FILE_ID','Site'], axis = 1)
         df_combat = neuroCombat(
             dat = dataframe.transpose(),
             covars = dataframe[[confounder, covariate]],
@@ -126,30 +134,10 @@ class Preprocessing:
         listoffeatures = listoffeatures.drop(feature)
         X = dataframe[listoffeatures]
         y = dataframe[feature]
-
-        return  X, y
+        return  listoffeatures, X, y
 
 
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-    prep.add_features(df)
-    prep.add_binning(df)
-    grouping_lists=['Caltech','CMU','KKI','Leuven','MaxMun','NYU',
-'OHSU','Olin','Pitt','SBL','Stanford','Trinity','UCLA', 'UM','USM','Yale']
-    for x,words in enumerate(df.Site.values().tolist()):
-        print(x,words)
-    # grouping_lists=[x for x in enumerate (df.Site.keys())]
-    # print(grouping_lists)
-    #
-    # df = df.drop([ 'FILE_ID','Site'], axis = 1)
-    # print(df)
-    # df_combatharmonized= prep.com_harmonization(df)
-    # print(df_combatharmonized)
-
-
-    # prep.plot_histogram(df, 'AGE_AT_SCAN')
-    # (df_AS, df_TD) = prep.file_split(df)
-    #prep.plot_boxplot(df_TD, 'Site', 'AGE_AT_SCAN')
-    # prep.add_binning(df)
-    # features, X, y = prep.feature_selection(df_TD)
+    prep(df)
