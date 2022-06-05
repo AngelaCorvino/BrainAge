@@ -45,19 +45,26 @@ To mitigate the effect of the different acquisition sites on the features, we ha
 We define harmonization as the explicit removal of site-related effects in multi-site data (cit Pomponio https://www.sciencedirect.com/science/article/pii/S1053811919310419?via%3Dihub#!)
 
 
-We can use different models , in particular we want to follow Lombardi et al (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7349402/#B40-brainsci-10-00364).
+
 
 For the removal of site effects, different harmonization procedures were compared:
 (i) absence of harmonization ;
 (ii) Removal of site effects using linear regression without adjusting for biological covariates
 (ii) removal of site effects using ComBat with age as biological covariate of interest (age covariate);
-(iii) removal of site effects using ComBat without specifying the age as a biological covariate to be preserved (no age covariate).
-Why do we have to use the age as covariare ?
+(iii) removal of site effects using neuroHarmonize  specifying the age as a biological covariate.
+
+Why do we have to use the age as covariate ?
 We have to consider the interaction between the site variable and the age of the subjects.
 If some sites only include subjects with age in specific ranges( this is our case) , it is therefore important to ensure that the harmonization of the site effect does not affect the age-related biological variability of the dataset.
 
 
 the Combat model we are going to use has been implemented in python by Fortin et al. (https://www.sciencedirect.com/science/article/abs/pii/S105381191730931X)
+
+The neuroHarmonize model provides similar functionality respect to Combat but has  additional features:
+
+-Separate train/test datasets.
+-Specify covariates with generic nonlinear effects. Implemented using Generalized Additive Models (GAMs) from the statsmodels package.
+-Skip the empirical Bayes (EB) step of ComBat, if desired.
 
 ## Requirements
 
