@@ -11,3 +11,4 @@ keras
 neuroHarmonize
 neuroCombat
 statsmodels
+nibabel
