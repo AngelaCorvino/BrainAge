@@ -28,9 +28,9 @@ class Preprocessing:
         """
         self.add_features(dataframe)
         #self.age_binning(dataframe)
-        print(dataframe.shape)
+
         dataframe = self.site_binning(dataframe)
-        print(dataframe.shape)
+
         (df_AS, df_TD) = self.file_split(dataframe)
         features, X, y = self.feature_selection(df_TD)
         #print(features)
@@ -76,7 +76,6 @@ class Preprocessing:
             maps = (pd.DataFrame({'SITE_CLASS': labels, 'SITE': grouping_lists})
             .explode('SITE')
             .reset_index(drop=True))
-            print(maps)
             dataframe = dataframe.merge(maps, on = 'SITE', how='left').fillna('Other')
         except KeyError:
              print("Column SITE does not exist")
@@ -116,10 +115,16 @@ class Preprocessing:
         1-Load your data and all numeric covariates
         2-run harmonization and store the adjusted data
         """
-        covars = dataframe[[confounder, covariate1]]
-        dataframe = np.array(dataframe)
-        my_model, df_neuroharmonized,s_data = harmonizationLearn(dataframe, covars,return_s_data=True)
-        return df_neuroharmonized
+
+        try:
+            covars = dataframe[[confounder, covariate1]]
+            data_array = np.array(dataframe.drop(['FILE_ID','SITE_CLASS','SITE'], axis = 1))
+            #dataframe=dataframe.astype(np.float)
+            my_model, array_neuroharmonized,s_data = harmonizationLearn(data_array , covars,return_s_data=True)
+        except RuntimeWarning :
+            print( 'How can we solve this?')
+
+        return   pd.DataFrame(array_neuroharmonized)
 
     def com_harmonization(self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"):
         """
@@ -159,4 +164,5 @@ if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
     df = prep(df)
-    prep.com_harmonization(df, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")
+    df_neuroharmonized=prep.neuro_harmonization(df)
+    print(df_neuroharmonized)
