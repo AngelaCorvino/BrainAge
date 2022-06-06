@@ -3,7 +3,6 @@ from keras.models import Model, load_model
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
-from features import Utilities
 
 class Deep:
     """
@@ -24,8 +23,14 @@ class Deep:
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.dataframe, self.dataframe['AGE_AT_SCAN'], test_size=0.3, random_state=14)
 
 
-    def make_model(self):
+    def make_MLP(self):
         """
+        This function uses   generates an MLP model.
+        Arguments:
+
+          Returns:
+          model: the model architecture (Tensorflow Object).
+
         """
         inputs = Input(shape=(424))
         hidden = Dense(128, activation ='relu')(inputs)
@@ -34,44 +39,81 @@ class Deep:
         hidden = Dense(12, activation ='relu')(hidden)
         outputs = Dense(1, activation ='linear')(hidden)
 
-        deepmodel = Model(inputs=inputs, outputs=outputs)
-        deepmodel.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MSE'])
-        deepmodel.summary()
-        deephistory = deepmodel.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 1000, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
+        model = Model(inputs=inputs, outputs=outputs)
+        model.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MSE'])
+        model.summary()
 
-        plt.plot(deephistory.history["val_loss"],label = 'val')
-        plt.plot(deephistory.history["loss"],label = 'train')
-        plt.legend()
-        plt.show()
-        # plt.semilogy(deephistory.history['MSE'])
-        # plt.semilogy(deephistory.history['val_MSE'])
-        # plt.show()
-        return deepmodel
+        return model
 
     def make_autoencoder(self):
         """
         Autoenoder trained comparing the output vector with the input features
         using the Mean Squared Error (MSE)  loss function.
-        git"""
+        Returns:
+          model: the model architecture (Tensorflow Object).
+          model_summary: a summary of the model's architecture.
+
+        """
         inputs = Input(shape=(424))
         hidden = Dense(30, activation ='tanh')(inputs)
         hidden = Dense(2, activation ='sigmoid')(hidden) #this should be a stepwise function
         hidden = Dense(30, activation ='tanh')(hidden)
         outputs = Dense(424, activation ='linear')(hidden)
 
-        rnn = Model(inputs=inputs, outputs=outputs)
-        rnn.compile(loss = 'mean_squared_error', optimizer = 'adam', metrics=['MSE'])
-        rnn.summary()
-        rnn_hist = rnn.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 10, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
+        model = Model(inputs=inputs, outputs=outputs)
+        model.compile(loss = 'mean_squared_error', optimizer = 'adam', metrics=['MSE'])
+        model.summary()
+        return model
+
+    def model_fit(self, model):
+        '''
+        This function  trains the model on the x_train data.
+        Arguments:
+         model: the model architecture (Tensorflow Object).
+        Returns:
+          model: the trained model.
+          history: a summary of how the model trained (training error, validation error).
+         '''
+
+        history = model.fit(self.X_train, self.y_train, validation_split = 0.4,
+        epochs = 10, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
 
 
-        plt.plot(rnn_hist.history["val_loss"],label = 'val')
-        plt.plot(rnn_hist.history["loss"],label = 'train')
-        plt.legend()
-        plt.show()
+        return model, history
 
-        return rnn
+    def plot_training_validation_loss(self,history):
+        '''
+        This function plots the training and validation loss curves of the trained model,
+        enabling visual diagnosis of underfitting (bias) or overfitting (variance).
+        Arguments:
+          history
 
-if __name__ == "__main__":
-    deep = Deep("data/FS_features_ABIDE_males.csv")
-    deep.make_model().summary()
+        Returns:
+          fig: a visual representation of the model's training loss and validation
+          loss curves.
+         '''
+        training_validation_loss = pd.DataFrame.from_dict(history.history, orient='columns')
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x = training_validation_loss.index, y = training_validation_loss["loss"].round(6),
+                           mode = 'lines',
+                           name = 'Training Loss',
+                           connectgaps=True))
+        fig.add_trace(go.Scatter(x = training_validation_loss.index, y = training_validation_loss["val_loss"].round(6),
+                           mode = 'lines',
+                           name = 'Validation Loss',
+                           connectgaps=True))
+
+        fig.update_layout(
+        title='Training and Validation Loss',
+        xaxis_title="Epoch",
+        yaxis_title="Loss",
+        font=dict(
+        family="Arial",
+        size=11,
+        color="#7f7f7f"
+        ))
+        return fig.show()
+
+
+#if __name__ == "__main__":

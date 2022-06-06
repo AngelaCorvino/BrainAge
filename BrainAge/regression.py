@@ -85,6 +85,6 @@ if __name__ == "__main__":
     model = LinearRegression()
     stratified = True
     if stratified == True:
-        predict_y, MSE, MAE = reg.stratified_k_fold(X, y, prep(df, 'raw').['AGE_AT_SCAN'], 10, model)
+        predict_y, MSE, MAE = reg.stratified_k_fold(X, y, prep(df, 'raw')['AGE_AT_SCAN'], 10, model)
     else:
         predict_y, MSE, MAE = reg.k_Fold(X, y, 10, model)

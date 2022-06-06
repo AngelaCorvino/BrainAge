@@ -22,6 +22,8 @@ from sklearn.feature_selection import f_classif
 
 from regression import Regression
 from features import Preprocessing
+from deeplearning import Deep
+
 def file_split(dataframe):
         """
         Split dataframe in healthy (control) and autistic subjects groups
@@ -74,8 +76,8 @@ def run_models(models, model_results = []):
         model_results.append([MSE1, MAE1,MSE2,MAE2])
 
     return model_results
-m=run_models(models)
-print(m)
+#m=run_models(models)
+
 
 
 
@@ -83,4 +85,6 @@ print(m)
 #Deep learning
 
 deep = Deep(df_TD)
-deep.make_model().summary()
+mlp_model=deep.make_MLP()
+mlp_history=deep.model_fit(mlp_model)
+#deep.plot_training_validation_loss(rnn_hist)
