@@ -62,20 +62,22 @@ class Preprocessing:
 
     def site_binning(self, dataframe):
         """
-        Create a map  where SITE is binned and then merge it withe dataframe
+        Create a map  where SITE  is binned in the column SITE_Class
+         and then merge it withe dataframe
         """
         try :
             grouping_lists=['Caltech','CMU','KKI','Leuven','MaxMun','NYU',
-        'OHSU','Olin','Pitt','SBL','Stanford','Trinity','UCLA', 'UM','USM','Yale']
-            labels=[x for x in range(16)]
+        'OHSU','Olin','Pitt','SBL','SDSU','Stanford','Trinity','UCLA', 'UM','USM','Yale']
+            labels=[x for x in range(len(grouping_lists))]
+
             maps = (pd.DataFrame({'SITE_CLASS': labels, 'SITE': grouping_lists})
             .explode('SITE')
             .reset_index(drop=True))
 
-            dataframe = dataframe.merge(maps, on = 'SITE', how='left').fillna("Other")
+            dataframe = dataframe.merge(maps, on = 'SITE', how='left').fillna('Other')
+
         except KeyError:
              print("Column SITE does not exist")
-
         return dataframe
 
     def file_split(self, dataframe):
