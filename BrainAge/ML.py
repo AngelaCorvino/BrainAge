@@ -75,13 +75,14 @@ def run_models(dataframe, models, model_results = []):
         model_results.append([MSE1, MAE1,MSE2,MAE2])
 
     return model_results
-    
-    
-m=run_models(df_TD, models)
-print(m)
+
+
+#m=run_models(df_TD, models)
+
 
 #Deep learning
 
 deep = Deep(df_TD)
-deepmodel, deephistory = deep.make_MLP()
-deepmodel.summary()
+deepmodel, deephistory = deep.make_autoencoder()
+deep.plot_training_validation_loss(deephistory)
+deep.reconstruction_error(deepmodel)
