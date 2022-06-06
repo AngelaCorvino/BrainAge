@@ -3,8 +3,8 @@ import os
 import sys
 
 #to run locally
-package_name = "../BrainAge"
-#package_name = "BrainAge"
+#package_name = "../BrainAge"
+package_name = "BrainAge"
 
 sys.path.insert(0, package_name)
 
