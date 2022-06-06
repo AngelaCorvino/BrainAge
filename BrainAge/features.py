@@ -27,12 +27,15 @@ class Preprocessing:
         What happens when you call an istance as a function
         """
         self.add_features(dataframe)
-        self.site_binning(dataframe)
+        #self.age_binning(dataframe)
+        print(dataframe.shape)
+        dataframe = self.site_binning(dataframe)
+        print(dataframe.shape)
         (df_AS, df_TD) = self.file_split(dataframe)
         features, X, y = self.feature_selection(df_TD)
-        print(features)
-        prep.plot_histogram(dataframe, 'AGE_AT_SCAN')
-        return
+        #print(features)
+        #prep.plot_histogram(dataframe, 'AGE_AT_SCAN')
+        return dataframe
 
     #def __str__(self):
     #    return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(df.size, df.shape, df.head(5))
@@ -50,7 +53,7 @@ class Preprocessing:
         """
         dataframe['TotalWhiteVol'] = dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
         dataframe['SITE'] = dataframe.FILE_ID.apply(lambda x: x.split('_')[0])
-        dataframe = dataframe.drop([ 'FILE_ID'], axis = 1)
+        dataframe = dataframe.drop(['FILE_ID'], axis = 1)
         return
 
     def age_binning(self, dataframe):
@@ -75,7 +78,6 @@ class Preprocessing:
             .reset_index(drop=True))
             print(maps)
             dataframe = dataframe.merge(maps, on = 'SITE', how='left').fillna('Other')
-
         except KeyError:
              print("Column SITE does not exist")
         return dataframe
@@ -108,7 +110,6 @@ class Preprocessing:
         plt.show()
         return
 
-
     def neuro_harmonization(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
         """
         Harmonize dataset with neuroHarmonize model.
@@ -118,14 +119,13 @@ class Preprocessing:
         covars = dataframe[[confounder, covariate1]]
         dataframe = np.array(dataframe)
         my_model, df_neuroharmonized,s_data = harmonizationLearn(dataframe, covars,return_s_data=True)
-
         return df_neuroharmonized
 
     def com_harmonization(self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"):
         """
         Harmonize dataset with ComBat model
         """
-        dataframe=  dataframe.drop([ 'SITE'], axis = 1)
+        dataframe=  dataframe.drop(['FILE_ID','SITE'], axis = 1)
         df_combat = neuroCombat(
             dat = dataframe.transpose(),
             covars = dataframe[[confounder, covariate]],
@@ -139,7 +139,6 @@ class Preprocessing:
         #    df_TDharmonized, self.df_TD["AGE_AT_SCAN"], test_size=0.3
         #)
         return df_combatharmonized
-
 
     def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
         """
@@ -156,9 +155,8 @@ class Preprocessing:
         y = dataframe[feature]
         return  listoffeatures, X, y
 
-
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-    prep(df)
+    df = prep(df)
     prep.com_harmonization(df, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")

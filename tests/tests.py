@@ -38,6 +38,14 @@ class TestBrainAge(unittest.TestCase):
         dataframe = prep.file_reader(self.data)
         prep.age_binning(dataframe)
         assert dataframe.shape == (915, 425)
+        
+    def test_site_binning(self):
+        prep = Preprocessing()
+        dataframe = prep.file_reader(self.data)
+        prep.add_features(dataframe)
+        dataframe = prep.site_binning(dataframe)
+        print(dataframe.shape)
+        assert dataframe.shape == (915, 427)
 
     def test_file_split(self):
         prep = Preprocessing()
