@@ -3,7 +3,6 @@ from keras.models import Model, load_model
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
-from features import Utilities
 
 class Deep:
     """
@@ -24,8 +23,16 @@ class Deep:
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.dataframe, self.dataframe['AGE_AT_SCAN'], test_size=0.3, random_state=14)
 
 
-    def make_model(self):
+    def make_MLP(self):
         """
+        This function uses   generates an MLP model.
+        Arguments:
+
+          Returns:
+
+          model: the trained model.
+          history: a summary of how the model trained (training error, validation error).
+
         """
         inputs = Input(shape=(424))
         hidden = Dense(128, activation ='relu')(inputs)
@@ -34,44 +41,112 @@ class Deep:
         hidden = Dense(12, activation ='relu')(hidden)
         outputs = Dense(1, activation ='linear')(hidden)
 
-        deepmodel = Model(inputs=inputs, outputs=outputs)
-        deepmodel.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MSE'])
-        deepmodel.summary()
-        deephistory = deepmodel.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 1000, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
+        model = Model(inputs=inputs, outputs=outputs)
+        model.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MSE'])
+        model.summary()
 
-        plt.plot(deephistory.history["val_loss"],label = 'val')
-        plt.plot(deephistory.history["loss"],label = 'train')
-        plt.legend()
-        plt.show()
-        # plt.semilogy(deephistory.history['MSE'])
-        # plt.semilogy(deephistory.history['val_MSE'])
-        # plt.show()
-        return deepmodel
+
+        history = model.fit(self.X_train, self.y_train, validation_split = 0.4,
+        epochs = 10, batch_size = 50, verbose = 0)
+
+        return model,history
 
     def make_autoencoder(self):
         """
         Autoenoder trained comparing the output vector with the input features
         using the Mean Squared Error (MSE)  loss function.
-        git"""
+        Returns:
+        model: the trained model.
+        history: a summary of how the model trained (training error, validation error).
+
+        """
         inputs = Input(shape=(424))
         hidden = Dense(30, activation ='tanh')(inputs)
         hidden = Dense(2, activation ='sigmoid')(hidden) #this should be a stepwise function
         hidden = Dense(30, activation ='tanh')(hidden)
         outputs = Dense(424, activation ='linear')(hidden)
 
-        rnn = Model(inputs=inputs, outputs=outputs)
-        rnn.compile(loss = 'mean_squared_error', optimizer = 'adam', metrics=['MSE'])
-        rnn.summary()
-        rnn_hist = rnn.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 10, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
+        model = Model(inputs=inputs, outputs=outputs)
+        model.compile(loss = 'mean_squared_error', optimizer = 'adam', metrics=['MSE'])
+        model.summary()
 
 
-        plt.plot(rnn_hist.history["val_loss"],label = 'val')
-        plt.plot(rnn_hist.history["loss"],label = 'train')
-        plt.legend()
-        plt.show()
+        history = model.fit(self.X_train, self.X_train, validation_split = 0.4,
+        epochs = 10, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
 
-        return rnn
 
-if __name__ == "__main__":
-    deep = Deep("data/FS_features_ABIDE_males.csv")
-    deep.make_model().summary()
+        return model, history
+
+    def plot_training_validation_loss(self,history):
+        '''
+        This function plots the training and validation loss curves of the trained model,
+        enabling visual diagnosis of underfitting (bias) or overfitting (variance).
+        Arguments:
+          history
+
+        Returns:
+          fig: a visual representation of the model's training loss and validation
+          loss curves.
+         '''
+        training_validation_loss = pd.DataFrame.from_dict(history.history, orient='columns')
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x = training_validation_loss.index, y = training_validation_loss["loss"].round(6),
+                           mode = 'lines',
+                           name = 'Training Loss',
+                           connectgaps=True))
+        fig.add_trace(go.Scatter(x = training_validation_loss.index, y = training_validation_loss["val_loss"].round(6),
+                           mode = 'lines',
+                           name = 'Validation Loss',
+                           connectgaps=True))
+
+        fig.update_layout(
+        title='Training and Validation Loss',
+        xaxis_title="Epoch",
+        yaxis_title="Loss",
+        font=dict(
+        family="Arial",
+        size=11,
+        color="#7f7f7f"
+        ))
+        return fig.show()
+
+    def reconstruction_error(self,model):
+        """
+        This function calculates the reconstruction error and displays a histogram of
+        the training mean absolute error.
+        Arguments:
+        model: the trained  model
+          x_train: 3D data to be used in model training (numpy array).
+          Returns:
+          fig: a visual representation of the training MAE distribution.
+        """
+
+        if isinstance(self.X_train, np.ndarray) is False:
+            raise TypeError("x_train argument should be a numpy array.")
+
+        x_train_pred = model.predict(self.X_train)
+        global train_mae_loss
+        train_mae_loss = np.mean(np.abs(x_train_pred - self.X_train), axis = 1)
+        histogram = train_mae_loss.flatten()
+        fig =go.Figure(data = [go.Histogram(x = histogram,
+                                      histnorm = 'probability',
+                                      name = 'MAE Loss')])
+        fig.update_layout(
+        title='Mean Absolute Error Loss',
+        xaxis_title="Training MAE Loss (%)",
+        yaxis_title="Number of Samples",
+        font=dict(
+        family="Arial",
+        size=11,
+        color="#7f7f7f"
+        ))
+
+        
+        print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss).round(4)))
+
+        return fig.show()
+
+
+
+#if __name__ == "__main__":

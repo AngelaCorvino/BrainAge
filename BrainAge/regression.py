@@ -78,21 +78,13 @@ class Regression:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-    prep.add_features(df)
-    prep.add_binning(df)
-    y_bins = df['AGE_CLASS']
-    prep.plot_histogram(df, 'AGE_AT_SCAN')
-    (df_AS, df_TD) = prep.file_split(df)
-    prep.plot_boxplot(df_TD, 'Site', 'AGE_AT_SCAN')
-    features, X, y = prep.feature_selection(df_TD)
-    harmonization = False
-    if harmonization == True:
-        df_TD = prep.com_harmonization(df_TD)
-        print(df_TD)
-    reg = Regression("data/FS_features_ABIDE_males.csv")
+
+    features, X, y = prep.feature_selection(prep(df, 'raw'))
+
+    reg = Regression()
     model = LinearRegression()
     stratified = True
     if stratified == True:
-        predict_y, MSE, MAE = reg.stratified_k_fold(X, y, y_bins, 10, model)
+        predict_y, MSE, MAE = reg.stratified_k_fold(X, y, prep(df, 'raw')['AGE_AT_SCAN'], 10, model)
     else:
         predict_y, MSE, MAE = reg.k_Fold(X, y, 10, model)
