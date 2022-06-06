@@ -15,7 +15,6 @@ class Preprocessing:
     ----------
     file_url : string-like
         The string containing data adress to be passed to Preprocessing.
-    df : dataframe containing data to preprocess.
     """
 
     def __init__(self):
