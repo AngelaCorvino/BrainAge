@@ -85,6 +85,6 @@ def run_models(models, model_results = []):
 #Deep learning
 
 deep = Deep(df_TD)
-mlp_model=deep.make_MLP()
-mlp_history=deep.model_fit(mlp_model)
-#deep.plot_training_validation_loss(rnn_hist)
+mlp_model,mlp_history=deep.make_MLP()
+deep.plot_training_validation_loss(mlp_history)
+deep.reconstruction_error(mlp_model)
