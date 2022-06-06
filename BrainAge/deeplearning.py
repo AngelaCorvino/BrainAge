@@ -142,9 +142,9 @@ class Deep:
         color="#7f7f7f"
         ))
 
-        print("*"*80)
+        
         print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss).round(4)))
-        print("*"*80)
+
         return fig.show()
 
 
