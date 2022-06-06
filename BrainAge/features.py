@@ -149,15 +149,16 @@ class Preprocessing:
 
 
 if __name__ == "__main__":
-    print('ciao')
+
     prep = Preprocessing()
 
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
     df=prep.add_features(df)
+    print(df)
     df=prep.add_binning(df)
 
-    #df_combatharmonized=prep.com_harmonization(df)
-    df_nueroharmonized=prep.neuro_harmonization(df)
+    df_combatharmonized=prep.com_harmonization(df)
+    #df_nueroharmonized=prep.neuro_harmonization(df)
     print(df)
 
     #for x,words in enumerate(df.SITE.values().tolist()):
