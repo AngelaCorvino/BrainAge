@@ -22,6 +22,7 @@ from sklearn.feature_selection import f_classif
 
 from regression import Regression
 from features import Preprocessing
+from deeplearning import Deep
 def file_split(dataframe):
         """
         Split dataframe in healthy (control) and autistic subjects groups
