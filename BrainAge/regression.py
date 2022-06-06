@@ -30,21 +30,10 @@ class Regression:
 
     """
 
-    def __init__(self,dataframe):
+    def __init__(self):
         """
         Constructor.
         """
-        self.dataframe=dataframe
-
-
-    def file_split(self):
-        """
-        Split dataframe in healthy (control) and autistic subjects groups
-        """
-        df_AS = self.dataframe.loc[self.dataframe.DX_GROUP == 1]
-        df_TD = self.dataframe.loc[self.dataframe.DX_GROUP == -1]
-        return df_AS, df_TD
-
 
 
     def k_fold(self, X, y, n_splits, model):

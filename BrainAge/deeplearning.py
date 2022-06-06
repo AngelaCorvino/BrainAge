@@ -14,17 +14,15 @@ class Deep:
         The path that point to the data.
 
     """
-    def __init__(self, file_url):
+    def __init__(self, dataframe):
         """
         Constructor.
         """
-        self.file_url = file_url
-        self.util = Utilities(file_url)
-        (self.df_AS, self.df_TD) = self.util.file_split()
-        self.df_TD = self.df_TD.drop(['Site', 'FILE_ID'], axis = 1)
+        self.dataframe = dataframe
+
         # Divide the dataset in train, validation and test in a static way
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.df_TD, self.df_TD['AGE_AT_SCAN'], test_size=0.3, random_state=14)
-        print(self.X_train.shape)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.dataframe, self.dataframe['AGE_AT_SCAN'], test_size=0.3, random_state=14)
+
 
     def make_model(self):
         """
@@ -66,7 +64,7 @@ class Deep:
         rnn.summary()
         rnn_hist = rnn.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 10, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
 
-        
+
         plt.plot(rnn_hist.history["val_loss"],label = 'val')
         plt.plot(rnn_hist.history["loss"],label = 'train')
         plt.legend()

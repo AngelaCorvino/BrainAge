@@ -22,14 +22,21 @@ from sklearn.feature_selection import f_classif
 
 from regression import Regression
 from features import Preprocessing
+def file_split(dataframe):
+        """
+        Split dataframe in healthy (control) and autistic subjects groups
+        """
+        df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
+        df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
+        return df_AS, df_TD
 
 
 prep = Preprocessing()
 df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-regression = Regression(prep(df, 'raw'))
+regression = Regression()
 
 #SPLITTING DATA
-(df_AS, df_TD) = regression.file_split()
+(df_AS, df_TD) =file_split(prep(df, 'raw'))
 
 models = [LinearRegression(), GaussianProcessRegressor(), RandomForestRegressor(), Lasso(), SVR()]
 #
@@ -69,3 +76,11 @@ def run_models(models, model_results = []):
     return model_results
 m=run_models(models)
 print(m)
+
+
+
+
+#Deep learning
+
+deep = Deep(df_TD)
+deep.make_model().summary()
