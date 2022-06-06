@@ -51,6 +51,7 @@ class Preprocessing:
         """
         dataframe['TotalWhiteVol'] = dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
         dataframe['SITE'] = dataframe.FILE_ID.apply(lambda x: x.split('_')[0])
+        dataframe = dataframe.drop([ 'FILE_ID'], axis = 1)
         return
 
     def age_binning(self, dataframe):
