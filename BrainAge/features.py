@@ -10,11 +10,6 @@ import statsmodels.api as sm
 class Preprocessing:
     """
     Class containing functions for data
-
-     Parameters
-    ----------
-    file_url : string-like
-        The string containing data adress to be passed to Preprocessing.
     """
 
     def __init__(self):
@@ -22,20 +17,30 @@ class Preprocessing:
         Initialize the class.
         """
 
-    def __call__(self, dataframe):
+    def __call__(self, dataframe, harmonize_option):
         """
         What happens when you call an istance as a function
+        ----
+        Parameters:
+        ----
+        harmonize_option : string-like
+            String containing one of the options: 'raw', 'combat', 'neuro'
         """
         self.add_features(dataframe)
         #self.age_binning(dataframe)
-
-        dataframe = self.site_binning(dataframe)
-
-        (df_AS, df_TD) = self.file_split(dataframe)
-        features, X, y = self.feature_selection(df_TD)
+        #(df_AS, df_TD) = self.file_split(dataframe)
+        #features, X, y = self.feature_selection(df_TD)
         #print(features)
         #prep.plot_histogram(dataframe, 'AGE_AT_SCAN')
-        return dataframe
+        if harmonize_option == 'raw':
+            return dataframe
+        elif harmonize_option == 'combat':
+            dataframe = self.site_binning(dataframe)
+            dataframe_combat = self.com_harmonization(dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")
+            return dataframe_combat
+        elif harmonize_option == 'neuro':
+            dataframe_neuro = self.neuro_harmonization(dataframe, confounder="SITE", covariate1="AGE_AT_SCAN")
+            return dataframe_neuro
 
     #def __str__(self):
     #    return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(df.size, df.shape, df.head(5))
@@ -43,6 +48,11 @@ class Preprocessing:
     def file_reader(self, file_url):
         """
         Read data features from url and return them in a dataframe
+        ----
+        Parameters
+        ----
+        file_url : string-like
+            The string containing data adress to be passed to Preprocessing.
         """
         df = pd.read_csv(file_url, sep = ";")
         return df
@@ -118,7 +128,7 @@ class Preprocessing:
 
         try:
             covars = dataframe[[confounder, covariate1]]
-            data_array = np.array(dataframe.drop(['FILE_ID','SITE_CLASS','SITE'], axis = 1))
+            data_array = np.array(dataframe.drop(['FILE_ID','SITE'], axis = 1))
             #dataframe=dataframe.astype(np.float)
             my_model, array_neuroharmonized,s_data = harmonizationLearn(data_array , covars,return_s_data=True)
         except RuntimeWarning :
@@ -136,14 +146,14 @@ class Preprocessing:
             covars = dataframe[[confounder, covariate]],
             batch_col = confounder,
         )["data"]
-        df_combatharmonized = df_combat.transpose()
+        df_combat_harmonized = df_combat.transpose()
         #df_TDharmonized = self.df_TD[self.features]
         #df_TDharmonized.loc[:, (self.features)] = df_combat.transpose()
         # the following line has to be inseting in the next function
         #X_train, X_test, y_train, y_test = train_test_split(
         #    df_TDharmonized, self.df_TD["AGE_AT_SCAN"], test_size=0.3
         #)
-        return df_combatharmonized
+        return df_combat_harmonized
 
     def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
         """
@@ -163,6 +173,6 @@ class Preprocessing:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-    df = prep(df)
-    df_neuroharmonized=prep.neuro_harmonization(df)
-    print(df_neuroharmonized)
+    df1 = prep(df, 'raw')
+    df2 = prep(df, 'neuro')        
+    df3 = prep(df, 'combat')
