@@ -30,7 +30,7 @@ class TestBrainAge(unittest.TestCase):
         prep = Preprocessing()
         dataframe = prep.file_reader(self.data)
         prep.add_features(dataframe)
-        assert 'Site' in dataframe.keys()
+        assert 'SITE' in dataframe.keys()
         assert 'TotalWhiteVol' in dataframe.keys()
         
     def test_create_binning(self):
