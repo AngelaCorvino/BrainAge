@@ -79,13 +79,8 @@ class Preprocessing:
          and then merge it withe dataframe
         """
         try :
-            grouping_lists=['Caltech','CMU','KKI','Leuven','MaxMun','NYU',
-        'OHSU','Olin','Pitt','SBL','SDSU','Stanford','Trinity','UCLA', 'UM','USM','Yale']
-            labels=[x for x in range(len(grouping_lists))]
-
-            maps = (pd.DataFrame({'SITE_CLASS': labels, 'SITE': grouping_lists})
-            .explode('SITE')
-            .reset_index(drop=True))
+            sites = dataframe['SITE'].value_counts(dropna = False, sort = False).keys().to_list()
+            maps = (pd.DataFrame({'SITE_CLASS': [x for x in range(len(sites))], 'SITE': sites}).explode('SITE').reset_index(drop=True))
             dataframe =dataframe=dataframe.join(maps.set_index('SITE'), on='SITE')
         except KeyError:
              print("Column SITE does not exist")
@@ -125,7 +120,6 @@ class Preprocessing:
             my_model, array_neuroharmonized,s_data = harmonizationLearn(data_array , covars,return_s_data=True)
         except RuntimeWarning :
             print( 'How can we solve this?')
-
         return   pd.DataFrame(array_neuroharmonized)
 
     def com_harmonization(self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"):
