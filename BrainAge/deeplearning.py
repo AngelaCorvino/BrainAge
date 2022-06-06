@@ -29,7 +29,9 @@ class Deep:
         Arguments:
 
           Returns:
-          model: the model architecture (Tensorflow Object).
+
+          model: the trained model.
+          history: a summary of how the model trained (training error, validation error).
 
         """
         inputs = Input(shape=(424))
@@ -43,15 +45,19 @@ class Deep:
         model.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MSE'])
         model.summary()
 
-        return model
+
+        history = model.fit(self.X_train, self.y_train, validation_split = 0.4,
+        epochs = 10, batch_size = 50, verbose = 0)
+
+        return model,history
 
     def make_autoencoder(self):
         """
         Autoenoder trained comparing the output vector with the input features
         using the Mean Squared Error (MSE)  loss function.
         Returns:
-          model: the model architecture (Tensorflow Object).
-          model_summary: a summary of the model's architecture.
+        model: the trained model.
+        history: a summary of how the model trained (training error, validation error).
 
         """
         inputs = Input(shape=(424))
@@ -63,19 +69,9 @@ class Deep:
         model = Model(inputs=inputs, outputs=outputs)
         model.compile(loss = 'mean_squared_error', optimizer = 'adam', metrics=['MSE'])
         model.summary()
-        return model
 
-    def model_fit(self, model):
-        '''
-        This function  trains the model on the x_train data.
-        Arguments:
-         model: the model architecture (Tensorflow Object).
-        Returns:
-          model: the trained model.
-          history: a summary of how the model trained (training error, validation error).
-         '''
 
-        history = model.fit(self.X_train, self.y_train, validation_split = 0.4,
+        history = model.fit(self.X_train, self.X_train, validation_split = 0.4,
         epochs = 10, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
 
 
@@ -114,6 +110,43 @@ class Deep:
         color="#7f7f7f"
         ))
         return fig.show()
+
+    def reconstruction_error(self,model):
+        """
+        This function calculates the reconstruction error and displays a histogram of
+        the training mean absolute error.
+        Arguments:
+        model: the trained  model
+          x_train: 3D data to be used in model training (numpy array).
+          Returns:
+          fig: a visual representation of the training MAE distribution.
+        """
+
+        if isinstance(self.X_train, np.ndarray) is False:
+            raise TypeError("x_train argument should be a numpy array.")
+
+        x_train_pred = model.predict(self.X_train)
+        global train_mae_loss
+        train_mae_loss = np.mean(np.abs(x_train_pred - self.X_train), axis = 1)
+        histogram = train_mae_loss.flatten()
+        fig =go.Figure(data = [go.Histogram(x = histogram,
+                                      histnorm = 'probability',
+                                      name = 'MAE Loss')])
+        fig.update_layout(
+        title='Mean Absolute Error Loss',
+        xaxis_title="Training MAE Loss (%)",
+        yaxis_title="Number of Samples",
+        font=dict(
+        family="Arial",
+        size=11,
+        color="#7f7f7f"
+        ))
+
+        print("*"*80)
+        print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss).round(4)))
+        print("*"*80)
+        return fig.show()
+
 
 
 #if __name__ == "__main__":
