@@ -44,12 +44,12 @@ class Preprocessing:
         df = pd.read_csv(file_url, sep = ";")
         return df
 
-    def add_features(self, df):
+    def add_features(self, dataframe):
         """
         Add columns with derived features
         """
-        df['TotalWhiteVol'] = df.lhCerebralWhiteMatterVol + df.rhCerebralWhiteMatterVol
-        df['SITE'] = df.FILE_ID.apply(lambda x: x.split('_')[0])
+        dataframe['TotalWhiteVol'] = dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
+        dataframe['SITE'] = dataframe.FILE_ID.apply(lambda x: x.split('_')[0])
         return
 
     def create_binning(self, dataframe):
@@ -77,12 +77,12 @@ class Preprocessing:
 
         return dataframe
 
-    def file_split(self, df):
+    def file_split(self, dataframe):
         """
         Split dataframe in healthy (control) and autistic subjects groups
         """
-        df_AS = df.loc[df.DX_GROUP == 1]
-        df_TD = df.loc[df.DX_GROUP == -1]
+        df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
+        df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
         return df_AS, df_TD
 
     def plot_histogram(self, dataframe, feature):
