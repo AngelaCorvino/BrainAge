@@ -22,17 +22,17 @@ class Preprocessing:
         Initialize the class.
         """
 
-    def __call__(self, df):
+    def __call__(self, dataframe):
         """
         What happens when you call an istance as a function
         """
-        self.add_features(df)
-        self.age_binning(df)
-        self.site_binning(df)
-        (df_AS, df_TD) = self.file_split(df)
+        self.add_features(dataframe)
+        self.age_binning(dataframe)
+        self.site_binning(dataframe)
+        (df_AS, df_TD) = self.file_split(dataframe)
         features, X, y = self.feature_selection(df_TD)
         print(features)
-        prep.plot_histogram(df, 'AGE_AT_SCAN')
+        prep.plot_histogram(dataframe, 'AGE_AT_SCAN')
         return
 
     #def __str__(self):
@@ -159,4 +159,4 @@ if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
     prep(df)
-    prep.com_harmonization(df, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")
+    #prep.com_harmonization(df, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")
