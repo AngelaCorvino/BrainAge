@@ -34,7 +34,7 @@ class Deep:
           history: a summary of how the model trained (training error, validation error).
 
         """
-        inputs = Input(shape=(424))
+        inputs = Input(shape=(425))
         hidden = Dense(128, activation ='relu')(inputs)
         hidden = Dense(12, activation ='relu')(hidden)
         hidden = Dense(12, activation ='relu')(hidden)
@@ -46,10 +46,9 @@ class Deep:
         model.summary()
 
 
-        history = model.fit(self.X_train, self.y_train, validation_split = 0.4,
-        epochs = 10, batch_size = 50, verbose = 0)
+        history = model.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 10, batch_size = 50, verbose = 0)
 
-        return model,history
+        return model, history
 
     def make_autoencoder(self):
         """
@@ -60,11 +59,11 @@ class Deep:
         history: a summary of how the model trained (training error, validation error).
 
         """
-        inputs = Input(shape=(424))
+        inputs = Input(shape=(425))
         hidden = Dense(30, activation ='tanh')(inputs)
         hidden = Dense(2, activation ='sigmoid')(hidden) #this should be a stepwise function
         hidden = Dense(30, activation ='tanh')(hidden)
-        outputs = Dense(424, activation ='linear')(hidden)
+        outputs = Dense(425, activation ='linear')(hidden)
 
         model = Model(inputs=inputs, outputs=outputs)
         model.compile(loss = 'mean_squared_error', optimizer = 'adam', metrics=['MSE'])

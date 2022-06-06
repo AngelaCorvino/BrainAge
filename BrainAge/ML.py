@@ -23,6 +23,7 @@ from sklearn.feature_selection import f_classif
 from regression import Regression
 from features import Preprocessing
 from deeplearning import Deep
+
 def file_split(dataframe):
         """
         Split dataframe in healthy (control) and autistic subjects groups
@@ -35,9 +36,9 @@ def file_split(dataframe):
 prep = Preprocessing()
 df = prep.file_reader("data/FS_features_ABIDE_males.csv")
 regression = Regression()
-
+df = prep(df, 'raw')
 #SPLITTING DATA
-(df_AS, df_TD) =file_split(prep(df, 'raw'))
+df_AS, df_TD = file_split(df.drop(['SITE', 'FILE_ID'], axis = 1))
 
 models = [LinearRegression(), GaussianProcessRegressor(), RandomForestRegressor(), Lasso(), SVR()]
 #
@@ -66,22 +67,21 @@ models = [LinearRegression(), GaussianProcessRegressor(), RandomForestRegressor(
 
 
 
-def run_models(models, model_results = []):
+def run_models(dataframe, models, model_results = []):
     for model in models:
-        pipe = Pipeline(steps=[('Feauture',SelectKBest(score_func=f_classif, k=10)),('Scaler', RobustScaler()),
-                          ('regressionmodel', model)])
-        predict_age1, MSE1, MAE1 = regression.k_fold(df_TD.drop(['SITE','FILE_ID','AGE_AT_SCAN'],axis=1),df_TD['AGE_AT_SCAN'],10, pipe)
-        predict_ag2, MSE2, MAE2 = regression.stratified_k_fold(df_TD.drop(['SITE','FILE_ID','AGE_AT_SCAN'],axis=1),df_TD['AGE_AT_SCAN'],df_TD['AGE_CLASS'],10, pipe)
+        pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_classif, k=10)),('Scaler', RobustScaler()), ('regressionmodel', model)])
+        predict_age1, MSE1, MAE1 = regression.k_fold(dataframe.drop(['AGE_AT_SCAN'],axis=1),dataframe['AGE_AT_SCAN'],10, pipe)
+        predict_ag2, MSE2, MAE2 = regression.stratified_k_fold(dataframe.drop(['AGE_AT_SCAN'], axis=1), dataframe['AGE_AT_SCAN'], dataframe['AGE_CLASS'],10, pipe)
         model_results.append([MSE1, MAE1,MSE2,MAE2])
 
     return model_results
-m=run_models(models)
+    
+    
+m=run_models(df_TD, models)
 print(m)
-
-
-
 
 #Deep learning
 
 deep = Deep(df_TD)
-deep.make_model().summary()
+deepmodel, deephistory = deep.make_MLP()
+deepmodel.summary()

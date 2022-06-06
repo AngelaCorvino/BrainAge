@@ -8,3 +8,6 @@ scipy
 numpy
 neuroCombat
 keras
+neuroHarmonize
+neuroCombat
+
