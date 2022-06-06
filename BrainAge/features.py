@@ -27,11 +27,11 @@ class Preprocessing:
             String containing one of the options: 'raw', 'combat', 'neuro'
         """
         self.add_features(dataframe)
-        #self.age_binning(dataframe)
-        #(df_AS, df_TD) = self.file_split(dataframe)
-        #features, X, y = self.feature_selection(df_TD)
-        #print(features)
-        #prep.plot_histogram(dataframe, 'AGE_AT_SCAN')
+        self.age_binning(dataframe)
+        #PLOTTING data
+        self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
+        self.plot_histogram(dataframe, 'AGE_AT_SCAN')
+
         if harmonize_option == 'raw':
             return dataframe
         elif harmonize_option == 'combat':
@@ -54,8 +54,8 @@ class Preprocessing:
         file_url : string-like
             The string containing data adress to be passed to Preprocessing.
         """
-        df = pd.read_csv(file_url, sep = ";")
-        return df
+        dataframe = pd.read_csv(file_url, sep = ";")
+        return dataframe
 
     def add_features(self, dataframe):
         """
@@ -86,18 +86,10 @@ class Preprocessing:
             maps = (pd.DataFrame({'SITE_CLASS': labels, 'SITE': grouping_lists})
             .explode('SITE')
             .reset_index(drop=True))
-            dataframe = dataframe.merge(maps, on = 'SITE', how='left').fillna('Other')
+            dataframe =dataframe=dataframe.join(maps.set_index('SITE'), on='SITE')
         except KeyError:
              print("Column SITE does not exist")
         return dataframe
-
-    def file_split(self, dataframe):
-        """
-        Split dataframe in healthy (control) and autistic subjects groups
-        """
-        df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
-        df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
-        return df_AS, df_TD
 
     def plot_histogram(self, dataframe, feature):
         """
@@ -174,5 +166,5 @@ if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
     df1 = prep(df, 'raw')
-    df2 = prep(df, 'neuro')        
+    df2 = prep(df, 'neuro')
     df3 = prep(df, 'combat')

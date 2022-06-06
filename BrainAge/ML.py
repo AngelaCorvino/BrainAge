@@ -17,16 +17,19 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import RobustScaler
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_classif
 
 from regression import Regression
 from features import Preprocessing
-#
-#a = Regression("data/FS_features_ABIDE_males.csv")
 
-#a.util.plot_histogram('AGE_AT_SCAN')
-# a.util.plot_boxplot('Site', 'AGE_AT_SCAN', True)
-# print(a.util.feature_selection('AGE_AT_SCAN', True).format())
 
+prep = Preprocessing()
+df = prep.file_reader("data/FS_features_ABIDE_males.csv")
+regression = Regression(prep(df, 'raw'))
+
+#SPLITTING DATA
+(df_AS, df_TD) = regression.file_split()
 
 models = [LinearRegression(), GaussianProcessRegressor(), RandomForestRegressor(), Lasso(), SVR()]
 #
@@ -42,16 +45,6 @@ models = [LinearRegression(), GaussianProcessRegressor(), RandomForestRegressor(
 # m=run_models(models)
 
 
-prep = Preprocessing()
-df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-prep.add_features(df)
-prep.add_binning(df)
-y_bins = df['AGE_CLASS']
-(df_AS, df_TD) = prep.file_split(df)
-
-
-
-
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 #
 # for model in models:
@@ -65,15 +58,14 @@ y_bins = df['AGE_CLASS']
 
 
 
-
-X, y = prep.feature_selection(df_TD)
 def run_models(models, model_results = []):
     for model in models:
-        pipe = Pipeline(steps=[('Scaler', RobustScaler()),
+        pipe = Pipeline(steps=[('Feauture',SelectKBest(score_func=f_classif, k=10)),('Scaler', RobustScaler()),
                           ('regressionmodel', model)])
-        predict_age1, MSE1, MAE1 = a.k_Fold(10, pipe)
-        predict_ag2, MSE2, MAE2 = a.Stratifiedk_Fold(10, pipe)
+        predict_age1, MSE1, MAE1 = regression.k_fold(df_TD.drop(['SITE','FILE_ID','AGE_AT_SCAN'],axis=1),df_TD['AGE_AT_SCAN'],10, pipe)
+        predict_ag2, MSE2, MAE2 = regression.stratified_k_fold(df_TD.drop(['SITE','FILE_ID','AGE_AT_SCAN'],axis=1),df_TD['AGE_AT_SCAN'],df_TD['AGE_CLASS'],10, pipe)
         model_results.append([MSE1, MAE1,MSE2,MAE2])
 
     return model_results
 m=run_models(models)
+print(m)

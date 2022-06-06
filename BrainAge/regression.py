@@ -25,15 +25,26 @@ class Regression:
     Class describing regression model.
     Parameters
     ----------
-    file_url : string-like
-        The path that point to the data.
+    dataframe : datframe-like
+        The dataframe  tio be passed to the class.
 
     """
 
-    def __init__(self, file_url, features=0):
+    def __init__(self,dataframe):
         """
         Constructor.
         """
+        self.dataframe=dataframe
+
+
+    def file_split(self):
+        """
+        Split dataframe in healthy (control) and autistic subjects groups
+        """
+        df_AS = self.dataframe.loc[self.dataframe.DX_GROUP == 1]
+        df_TD = self.dataframe.loc[self.dataframe.DX_GROUP == -1]
+        return df_AS, df_TD
+
 
 
     def k_fold(self, X, y, n_splits, model):
