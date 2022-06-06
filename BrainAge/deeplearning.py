@@ -88,14 +88,19 @@ class Deep:
           fig: a visual representation of the model's training loss and validation
           loss curves.
          '''
+        #      plt.plot(rnn_hist.history["val_loss"],label = 'val')
+        #      plt.plot(rnn_hist.history["loss"],label = 'train')
+        #      plt.legend()
+        #      plt.show()
+        #
         training_validation_loss = pd.DataFrame.from_dict(history.history, orient='columns')
 
-        plt.figure()
-        plt.scatter(training_validation_loss.index,training_validation_loss["loss"].round(6),
+
+        plt.scatter(training_validation_loss.index,training_validation_loss["loss"],
                            marker='.',
                            label= 'Training Loss',
                            )
-        plt.scatter(training_validation_loss.index,training_validation_loss["val_loss"].round(6),
+        plt.scatter(training_validation_loss.index,training_validation_loss["val_loss"],
                         marker='.',
                         label = 'Validation Loss',
                             )
@@ -121,7 +126,7 @@ class Deep:
 
 
         x_train_pred = model.predict(self.X_train)
-        train_mae_loss = np.mean(np.abs(x_train_pred - self.X_train), axis = 1)
+        train_mae_loss = np.mean(np.abs(x_train_pred - np.array(self.X_train)), axis = 1)
         histogram = train_mae_loss.flatten()
         plt.hist(histogram,
                                       label = 'MAE Loss')
@@ -131,7 +136,7 @@ class Deep:
         plt.ylabel("Number of Samples")
 
 
-        print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss).round(4)))
+        print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
 
         return plt.show()
 
