@@ -74,6 +74,7 @@ class Preprocessing:
             dataframe = dataframe.merge(maps, on = 'SITE', how='left').fillna("Other")
         except KeyError:
              print("Column SITE does not exist")
+
         return dataframe
 
     def file_split(self, df):
@@ -106,12 +107,13 @@ class Preprocessing:
 
 
     def neuro_harmonization(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
-        # load your data and all numeric covariates
+        """
+        Harmonize dataset with neuroHarmonize model.
+        1-Load your data and all numeric covariates
+        2-run harmonization and store the adjusted data
+        """
         covars = dataframe[[confounder, covariate1]]
         dataframe = np.array(dataframe)
-
-        print(covars)
-        # run harmonization and store the adjusted data
         my_model, df_neuroharmonized,s_data = harmonizationLearn(dataframe, covars,return_s_data=True)
 
         return df_neuroharmonized
