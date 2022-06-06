@@ -16,7 +16,7 @@ class Preprocessing:
     ----------
     file_url : string-like
         The string containing data adress to be passed to Preprocessing.
-    df : dataframe containing data to preprocess.
+
     """
 
     def __init__(self):
@@ -101,9 +101,9 @@ class Preprocessing:
         plt.show()
         return
 
-    def neuro_harmonization(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN",covariate2='TotalWhiteVol'):
+    def neuro_harmonization(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
         # load your data and all numeric covariates
-        covars = dataframe[[confounder, covariate1,covariate2]]
+        covars = dataframe[[confounder, covariate1]]
         dataframe = np.array(dataframe)
 
         print(covars)
