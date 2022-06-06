@@ -2,7 +2,8 @@ from keras.layers import Dense, Dropout, Input, Flatten
 from keras.models import Model, load_model
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-
+import pandas as pd
+import numpy as np
 
 class Deep:
     """
@@ -46,7 +47,7 @@ class Deep:
         model.summary()
 
 
-        history = model.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 10, batch_size = 50, verbose = 0)
+        history = model.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 100, batch_size = 50, verbose = 0)
 
         return model, history
 
@@ -71,7 +72,7 @@ class Deep:
 
 
         history = model.fit(self.X_train, self.X_train, validation_split = 0.4,
-        epochs = 10, batch_size = 50, verbose = 0) #CHANGE HERE# Trying increasing number of epochs and changing batch size
+        epochs = 100, batch_size = 50, verbose = 1) #CHANGE HERE# Trying increasing number of epochs and changing batch size
 
 
         return model, history
@@ -89,26 +90,23 @@ class Deep:
          '''
         training_validation_loss = pd.DataFrame.from_dict(history.history, orient='columns')
 
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x = training_validation_loss.index, y = training_validation_loss["loss"].round(6),
-                           mode = 'lines',
-                           name = 'Training Loss',
-                           connectgaps=True))
-        fig.add_trace(go.Scatter(x = training_validation_loss.index, y = training_validation_loss["val_loss"].round(6),
-                           mode = 'lines',
-                           name = 'Validation Loss',
-                           connectgaps=True))
+        plt.figure()
+        plt.scatter(training_validation_loss.index,training_validation_loss["loss"].round(6),
+                           marker='.',
+                           label= 'Training Loss',
+                           )
+        plt.scatter(training_validation_loss.index,training_validation_loss["val_loss"].round(6),
+                        marker='.',
+                        label = 'Validation Loss',
+                            )
 
-        fig.update_layout(
-        title='Training and Validation Loss',
-        xaxis_title="Epoch",
-        yaxis_title="Loss",
-        font=dict(
-        family="Arial",
-        size=11,
-        color="#7f7f7f"
-        ))
-        return fig.show()
+
+        plt.title('Training and Validation Loss')
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.legend()
+
+        return plt.show()
 
     def reconstruction_error(self,model):
         """
@@ -121,30 +119,21 @@ class Deep:
           fig: a visual representation of the training MAE distribution.
         """
 
-        if isinstance(self.X_train, np.ndarray) is False:
-            raise TypeError("x_train argument should be a numpy array.")
 
         x_train_pred = model.predict(self.X_train)
-        global train_mae_loss
         train_mae_loss = np.mean(np.abs(x_train_pred - self.X_train), axis = 1)
         histogram = train_mae_loss.flatten()
-        fig =go.Figure(data = [go.Histogram(x = histogram,
-                                      histnorm = 'probability',
-                                      name = 'MAE Loss')])
-        fig.update_layout(
-        title='Mean Absolute Error Loss',
-        xaxis_title="Training MAE Loss (%)",
-        yaxis_title="Number of Samples",
-        font=dict(
-        family="Arial",
-        size=11,
-        color="#7f7f7f"
-        ))
+        plt.hist(histogram,
+                                      label = 'MAE Loss')
 
-        
+        plt.title('Mean Absolute Error Loss')
+        plt.xlabel("Training MAE Loss (%)")
+        plt.ylabel("Number of Samples")
+
+
         print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss).round(4)))
 
-        return fig.show()
+        return plt.show()
 
 
 
