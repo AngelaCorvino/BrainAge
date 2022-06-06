@@ -74,7 +74,7 @@ class Preprocessing:
             maps = (pd.DataFrame({'SITE_CLASS': labels, 'SITE': grouping_lists})
             .explode('SITE')
             .reset_index(drop=True))
-
+            print(maps)
             dataframe = dataframe.merge(maps, on = 'SITE', how='left').fillna('Other')
 
         except KeyError:
