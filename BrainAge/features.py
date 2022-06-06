@@ -20,7 +20,7 @@ class Preprocessing:
         """
         Initialize the class.
         """
-        
+
     def __call__(self, df):
         """
         What happens when you call an istance as a function
@@ -32,7 +32,7 @@ class Preprocessing:
         print(features)
         prep.plot_histogram(df, 'AGE_AT_SCAN')
         return
-        
+
     #def __str__(self):
     #    return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(df.size, df.shape, df.head(5))
 
@@ -103,11 +103,23 @@ class Preprocessing:
         plt.show()
         return
 
-    def com_harmonization(self, dataframe, confounder="SITE", covariate="AGE_AT_SCAN"):
+
+    def neuro_harmonization(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
+        # load your data and all numeric covariates
+        covars = dataframe[[confounder, covariate1]]
+        dataframe = np.array(dataframe)
+
+        print(covars)
+        # run harmonization and store the adjusted data
+        my_model, df_neuroharmonized,s_data = harmonizationLearn(dataframe, covars,return_s_data=True)
+
+        return df_neuroharmonized
+
+    def com_harmonization(self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"):
         """
         Harmonize dataset with ComBat model
         """
-        dataframe = dataframe.drop([ 'FILE_ID','SITE'], axis = 1)
+        dataframe=  dataframe.drop([ 'SITE'], axis = 1)
         df_combat = neuroCombat(
             dat = dataframe.transpose(),
             covars = dataframe[[confounder, covariate]],
@@ -121,6 +133,7 @@ class Preprocessing:
         #    df_TDharmonized, self.df_TD["AGE_AT_SCAN"], test_size=0.3
         #)
         return df_combatharmonized
+
 
     def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
         """
