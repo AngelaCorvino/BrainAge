@@ -27,7 +27,6 @@ class Preprocessing:
         What happens when you call an istance as a function
         """
         self.add_features(dataframe)
-        self.age_binning(dataframe)
         self.site_binning(dataframe)
         (df_AS, df_TD) = self.file_split(dataframe)
         features, X, y = self.feature_selection(df_TD)
@@ -59,7 +58,7 @@ class Preprocessing:
         Create a column with AGE_AT_SCAN binning and attach to dataframe
         """
         dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
-        return dataframe['AGE_CLASS']
+        return
 
     def site_binning(self, dataframe):
         """
@@ -162,4 +161,4 @@ if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
     prep(df)
-    #prep.com_harmonization(df, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")
+    prep.com_harmonization(df, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")
