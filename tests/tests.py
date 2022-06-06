@@ -33,10 +33,10 @@ class TestBrainAge(unittest.TestCase):
         assert 'SITE' in dataframe.keys()
         assert 'TotalWhiteVol' in dataframe.keys()
         
-    def test_create_binning(self):
+    def test_age_binning(self):
         prep = Preprocessing()
         dataframe = prep.file_reader(self.data)
-        prep.create_binning(dataframe)
+        prep.age_binning(dataframe)
         assert dataframe.shape == (915, 425)
 
     def test_file_split(self):

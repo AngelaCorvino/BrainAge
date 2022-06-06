@@ -27,7 +27,8 @@ class Preprocessing:
         What happens when you call an istance as a function
         """
         self.add_features(df)
-        self.create_binning(df)
+        self.age_binning(df)
+        self.site_binning(df)
         (df_AS, df_TD) = self.file_split(df)
         features, X, y = self.feature_selection(df_TD)
         print(features)
@@ -52,14 +53,14 @@ class Preprocessing:
         dataframe['SITE'] = dataframe.FILE_ID.apply(lambda x: x.split('_')[0])
         return
 
-    def create_binning(self, dataframe):
+    def age_binning(self, dataframe):
         """
         Create a column with AGE_AT_SCAN binning and attach to dataframe
         """
         dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
         return dataframe['AGE_CLASS']
 
-    def add_binning(self, dataframe):
+    def site_binning(self, dataframe):
         """
         Create a map  where SITE is binned and then merge it withe dataframe
         """
@@ -158,3 +159,4 @@ if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
     prep(df)
+    prep.com_harmonization(df, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")
