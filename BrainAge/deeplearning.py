@@ -43,7 +43,7 @@ class Deep:
         outputs = Dense(1, activation ='linear')(hidden)
 
         model = Model(inputs=inputs, outputs=outputs)
-        model.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MSE'])
+        model.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MAE'])
         model.summary()
 
 
@@ -67,7 +67,7 @@ class Deep:
         outputs = Dense(425, activation ='linear')(hidden)
 
         model = Model(inputs=inputs, outputs=outputs)
-        model.compile(loss = 'mean_squared_error', optimizer = 'adam', metrics=['MSE'])
+        model.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MAE'])
         model.summary()
 
 
@@ -119,7 +119,7 @@ class Deep:
         the training mean absolute error.
         Arguments:
         model: the trained  model
-          x_train: 3D data to be used in model training (numpy array).
+          x_train: 3D data to be used in model training (dataframe).
           Returns:
           fig: a visual representation of the training MAE distribution.
         """
