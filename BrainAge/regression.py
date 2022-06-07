@@ -18,16 +18,13 @@ from features import Preprocessing
 class Regression:
     """
     Class describing regression model.
-    Parameters
-    ----------
-    dataframe : dataframe-like
-        The dataframe  to be passed to the class.
     """
     def k_fold(self, X, y, n_splits, model):
         """
-        Split the data and test it on a model chosen by the user
-        Parameters
-        ----------
+        Splits the data and tests it on a model chosen by the user.
+        
+        :Parameters:
+
         X : 
         y : 
         n_splits :

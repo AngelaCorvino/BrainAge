@@ -11,7 +11,7 @@ class Preprocessing:
     """
     Class containing functions for data
     """
-    def __call__(self, dataframe, harmonize_option):
+    def __call__(self, dataframe, harmonize_option, plot_option = True):
         """
         What happens when you call an istance as a function.
         
@@ -21,6 +21,8 @@ class Preprocessing:
                     The dataframe of raw data  to be passed to the preprocessing class.
         harmonize_option : string-like
                            String containing one of the options: 'raw', 'combat', 'neuro'.
+        plot_option : boolean
+                      If True shows some plots of data. Default is True
                            
         :Returns:
         
@@ -30,8 +32,9 @@ class Preprocessing:
         self.add_features(dataframe)
         self.add_age_binning(dataframe)
         #PLOTTING DATA
-        self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
-        self.plot_histogram(dataframe, 'AGE_AT_SCAN')
+        if plot_option == True:
+            self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
+            self.plot_histogram(dataframe, 'AGE_AT_SCAN')
 
         if harmonize_option == 'raw':
             return dataframe
@@ -153,7 +156,7 @@ class Preprocessing:
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         confounder : string-like
-                     Feature to be accounted as confounder.
+                     Feature to be accounted as confounder. Default is 'SITE'
         covariate1 : string-like
                      
         :Returns:
@@ -163,12 +166,16 @@ class Preprocessing:
         """
         try:
             covars = dataframe[[confounder, covariate1]]
-            data_array = np.array(dataframe.drop(['FILE_ID','SITE'], axis = 1))
+            dataframe = dataframe.drop(['FILE_ID','SITE'], axis = 1)
+            print(dataframe)
             #dataframe=dataframe.astype(np.float)
-            my_model, array_neuroharmonized,s_data = harmonizationLearn(data_array, covars, return_s_data = True)
+            my_model, array_neuro_harmonized,s_data = harmonizationLearn(np.array(dataframe), covars, return_s_data = True)
+            df_neuro_harmonized = pd.DataFrame(array_neuro_harmonized)
+            df_neuro_harmonized.columns = dataframe.keys()
+            print(df_neuro_harmonized)
         except RuntimeWarning :
             print( 'How can we solve this?')
-        return pd.DataFrame(array_neuroharmonized)
+        return df_neuro_harmonized
 
     def com_harmonization(self, dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN'):
         """
@@ -181,19 +188,20 @@ class Preprocessing:
         confounder : string-like
                      Categorical feature to be accounted as confounder. Default 'SITE_CLASS'.
         covariate : string-like
-                    Default 'AGE_AT_SCAN'.
+                    Default is 'AGE_AT_SCAN'.
         :Returns:
         
         dataframe_harmonized: dataframe-like
                               The dataframe containing harmonized data       
         """
-        dataframe=  dataframe.drop(['FILE_ID','SITE'], axis = 1)
-        df_combat = neuroCombat(
+        dataframe =  dataframe.drop(['FILE_ID','SITE'], axis = 1)
+        array_combat_harmonized = neuroCombat(
             dat = dataframe.transpose(),
             covars = dataframe[[confounder, covariate]],
             batch_col = confounder,
         )["data"]
-        df_combat_harmonized = df_combat.transpose()
+        df_combat_harmonized = pd.DataFrame(array_combat_harmonized.transpose())
+        df_combat_harmonized.columns = dataframe.keys()
         #df_TDharmonized = self.df_TD[self.features]
         #df_TDharmonized.loc[:, (self.features)] = df_combat.transpose()
         # the following line has to be inseting in the next function
@@ -213,7 +221,7 @@ class Preprocessing:
         feature : string-like
                   Target feature on which to compute correlation.
         plot_heatmap : boolean
-                       If True, show heatmap of data correlation with feature. Default False.
+                       If True, show heatmap of data correlation with feature. Default is False.
         :Returns:
         
         listoffeatures : list
@@ -235,6 +243,6 @@ class Preprocessing:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    df1 = prep(df, 'raw')
-    df2 = prep(df, 'neuro')
-    df3 = prep(df, 'combat')
+    #df1 = prep(df, 'raw')
+    df2 = prep(df, 'neuro', plot_option = False)
+    #df3 = prep(df, 'combat', plot_option = False)
