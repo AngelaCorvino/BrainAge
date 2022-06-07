@@ -1,34 +1,30 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import matplotlib.pyplot as plt
+
 from neuroHarmonize import harmonizationLearn
 from neuroCombat import neuroCombat
 
-import statsmodels.api as sm
 
 class Preprocessing:
     """
     Class containing functions for data
     """
-
-    def __init__(self):
-        """
-        Initialize the class.
-        """
-
     def __call__(self, dataframe, harmonize_option):
         """
-        What happens when you call an istance as a function
+        What happens when you call an istance as a function.
         ----
         Parameters:
         ----
+        dataframe : dataframe-like
+            The dataframe of raw data  to be passed to the preprocessing class.
         harmonize_option : string-like
             String containing one of the options: 'raw', 'combat', 'neuro'
         """
         self.add_features(dataframe)
         self.age_binning(dataframe)
-        #PLOTTING data
+        #PLOTTING DATA
         self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
         self.plot_histogram(dataframe, 'AGE_AT_SCAN')
 
@@ -45,9 +41,9 @@ class Preprocessing:
     #def __str__(self):
     #    return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(df.size, df.shape, df.head(5))
 
-    def file_reader(self, file_url):
+    def read_file(self, file_url):
         """
-        Read data features from url and return them in a dataframe
+        Read data features from url and return them in a dataframe.
         ----
         Parameters
         ----
@@ -59,7 +55,12 @@ class Preprocessing:
 
     def add_features(self, dataframe):
         """
-        Add columns with derived features
+        Add columns with derived features to dataframe.
+        ----
+        Parameters:
+        ----
+        dataframe : dataframe-like
+            The dataframe of raw data  to be passed to the function.
         """
         dataframe['TotalWhiteVol'] = dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
         dataframe['SITE'] = dataframe.FILE_ID.apply(lambda x: x.split('_')[0])
@@ -68,27 +69,43 @@ class Preprocessing:
 
     def age_binning(self, dataframe):
         """
-        Create a column with AGE_AT_SCAN binning and attach to dataframe
+        Create a column with AGE_AT_SCAN binning and attach to dataframe.
+        ----
+        Parameters:
+        ----
+        dataframe : dataframe-like
+            The dataframe of data to be passed to the function.
         """
         dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
         return
 
     def site_binning(self, dataframe):
         """
-        Create a map  where SITE  is binned in the column SITE_Class
-         and then merge it withe dataframe
+        Create a map  where SITE  is binned in the column SITE_Class and then merge it with the dataframe.
+        ----
+        Parameters:
+        ----
+        dataframe : dataframe-like
+            The dataframe of data to be passed to the function.
         """
         try :
             sites = dataframe['SITE'].value_counts(dropna = False, sort = False).keys().to_list()
             maps = (pd.DataFrame({'SITE_CLASS': [x for x in range(len(sites))], 'SITE': sites}).explode('SITE').reset_index(drop=True))
-            dataframe =dataframe=dataframe.join(maps.set_index('SITE'), on='SITE')
+            dataframe = dataframe.join(maps.set_index('SITE'), on='SITE')
         except KeyError:
              print("Column SITE does not exist")
         return dataframe
 
     def plot_histogram(self, dataframe, feature):
         """
-        Plot histogram of a given feature on the indicated group, masking values <0
+        Plot histogram of a given feature on the indicated dataframe, masking values <0.
+        ----
+        Parameters:
+        ----
+        dataframe : dataframe-like
+            The dataframe of data to be passed to the function.
+        feature : string-like
+            The feature to plot the histogram of.
         """
         dataframe[dataframe.loc[:, feature]>0].hist([feature])
         plt.show()
@@ -96,7 +113,16 @@ class Preprocessing:
 
     def plot_boxplot(self, dataframe, featurex, featurey):
         """
-        Boxplot of featurey by featurex
+        Boxplot of featurey by featurex.
+        ----
+        Parameters:
+        ----
+        dataframe : dataframe-like
+            The dataframe of data to be passed to the function.
+        featurex : string-like
+            The feature in the x-axis of the boxplot.
+        featurey : string-like
+            The feature in the y-axis of the boxplot.
         """
         sns_boxplot = sns.boxplot(x = featurex, y = featurey, data = dataframe)
         sns_boxplot.set_xticklabels(labels = sns_boxplot.get_xticklabels(), rotation=50)
@@ -106,25 +132,38 @@ class Preprocessing:
         plt.show()
         return
 
-    def neuro_harmonization(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
+    def neuro_harmonization(self, dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN'):
         """
-        Harmonize dataset with neuroHarmonize model.
+        Harmonize dataset with neuroHarmonize model:
         1-Load your data and all numeric covariates
-        2-run harmonization and store the adjusted data
+        2-Run harmonization and store the adjusted data.
+        ----
+        Parameters:
+        ----
+        dataframe : dataframe-like
+            The dataframe of data to be passed to the function.
+        confounder : string-like
+        covariate1 : string-like
         """
-
         try:
             covars = dataframe[[confounder, covariate1]]
             data_array = np.array(dataframe.drop(['FILE_ID','SITE'], axis = 1))
             #dataframe=dataframe.astype(np.float)
-            my_model, array_neuroharmonized,s_data = harmonizationLearn(data_array , covars,return_s_data=True)
+            my_model, array_neuroharmonized,s_data = harmonizationLearn(data_array, covars, return_s_data = True)
         except RuntimeWarning :
             print( 'How can we solve this?')
-        return   pd.DataFrame(array_neuroharmonized)
+        return pd.DataFrame(array_neuroharmonized)
 
     def com_harmonization(self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"):
         """
         Harmonize dataset with ComBat model
+        ----
+        Parameters:
+        ----
+        dataframe : dataframe-like
+            The dataframe of data to be passed to the function.
+        confounder : string-like
+        covariate : string-like
         """
         dataframe=  dataframe.drop(['FILE_ID','SITE'], axis = 1)
         df_combat = neuroCombat(
@@ -143,7 +182,14 @@ class Preprocessing:
 
     def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
         """
-        Gives a list of the feature whose correlation with the given feature is higher than 0.5
+        Gives a list of the feature whose correlation with the given feature is higher than 0.5.
+        ----
+        Parameters:
+        ----
+        dataframe : dataframe-like
+            The dataframe of data to be passed to the function.
+        feature : string-like
+        plot_heatmap : boolean
         """
         agecorr = dataframe.corr()[feature] #we acces to the column relative to age
         listoffeatures = agecorr[np.abs(agecorr)>0.5].keys() #we decide to use the feautures whose correlation with age at scan is >0.5
@@ -158,7 +204,7 @@ class Preprocessing:
 
 if __name__ == "__main__":
     prep = Preprocessing()
-    df = prep.file_reader("data/FS_features_ABIDE_males.csv")
+    df = prep.read_file("data/FS_features_ABIDE_males.csv")
     df1 = prep(df, 'raw')
     df2 = prep(df, 'neuro')
     df3 = prep(df, 'combat')

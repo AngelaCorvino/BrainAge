@@ -20,48 +20,47 @@ class TestBrainAge(unittest.TestCase):
         """
         self.data = package_name + "/data/FS_features_ABIDE_males.csv"
 
-    def test_file_reader(self):
+    def test_read_file(self):
         prep = Preprocessing()
-        dataframe = prep.file_reader(self.data)
-        assert dataframe.size == 387960
-        assert dataframe.shape == (915, 424)
+        dataframe = prep.read_file(self.data)
+        self.assertEqual(dataframe.size, 387960, 'Wrong Size')
+        self.assertEqual(dataframe.shape, (915, 424), 'Wrong Shape')
 
     def test_add_features(self):
         prep = Preprocessing()
-        dataframe = prep.file_reader(self.data)
+        dataframe = prep.read_file(self.data)
         prep.add_features(dataframe)
-        assert 'SITE' in dataframe.keys()
-        assert 'TotalWhiteVol' in dataframe.keys()
+        self.assertIn('SITE', dataframe.keys(), 'SITE was not added')
+        self.assertIn('TotalWhiteVol', dataframe.keys(), 'TotalWhiteVol was not added')
+        self.assertEqual(dataframe.shape, (915, 426), 'Two features were not added')
         
     def test_age_binning(self):
         prep = Preprocessing()
-        dataframe = prep.file_reader(self.data)
+        dataframe = prep.read_file(self.data)
         prep.age_binning(dataframe)
-        assert dataframe.shape == (915, 425)
+        self.assertEqual(dataframe.shape, (915, 425), 'Wrong Shape')
+        self.assertIn('AGE_CLASS', dataframe.keys(), 'AGE_CLASS was not added')
         
     def test_site_binning(self):
         prep = Preprocessing()
-        dataframe = prep.file_reader(self.data)
+        dataframe = prep.read_file(self.data)
         prep.add_features(dataframe)
         dataframe = prep.site_binning(dataframe)
-        print(dataframe.shape)
-        assert dataframe.shape == (915, 427)
+        self.assertIn('SITE_CLASS', dataframe.keys(), 'SITE_CLASS was not added')
+        self.assertEqual(dataframe.shape, (915, 427), 'SITE_CLASS was not added')
 
     #def test_file_split(self):
         #prep = Preprocessing()
-        #dataframe = prep.file_reader(self.data)
+        #dataframe = prep.read_file(self.data)
         #df_AS, df_TD = prep.file_split(dataframe)
         #assert df_AS.shape == (451, 424)
         #assert df_TD.shape == (464, 424)
 
     def test_feature_selection(self):
         prep = Preprocessing()
-        dataframe = prep.file_reader(self.data)
+        dataframe = prep.read_file(self.data)
         features, _, _ = prep.feature_selection(dataframe, 'AGE_AT_SCAN', False)
-        assert features.shape == (13, )
-        #_, df_TD = prep.file_split(dataframe)
-        #features_TD, _, _ = prep.feature_selection(df_TD, 'AGE_AT_SCAN', False)
-        #assert features_TD.shape == (16, )
+        self.assertEqual(features.shape, (13, ), 'Wrong number of selected features')
 
 if __name__ == "__main__":
     unittest.main()
