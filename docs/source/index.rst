@@ -10,6 +10,10 @@ Welcome to BrainAge's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   install
+
+   api
+
 
 
 Indices and tables
