@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+
+<html lang="english">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Public interfaces &#8212; BrainAge 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Installation" href="install.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-features">
+<span id="public-interfaces"></span><span id="api"></span><h1>Public interfaces<a class="headerlink" href="#module-features" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="features.Preprocessing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">features.</span></span><span class="sig-name descname"><span class="pre">Preprocessing</span></span><a class="reference internal" href="_modules/features.html#Preprocessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing functions for data</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="features.Preprocessing.add_features">
+<span class="sig-name descname"><span class="pre">add_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/features.html#Preprocessing.add_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing.add_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add columns with derived features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="features.Preprocessing.age_binning">
+<span class="sig-name descname"><span class="pre">age_binning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/features.html#Preprocessing.age_binning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing.age_binning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a column with AGE_AT_SCAN binning and attach to dataframe</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="features.Preprocessing.com_harmonization">
+<span class="sig-name descname"><span class="pre">com_harmonization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confounder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SITE_CLASS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covariate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AGE_AT_SCAN'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/features.html#Preprocessing.com_harmonization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing.com_harmonization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Harmonize dataset with ComBat model</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="features.Preprocessing.feature_selection">
+<span class="sig-name descname"><span class="pre">feature_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AGE_AT_SCAN'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_heatmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/features.html#Preprocessing.feature_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing.feature_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a list of the feature whose correlation with the given feature is higher than 0.5</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="features.Preprocessing.file_reader">
+<span class="sig-name descname"><span class="pre">file_reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/features.html#Preprocessing.file_reader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing.file_reader" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_url</strong> (<em>string-like</em>) -- The string containing data adress to be passed to Preprocessing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="features.Preprocessing.neuro_harmonization">
+<span class="sig-name descname"><span class="pre">neuro_harmonization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confounder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SITE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covariate1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AGE_AT_SCAN'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/features.html#Preprocessing.neuro_harmonization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing.neuro_harmonization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Harmonize dataset with neuroHarmonize model.
+1-Load your data and all numeric covariates
+2-run harmonization and store the adjusted data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="features.Preprocessing.plot_boxplot">
+<span class="sig-name descname"><span class="pre">plot_boxplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurey</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/features.html#Preprocessing.plot_boxplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing.plot_boxplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boxplot of featurey by featurex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="features.Preprocessing.plot_histogram">
+<span class="sig-name descname"><span class="pre">plot_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/features.html#Preprocessing.plot_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing.plot_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot histogram of a given feature on the indicated group, masking values &lt;0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="features.Preprocessing.site_binning">
+<span class="sig-name descname"><span class="pre">site_binning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/features.html#Preprocessing.site_binning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#features.Preprocessing.site_binning" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Create a map  where SITE  is binned in the column SITE_Class</dt><dd><p>and then merge it withe dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-regression"></span><dl class="py class">
+<dt class="sig sig-object py" id="regression.Regression">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regression.</span></span><span class="sig-name descname"><span class="pre">Regression</span></span><a class="reference internal" href="_modules/regression.html#Regression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#regression.Regression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class describing regression model.
+:param dataframe: The dataframe  tio be passed to the class.
+:type dataframe: datframe-like</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="regression.Regression.k_fold">
+<span class="sig-name descname"><span class="pre">k_fold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/regression.html#Regression.k_fold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#regression.Regression.k_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split the data and test it on a model chosen by the user</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regression.Regression.stratified_k_fold">
+<span class="sig-name descname"><span class="pre">stratified_k_fold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/regression.html#Regression.stratified_k_fold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#regression.Regression.stratified_k_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split the data preserving distribution and test it on a model chosen by the user
+model is the pipeline</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-deeplearning"></span><dl class="py class">
+<dt class="sig sig-object py" id="deeplearning.Deep">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeplearning.</span></span><span class="sig-name descname"><span class="pre">Deep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deeplearning.html#Deep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeplearning.Deep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class describing deep regression model.
+:param file_url: The path that point to the data.
+:type file_url: string-like</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeplearning.Deep.make_MLP">
+<span class="sig-name descname"><span class="pre">make_MLP</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/deeplearning.html#Deep.make_MLP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeplearning.Deep.make_MLP" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function uses   generates an MLP model.
+:param Returns:
+:param model: the trained model.
+:param history: a summary of how the model trained (training error, validation error).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeplearning.Deep.make_autoencoder">
+<span class="sig-name descname"><span class="pre">make_autoencoder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/deeplearning.html#Deep.make_autoencoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeplearning.Deep.make_autoencoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Autoenoder trained comparing the output vector with the input features
+using the Mean Squared Error (MSE)  loss function.
+Returns:
+model: the trained model.
+history: a summary of how the model trained (training error, validation error).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeplearning.Deep.plot_training_validation_loss">
+<span class="sig-name descname"><span class="pre">plot_training_validation_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">history</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deeplearning.html#Deep.plot_training_validation_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeplearning.Deep.plot_training_validation_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots the training and validation loss curves of the trained model,
+enabling visual diagnosis of underfitting (bias) or overfitting (variance).
+:param history:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a visual representation of the model's training loss and validation
+loss curves.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>fig</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeplearning.Deep.reconstruction_error">
+<span class="sig-name descname"><span class="pre">reconstruction_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deeplearning.html#Deep.reconstruction_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeplearning.Deep.reconstruction_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the reconstruction error and displays a histogram of
+the training mean absolute error.
+Arguments:
+model: the trained  model</p>
+<blockquote>
+<div><p>x_train: 3D data to be used in model training (dataframe).
+Returns:
+fig: a visual representation of the training MAE distribution.</p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">BrainAge</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Public interfaces</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="install.html" title="previous chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Angela Corvino & Agata Minnocci.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
