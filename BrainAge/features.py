@@ -37,13 +37,15 @@ class Preprocessing:
             self.plot_histogram(dataframe, 'AGE_AT_SCAN')
 
         if harmonize_option == 'raw':
+            dataframe = dataframe.drop(['FILE_ID','SITE'], axis = 1)
             return dataframe
         elif harmonize_option == 'combat':
             dataframe = self.add_site_binning(dataframe)
-            dataframe_combat = self.com_harmonization(dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")
+            dataframe_combat = self.com_harmonization(dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN')
+            dataframe_combat = dataframe_combat.drop(['SITE_CLASS'], axis = 1)
             return dataframe_combat
         elif harmonize_option == 'neuro':
-            dataframe_neuro = self.neuro_harmonization(dataframe, confounder="SITE", covariate1="AGE_AT_SCAN")
+            dataframe_neuro = self.neuro_harmonization(dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN')
             return dataframe_neuro
 
     #def __str__(self):
@@ -167,12 +169,10 @@ class Preprocessing:
         try:
             covars = dataframe[[confounder, covariate1]]
             dataframe = dataframe.drop(['FILE_ID','SITE'], axis = 1)
-            print(dataframe)
             #dataframe=dataframe.astype(np.float)
             my_model, array_neuro_harmonized,s_data = harmonizationLearn(np.array(dataframe), covars, return_s_data = True)
             df_neuro_harmonized = pd.DataFrame(array_neuro_harmonized)
             df_neuro_harmonized.columns = dataframe.keys()
-            print(df_neuro_harmonized)
         except RuntimeWarning :
             print( 'How can we solve this?')
         return df_neuro_harmonized
@@ -243,6 +243,9 @@ class Preprocessing:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    #df1 = prep(df, 'raw')
+    df1 = prep(df, 'raw', plot_option = False)
+    print(df1)
     df2 = prep(df, 'neuro', plot_option = False)
-    #df3 = prep(df, 'combat', plot_option = False)
+    print(df2)
+    df3 = prep(df, 'combat', plot_option = False)
+    print(df3)
