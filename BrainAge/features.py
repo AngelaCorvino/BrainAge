@@ -14,16 +14,21 @@ class Preprocessing:
     def __call__(self, dataframe, harmonize_option):
         """
         What happens when you call an istance as a function.
-        ----
-        Parameters:
-        ----
+        
+        :Parameters:
+        
         dataframe : dataframe-like
-            The dataframe of raw data  to be passed to the preprocessing class.
+                    The dataframe of raw data  to be passed to the preprocessing class.
         harmonize_option : string-like
-            String containing one of the options: 'raw', 'combat', 'neuro'
+                           String containing one of the options: 'raw', 'combat', 'neuro'.
+                           
+        :Returns:
+        
+        dataframe_harmonized : dataframe-like
+                               Dataframe containing harmonized data.               
         """
         self.add_features(dataframe)
-        self.age_binning(dataframe)
+        self.add_age_binning(dataframe)
         #PLOTTING DATA
         self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
         self.plot_histogram(dataframe, 'AGE_AT_SCAN')
@@ -31,7 +36,7 @@ class Preprocessing:
         if harmonize_option == 'raw':
             return dataframe
         elif harmonize_option == 'combat':
-            dataframe = self.site_binning(dataframe)
+            dataframe = self.add_site_binning(dataframe)
             dataframe_combat = self.com_harmonization(dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN")
             return dataframe_combat
         elif harmonize_option == 'neuro':
@@ -43,50 +48,55 @@ class Preprocessing:
 
     def read_file(self, file_url):
         """
-        Read data features from url and return them in a dataframe.
-        ----
-        Parameters
-        ----
+        Reads data in .csv file from url and returns them in a dataframe.
+
+        :Parameters:
+
         file_url : string-like
-            The string containing data adress to be passed to Preprocessing.
+                   The string containing data adress to be passed to Preprocessing.
+        
+        :Returns:
+        
+        dataframe : dataframe-like
+                    The dataframe of raw data.    
         """
         dataframe = pd.read_csv(file_url, sep = ";")
         return dataframe
 
     def add_features(self, dataframe):
         """
-        Add columns with derived features to dataframe.
-        ----
-        Parameters:
-        ----
+        Adds columns with derived features to dataframe.
+
+        :Parameters:
+
         dataframe : dataframe-like
-            The dataframe of raw data  to be passed to the function.
+                    The dataframe of raw data  to be passed to the function.
         """
         dataframe['TotalWhiteVol'] = dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
         dataframe['SITE'] = dataframe.FILE_ID.apply(lambda x: x.split('_')[0])
         dataframe = dataframe.drop(['FILE_ID'], axis = 1)
         return
 
-    def age_binning(self, dataframe):
+    def add_age_binning(self, dataframe):
         """
-        Create a column with AGE_AT_SCAN binning and attach to dataframe.
-        ----
-        Parameters:
-        ----
+        Creates a column called AGE_CLASS with AGE_AT_SCAN binning and attaches it to dataframe.
+        
+        :Parameters:
+        
         dataframe : dataframe-like
-            The dataframe of data to be passed to the function.
+                    The dataframe of data to be passed to the function.
         """
         dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
         return
 
-    def site_binning(self, dataframe):
+    def add_site_binning(self, dataframe): #capire se si può fare senza return come add_age_binning
         """
-        Create a map  where SITE  is binned in the column SITE_Class and then merge it with the dataframe.
-        ----
-        Parameters:
-        ----
+        Creates a map  where SITE  is binned in the column SITE_CLASS and then merges it with the dataframe.
+        
+        :Parameters:
+        
         dataframe : dataframe-like
-            The dataframe of data to be passed to the function.
+                    The dataframe of data to be passed to the function.
         """
         try :
             sites = dataframe['SITE'].value_counts(dropna = False, sort = False).keys().to_list()
@@ -98,14 +108,14 @@ class Preprocessing:
 
     def plot_histogram(self, dataframe, feature):
         """
-        Plot histogram of a given feature on the indicated dataframe, masking values <0.
-        ----
-        Parameters:
-        ----
+        Plots histogram of a given feature on the indicated dataframe, masking values <0.
+        
+        :Parameters:
+        
         dataframe : dataframe-like
-            The dataframe of data to be passed to the function.
+                    The dataframe of data to be passed to the function.
         feature : string-like
-            The feature to plot the histogram of.
+                  The feature to plot the histogram of.
         """
         dataframe[dataframe.loc[:, feature]>0].hist([feature])
         plt.show()
@@ -113,16 +123,16 @@ class Preprocessing:
 
     def plot_boxplot(self, dataframe, featurex, featurey):
         """
-        Boxplot of featurey by featurex.
-        ----
-        Parameters:
-        ----
+        Plots boxplot of featurey by featurex.
+        
+        :Parameters:
+        
         dataframe : dataframe-like
-            The dataframe of data to be passed to the function.
+                    The dataframe of data to be passed to the function.
         featurex : string-like
-            The feature in the x-axis of the boxplot.
+                   The feature in the x-axis of the boxplot.
         featurey : string-like
-            The feature in the y-axis of the boxplot.
+                   The feature in the y-axis of the boxplot.
         """
         sns_boxplot = sns.boxplot(x = featurex, y = featurey, data = dataframe)
         sns_boxplot.set_xticklabels(labels = sns_boxplot.get_xticklabels(), rotation=50)
@@ -137,13 +147,19 @@ class Preprocessing:
         Harmonize dataset with neuroHarmonize model:
         1-Load your data and all numeric covariates
         2-Run harmonization and store the adjusted data.
-        ----
-        Parameters:
-        ----
+        
+        :Parameters:
+        
         dataframe : dataframe-like
-            The dataframe of data to be passed to the function.
+                    The dataframe of data to be passed to the function.
         confounder : string-like
+                     Feature to be accounted as confounder.
         covariate1 : string-like
+                     
+        :Returns:
+        
+        dataframe_harmonized: dataframe-like
+                              The dataframe containing harmonized data             
         """
         try:
             covars = dataframe[[confounder, covariate1]]
@@ -154,16 +170,22 @@ class Preprocessing:
             print( 'How can we solve this?')
         return pd.DataFrame(array_neuroharmonized)
 
-    def com_harmonization(self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"):
+    def com_harmonization(self, dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN'):
         """
         Harmonize dataset with ComBat model
-        ----
-        Parameters:
-        ----
+        
+        :Parameters:
+        
         dataframe : dataframe-like
-            The dataframe of data to be passed to the function.
+                    The dataframe of data to be passed to the function.
         confounder : string-like
+                     Categorical feature to be accounted as confounder. Default 'SITE_CLASS'.
         covariate : string-like
+                    Default 'AGE_AT_SCAN'.
+        :Returns:
+        
+        dataframe_harmonized: dataframe-like
+                              The dataframe containing harmonized data       
         """
         dataframe=  dataframe.drop(['FILE_ID','SITE'], axis = 1)
         df_combat = neuroCombat(
@@ -183,13 +205,21 @@ class Preprocessing:
     def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
         """
         Gives a list of the feature whose correlation with the given feature is higher than 0.5.
-        ----
-        Parameters:
-        ----
+        
+        :Parameters:
+        
         dataframe : dataframe-like
-            The dataframe of data to be passed to the function.
+                    The dataframe of data to be passed to the function.
         feature : string-like
+                  Target feature on which to compute correlation.
         plot_heatmap : boolean
+                       If True, show heatmap of data correlation with feature. Default False.
+        :Returns:
+        
+        listoffeatures : list
+                         List of selected features.
+        X : dataframe-like
+        y : series-like?              
         """
         agecorr = dataframe.corr()[feature] #we acces to the column relative to age
         listoffeatures = agecorr[np.abs(agecorr)>0.5].keys() #we decide to use the feautures whose correlation with age at scan is >0.5

@@ -34,18 +34,18 @@ class TestBrainAge(unittest.TestCase):
         self.assertIn('TotalWhiteVol', dataframe.keys(), 'TotalWhiteVol was not added')
         self.assertEqual(dataframe.shape, (915, 426), 'Two features were not added')
         
-    def test_age_binning(self):
+    def test_add_age_binning(self):
         prep = Preprocessing()
         dataframe = prep.read_file(self.data)
-        prep.age_binning(dataframe)
+        prep.add_age_binning(dataframe)
         self.assertEqual(dataframe.shape, (915, 425), 'Wrong Shape')
         self.assertIn('AGE_CLASS', dataframe.keys(), 'AGE_CLASS was not added')
         
-    def test_site_binning(self):
+    def test_add_site_binning(self):
         prep = Preprocessing()
         dataframe = prep.read_file(self.data)
         prep.add_features(dataframe)
-        dataframe = prep.site_binning(dataframe)
+        dataframe = prep.add_site_binning(dataframe)
         self.assertIn('SITE_CLASS', dataframe.keys(), 'SITE_CLASS was not added')
         self.assertEqual(dataframe.shape, (915, 427), 'SITE_CLASS was not added')
 
