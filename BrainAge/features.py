@@ -13,21 +13,21 @@ class Preprocessing:
     """
     def __call__(self, dataframe, harmonize_option, plot_option = True):
         """
-        What happens when you call an istance as a function.
-        
+        Allows to you call an istance as a function.
+
         :Parameters:
-        
+
         dataframe : dataframe-like
                     The dataframe of raw data  to be passed to the preprocessing class.
         harmonize_option : string-like
                            String containing one of the options: 'raw', 'combat', 'neuro'.
         plot_option : boolean
                       If True shows some plots of data. Default is True
-                           
+
         :Returns:
-        
+
         dataframe_harmonized : dataframe-like
-                               Dataframe containing harmonized data.               
+                               Dataframe containing harmonized data.
         """
         self.add_features(dataframe)
         self.add_age_binning(dataframe)
@@ -35,17 +35,18 @@ class Preprocessing:
         if plot_option == True:
             self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
             self.plot_histogram(dataframe, 'AGE_AT_SCAN')
+        self.self_normalize(dataframe)
 
         if harmonize_option == 'raw':
             dataframe = dataframe.drop(['FILE_ID','SITE'], axis = 1)
             return dataframe
         elif harmonize_option == 'combat':
             dataframe = self.add_site_binning(dataframe)
-            dataframe_combat = self.com_harmonization(dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN')
+            dataframe_combat = self.com_harmonize(dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN')
             dataframe_combat = dataframe_combat.drop(['SITE_CLASS'], axis = 1)
             return dataframe_combat
         elif harmonize_option == 'neuro':
-            dataframe_neuro = self.neuro_harmonization(dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN')
+            dataframe_neuro = self.neuro_harmonize(dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN')
             return dataframe_neuro
 
     #def __str__(self):
@@ -59,11 +60,11 @@ class Preprocessing:
 
         file_url : string-like
                    The string containing data adress to be passed to Preprocessing.
-        
+
         :Returns:
-        
+
         dataframe : dataframe-like
-                    The dataframe of raw data.    
+                    The dataframe of raw data.
         """
         dataframe = pd.read_csv(file_url, sep = ";")
         return dataframe
@@ -85,9 +86,9 @@ class Preprocessing:
     def add_age_binning(self, dataframe):
         """
         Creates a column called AGE_CLASS with AGE_AT_SCAN binning and attaches it to dataframe.
-        
+
         :Parameters:
-        
+
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         """
@@ -97,9 +98,9 @@ class Preprocessing:
     def add_site_binning(self, dataframe): #capire se si può fare senza return come add_age_binning
         """
         Creates a map  where SITE  is binned in the column SITE_CLASS and then merges it with the dataframe.
-        
+
         :Parameters:
-        
+
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         """
@@ -114,9 +115,9 @@ class Preprocessing:
     def plot_histogram(self, dataframe, feature):
         """
         Plots histogram of a given feature on the indicated dataframe, masking values <0.
-        
+
         :Parameters:
-        
+
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         feature : string-like
@@ -129,9 +130,9 @@ class Preprocessing:
     def plot_boxplot(self, dataframe, featurex, featurey):
         """
         Plots boxplot of featurey by featurex.
-        
+
         :Parameters:
-        
+
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         featurex : string-like
@@ -146,25 +147,40 @@ class Preprocessing:
         sns_boxplot.set_ylabel(featurey)
         plt.show()
         return
+    def self_normalize(self, dataframe):
 
-    def neuro_harmonization(self, dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN'):
+
+        dataframe_surface=dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]]
+        column_list=dataframe_surface.columns.tolist()
+        print(np.dtype(column_list))
+        print(dataframe.[column_list])
+        dataframe['SurfArea_Sum']=dataframe.[column_list].sum(axis=1)
+
+        dataframe_thickness=dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]]
+        column_list=dataframe_thickness.columns.tolist()
+        dataframe['Thick_Sum']=dataframe.[column_list].sum(axis=1)
+
+        #print(dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]])
+        #print(dataframe.columns.tolist())
+
+    def neuro_harmonize(self, dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN'):
         """
         Harmonize dataset with neuroHarmonize model:
         1-Load your data and all numeric covariates
         2-Run harmonization and store the adjusted data.
-        
+
         :Parameters:
-        
+
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         confounder : string-like
                      Feature to be accounted as confounder. Default is 'SITE'
         covariate1 : string-like
-                     
+
         :Returns:
-        
+
         dataframe_harmonized: dataframe-like
-                              The dataframe containing harmonized data             
+                              The dataframe containing harmonized data
         """
         try:
             covars = dataframe[[confounder, covariate1]]
@@ -177,12 +193,12 @@ class Preprocessing:
             print( 'How can we solve this?')
         return df_neuro_harmonized
 
-    def com_harmonization(self, dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN'):
+    def com_harmonize(self, dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN'):
         """
         Harmonize dataset with ComBat model
-        
+
         :Parameters:
-        
+
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         confounder : string-like
@@ -190,9 +206,9 @@ class Preprocessing:
         covariate : string-like
                     Default is 'AGE_AT_SCAN'.
         :Returns:
-        
+
         dataframe_harmonized: dataframe-like
-                              The dataframe containing harmonized data       
+                              The dataframe containing harmonized data
         """
         dataframe =  dataframe.drop(['FILE_ID','SITE'], axis = 1)
         array_combat_harmonized = neuroCombat(
@@ -213,9 +229,9 @@ class Preprocessing:
     def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
         """
         Gives a list of the feature whose correlation with the given feature is higher than 0.5.
-        
+
         :Parameters:
-        
+
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         feature : string-like
@@ -223,14 +239,14 @@ class Preprocessing:
         plot_heatmap : boolean
                        If True, show heatmap of data correlation with feature. Default is False.
         :Returns:
-        
+
         listoffeatures : list
                          List of selected features.
         X : dataframe-like
-        y : series-like?              
+        y : series-like?
         """
-        agecorr = dataframe.corr()[feature] #we acces to the column relative to age
-        listoffeatures = agecorr[np.abs(agecorr)>0.5].keys() #we decide to use the feautures whose correlation with age at scan is >0.5
+        agecorr = dataframe.corr()[feature]
+        listoffeatures = agecorr[np.abs(agecorr)>0.5].keys()
         if plot_heatmap == True:
             dataframe_restricted = dataframe[listoffeatures]
             heatmap = sns.heatmap(dataframe_restricted.corr(), annot=True)
@@ -243,9 +259,5 @@ class Preprocessing:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
+
     df1 = prep(df, 'raw', plot_option = False)
-    print(df1)
-    df2 = prep(df, 'neuro', plot_option = False)
-    print(df2)
-    df3 = prep(df, 'combat', plot_option = False)
-    print(df3)
