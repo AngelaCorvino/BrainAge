@@ -156,12 +156,20 @@ class Preprocessing:
         print(dataframe.[column_list])
         dataframe['SurfArea_Sum']=dataframe.[column_list].sum(axis=1)
 
-        dataframe_thickness=dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]]
-        column_list=dataframe_thickness.columns.tolist()
-        dataframe['Thick_Sum']=dataframe.[column_list].sum(axis=1)
 
-        #print(dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]])
-        #print(dataframe.columns.tolist())
+        #non capisco perchè i dataframe a riga 161 e 164 sono uguali
+        print(dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]])
+        dataframe['MeanThickness']= dataframe['lh_MeanThickness']+ dataframe['rh_MeanThickness']
+        dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]].divide(dataframe['MeanThickness'], axis='columns')
+        print(dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]])
+
+        print(dataframe.loc[:,['Vol' in i for i in dataframe.columns]])
+        dataframe['eTIV']= dataframe['TotalGrayVol']+ dataframe['TotalWhiteVol']
+        dataframe.loc[:,['Vol' in i for i in dataframe.columns]].divide(dataframe['eTIV'], axis='columns')
+        print(dataframe.loc[:,['Vol' in i for i in dataframe.columns]])
+
+
+
 
     def neuro_harmonize(self, dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN'):
         """
