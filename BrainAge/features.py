@@ -147,31 +147,29 @@ class Preprocessing:
         sns_boxplot.set_ylabel(featurey)
         plt.show()
         return
-        
+
     def self_normalize(self, dataframe):
         """
         Makes self normalization on data.
-        
+
         :Parameters:
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
-        
+
         """
-        dataframe_surface=dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]]
-        column_list=dataframe_surface.columns.tolist()
-        print(type(column_list))
-        print(dataframe[column_list])
-        dataframe['SurfArea_Sum']=dataframe[column_list].sum(axis=1)
-        #non capisco perchè i dataframe a riga 161 e 164 sono uguali-->mi sono cambiati i numeri delle righe, scusa non capisco quali dici.
-        print(dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]])
-        dataframe['MeanThickness']= dataframe['lh_MeanThickness']+ dataframe['rh_MeanThickness']
-        dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]].divide(dataframe['MeanThickness'], axis='columns')
-        print(dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]])
-        print(dataframe.loc[:,['Vol' in i for i in dataframe.columns]])
-        dataframe['eTIV']= dataframe['TotalGrayVol']+ dataframe['TotalWhiteVol']
-        dataframe.loc[:,['Vol' in i for i in dataframe.columns]].divide(dataframe['eTIV'], axis='columns')
-        print(dataframe.loc[:,['Vol' in i for i in dataframe.columns]])
+        #Surface
+        column_list=dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]].columns.tolist()
+        dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]]=dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]].divide(dataframe[column_list].sum(axis=1),axis=0)
+        print(dataframe.iloc[:,:20])
+
+        #Thickness
+        dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]]=dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]].divide((dataframe['lh_MeanThickness']+ dataframe['rh_MeanThickness']), axis=0)
+        #print(dataframe.iloc[:,:20])
+
+        #Volume
+        dataframe.loc[:,['Vol' in i for i in dataframe.columns]]=dataframe.loc[:,['Vol' in i for i in dataframe.columns]].divide((dataframe['TotalGrayVol']+ dataframe['TotalWhiteVol']), axis=0)
+
         return
 
     def neuro_harmonize(self, dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN'):
