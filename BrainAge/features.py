@@ -161,7 +161,6 @@ class Preprocessing:
         #Surface
         column_list=dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]].columns.tolist()
         dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]]=dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]].divide(dataframe[column_list].sum(axis=1),axis=0)
-        print(dataframe.iloc[:,:20])
 
         #Thickness
         dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]]=dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]].divide((dataframe['lh_MeanThickness']+ dataframe['rh_MeanThickness']), axis=0)
@@ -227,12 +226,7 @@ class Preprocessing:
         )["data"]
         df_combat_harmonized = pd.DataFrame(array_combat_harmonized.transpose())
         df_combat_harmonized.columns = dataframe.keys()
-        #df_TDharmonized = self.df_TD[self.features]
-        #df_TDharmonized.loc[:, (self.features)] = df_combat.transpose()
-        # the following line has to be inseting in the next function
-        #X_train, X_test, y_train, y_test = train_test_split(
-        #    df_TDharmonized, self.df_TD["AGE_AT_SCAN"], test_size=0.3
-        #)
+        
         return df_combat_harmonized
 
     def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
