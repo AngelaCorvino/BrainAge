@@ -13,13 +13,13 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import RobustScaler
 from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_classif
+from sklearn.feature_selection import f_regression
 from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import train_test_split
 
 from regression import Regression
 from features import Preprocessing
@@ -49,7 +49,11 @@ def run_linearmodel(dataframe,harmonize_list ):
         print('Harmonization model:',harmonize_option)
         dataframe=prep(df, harmonize_option,False)
         df_AS, df_TD = file_split(dataframe)
-        pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_classif, k=10)),
+        bins=6
+        for i in range(bins):      
+            print(i, ' = ', df_TD['AGE_CLASS'].value_counts()[i])
+
+        pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_regression, k=10)),
                                 ('Scaler', RobustScaler()),
                                 ('regressionmodel',LinearRegression())])
         test_age,predict_age, MSE, MAE =regression.stratified_k_fold(df_TD.drop(['AGE_AT_SCAN'],axis=1),
@@ -146,8 +150,8 @@ def run_randomforest(dataframe,harmonize_list):
         plt.show()
     return
 
-run_randomforest(df, ['raw'])
-
+#run_randomforest(df, ['raw'])
+run_linearmodel(df, harmonize_list)
 
 # #Deep learning
 #
