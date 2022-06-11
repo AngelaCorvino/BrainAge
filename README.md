@@ -68,6 +68,20 @@ The neuroHarmonize model provides similar functionality respect to Combat but ha
 
 ## Requirements
 
-To use our Python codes the following packages are needed: numpy, scikit-learn, seaborn, pandas, matplotlib, and scipy.
-
+To use our Python codes the following packages are needed: numpy, scikit-learn, seaborn, pandas, matplotlib, scipy, neuroHarmonize  and  neuroCombat.
 ## How to use
+
+#Step1 : Clone
+Clone the directory 
+
+#Step2 : Compare model on control subjects
+
+Run the Python code Modelcomparison.py to
+- peform data preprocessing ( self normalization and data harmonization ) 
+- predic the age of healthy subjects comparing different regression models
+- predict the age of healty subjects using a neuraò network.
+-
+#Steo 3: Autistic Subjects
+
+Run the python code to
+- use the best performing model to predict the age of ustistic subjects

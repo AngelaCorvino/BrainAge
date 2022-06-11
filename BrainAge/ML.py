@@ -34,12 +34,12 @@ def file_split(dataframe):
 
 
 prep = Preprocessing()
-df = prep.file_reader("data/FS_features_ABIDE_males.csv")
+df = prep.read_file("data/FS_features_ABIDE_males.csv")
 regression = Regression()
-df = prep(df, 'raw')
-#SPLITTING DATA
-df_AS, df_TD = file_split(df.drop(['SITE', 'FILE_ID'], axis = 1))
-
+df = prep(df, 'raw', False)
+#SPLITTING DATA here we need a check on whether there is a string in the dataframe!!!
+#df_AS, df_TD = file_split(df.drop(['SITE', 'FILE_ID'], axis = 1))
+df_AS, df_TD = file_split(df)
 models = [LinearRegression(), GaussianProcessRegressor(), RandomForestRegressor(), Lasso(), SVR()]
 #
 # def run_models(models, model_results = []):
@@ -69,11 +69,10 @@ models = [LinearRegression(), GaussianProcessRegressor(), RandomForestRegressor(
 
 def run_models(dataframe, models, model_results = []):
     for model in models:
-        pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_classif, k=10)),('Scaler', RobustScaler()), ('regressionmodel', model)])
-        predict_age1, MSE1, MAE1 = regression.k_fold(dataframe.drop(['AGE_AT_SCAN'],axis=1),dataframe['AGE_AT_SCAN'],10, pipe)
-        predict_ag2, MSE2, MAE2 = regression.stratified_k_fold(dataframe.drop(['AGE_AT_SCAN'], axis=1), dataframe['AGE_AT_SCAN'], dataframe['AGE_CLASS'],10, pipe)
-        model_results.append([MSE1, MAE1,MSE2,MAE2])
-
+        pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_classif, k=10)), ('Scaler', RobustScaler()), ('regressionmodel', model)])
+        predict_age1, MSE1, MAE1 = regression.k_fold(dataframe.drop(['AGE_AT_SCAN'],axis=1), dataframe['AGE_AT_SCAN'], 10, pipe)
+        predict_ag2, MSE2, MAE2 = regression.stratified_k_fold(dataframe.drop(['AGE_AT_SCAN'], axis=1), dataframe['AGE_AT_SCAN'], dataframe['AGE_CLASS'], 10, pipe)
+        model_results.append([MSE1, MAE1, MSE2, MAE2])
     return model_results
 
 
@@ -86,3 +85,4 @@ deep = Deep(df_TD)
 deepmodel, deephistory = deep.make_autoencoder()
 deep.plot_training_validation_loss(deephistory)
 deep.reconstruction_error(deepmodel)
+deep.outliers(deepmodel)

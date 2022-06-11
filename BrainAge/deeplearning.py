@@ -19,7 +19,6 @@ class Deep:
         Constructor.
         """
         self.dataframe = dataframe
-
         # Divide the dataset in train, validation and test in a static way
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.dataframe, self.dataframe['AGE_AT_SCAN'], test_size=0.3, random_state=14)
 
@@ -52,14 +51,12 @@ class Deep:
         return model, history
 
     def make_autoencoder(self):
-        """
-        Autoenoder trained comparing the output vector with the input features
-        using the Mean Squared Error (MSE)  loss function.
-        Returns:
-        model: the trained model.
-        history: a summary of how the model trained (training error, validation error).
-
-        """
+        '''
+        Autoencoder trained comparing the output vector with the input features, using the Mean Squared Error (MSE) as loss function.
+        :Returns:
+        model : the trained model.
+        history : a summary of how the model trained (training error, validation error).
+        '''
         inputs = Input(shape=(425))
         hidden = Dense(30, activation ='tanh')(inputs)
         hidden = Dense(2, activation ='sigmoid')(hidden) #this should be a stepwise function
@@ -124,7 +121,6 @@ class Deep:
           fig: a visual representation of the training MAE distribution.
         """
 
-
         x_train_pred = model.predict(self.X_train)
         train_mae_loss = np.mean(np.abs(x_train_pred - np.array(self.X_train)), axis = 1)
         histogram = train_mae_loss.flatten()
@@ -139,6 +135,23 @@ class Deep:
         print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
 
         return plt.show()
+        
+    def outliers(self,model):
+        """
+       
+        """
+        x_train_pred = model.predict(self.X_train)
+        x_test_pred = model.predict(self.X_test)
+        train_mae_loss = np.mean(np.abs(x_train_pred - np.array(self.X_train)), axis = 1).reshape((-1))
+        test_mae_loss = np.mean(np.abs(x_test_pred - np.array(self.X_test)), axis = 1).reshape((-1))
+        anomalies = (test_mae_loss >= np.max(train_mae_loss)).tolist()
+        histogram = train_mae_loss.flatten()
+        print("Number of anomaly samples: ", np.sum(anomalies))
+        print("Indices of anomaly samples: ", np.where(anomalies))
+  
+        print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
+
+        return
 
 
 
