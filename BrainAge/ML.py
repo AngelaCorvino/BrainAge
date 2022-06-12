@@ -18,7 +18,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import RobustScaler
 from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_classif
+from sklearn.feature_selection import f_regression
 
 from regression import Regression
 from features import Preprocessing

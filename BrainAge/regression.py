@@ -79,19 +79,24 @@ class Regression:
         MAE=[]
         for train_index, test_index in cv.split(X, y_bins):
             predict_y=model.fit(X[train_index], y[train_index]).predict(X[test_index])
-
             print('MSE:',mean_squared_error(y[test_index], predict_y, squared=False))
             MSE.append(mean_squared_error(y[test_index], predict_y, squared=False))
             MAE.append(mean_absolute_error(y[test_index], predict_y))
-
         return y[test_index],predict_y, np.mean(MSE), np.mean(MAE)
 
 if __name__ == "__main__":
+    def file_split(dataframe):
+        """
+        Split dataframe in healthy (control) and autistic subjects groups
+        """
+        df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
+        df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
+        return df_AS, df_TD
     prep = Preprocessing()
-    df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-    
-    dataframe=prep(df, 'raw')
+    df = prep.read_file("data/FS_features_ABIDE_males.csv")
+    df = prep(df, 'combat')
+    print(df['DX_GROUP'])
+    df_TD, df_ASD = file_split(df)
     reg = Regression()
     model = LinearRegression()
-
-    test_y,predict_y, MSE, MAE = reg.stratified_k_fold(X, y, prep(df, 'raw')['AGE_AT_SCAN'], 10, model)
+    test_y,predict_y, MSE, MAE = reg.stratified_k_fold(df_TD.drop(['AGE_AT_SCAN'],axis=1),                                                   df_TD['AGE_AT_SCAN'], df_TD['AGE_CLASS'], 10, model)
