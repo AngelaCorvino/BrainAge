@@ -74,9 +74,9 @@ def run_model(dataframe,model,hyparams):
         y_train_class,
         y_test_class,
     ) = train_test_split(
-        df_TD.drop(["AGE_AT_SCAN"], axis=1),
-        df_TD["AGE_AT_SCAN"],
-        df_TD["AGE_CLASS"],
+        dataframe.drop(["AGE_AT_SCAN"], axis=1),
+        dataframe["AGE_AT_SCAN"],
+        dataframe["AGE_CLASS"],
         test_size=0.25,
         random_state=18,
         )

@@ -56,50 +56,83 @@ models = [
 harmonize_list = ["raw", "combat", "neuro"]
 
 
-def run_linearmodel(dataframe, harmonize_list):
+
+
+def run_gaussianmodel(dataframe, harmonize_list):
+    """
+    Define dictonary in which searching the best set of hyperparameters
+    """
+    hyparams = {
+        # "Model__kernel": [200, 300, 400, 500],
+        "Feature__k":[10, 20, 30],
+        "Model__n_restarts_optimizer": [0, 1, 2],
+        "Model__random_state": [18],
+    }
     pipe = Pipeline(
         steps=[
-            ("Feature", SelectKBest(score_func=f_regression(), k=10)),
+            ("Feature", SelectKBest(score_func=f_regression)),
             ("Scaler", RobustScaler()),
-            ("regressionmodel", LinearRegression()),
+            ("Model", GaussianProcessRegressor()),
         ]
     )
-    for harmonize_option in harmonize_list:
-        print("Harmonization model:", harmonize_option)
-        dataframe = prep(df, harmonize_option, False)
-        df_AS, df_TD = file_split(dataframe)
 
-        y_test, predict_y, MSE, MAE = regression.stratified_k_fold(
-            df_TD.drop(["AGE_AT_SCAN"], axis=1),
-            df_TD["AGE_AT_SCAN"],
-            df_TD["AGE_CLASS"],
-            10,
-            pipe,
+
+        (
+            x_train,
+            x_test,
+            y_train,
+            y_test,
+            y_train_class,
+            y_test_class,
+        ) = train_test_split(
+            dataframe.drop(["AGE_AT_SCAN"], axis=1),
+            dataframe["AGE_AT_SCAN"],
+            dataframe["AGE_CLASS"],
+            test_size=0.25,
+            random_state=18,
         )
+        gr_cv = GridSearchCV(
+            pipe, cv=10, n_jobs=-1, param_grid=hyparams, scoring="neg_mean_squared_error"
+        )
+
+        gr_cv.fit(x_train, y_train)
+
+        print("Best estimator is:", gr_cv.best_estimator_)
+
+        """
+        Now that we have our optimal list of parameters,
+        we can run the model using these parameters.
+        This time the cross vazlidation is done using StratifiedKFold
+        """
+        y_test,predict_y, MSE, MAE = regression.stratified_k_fold(x_train,y_train, y_train_class, 10, gr_cv.best_estimator_)
+
         plt.figure(figsize=(10, 10))
         plt.scatter(y_test, predict_y, c="y")
         plt.xlabel("Ground truth Age(years)")
         plt.ylabel("Predicted Age(years)")
         plt.plot(
-            np.linspace(y_test.min(), y_test.max(), 100),
-            np.linspace(y_test.min(), y_test.max(), 100),
+            np.linspace(y_test.min(), predict_y.max(), 100),
+            np.linspace(y_test.min(), predict_y.max(), 100),
             c="r",
             label="Expected prediction line",
         )
         plt.text(
-            y_test.max() - 2,
-            predict_y.max() - 2,
+            y_test.max() - 20,
+            predict_y.max() - 20,
             f"Mean Absolute Error={MSE}",
             fontsize=14,
         )
         plt.title(
             "Ground-truth Age versus Predict Age using \n \
-            Linear Regression with {} harminization method".format(
+            Gaussian Regression  with {} harmonization method".format(
                 harmonize_option
             )
         )
         plt.show()
+
     return
+
+
 
 
 def run_gaussianmodel(dataframe, harmonize_list):
@@ -141,7 +174,6 @@ def run_gaussianmodel(dataframe, harmonize_list):
         gr_cv = GridSearchCV(
             pipe, cv=10, n_jobs=-1, param_grid=hyparams, scoring="neg_mean_squared_error"
         )
-
 
         gr_cv.fit(x_train, y_train)
 
@@ -259,6 +291,11 @@ def run_randomforest(dataframe, harmonize_list):
         plt.show()
     return
 
+
+for harmonize_option in harmonize_list:
+    print("Harmonization model:", harmonize_option)
+    dataframe = prep(df, harmonize_option, False)
+    df_AS, df_TD = file_split(dataframe)
 
 #run_randomforest(df,  harmonize_list)
 run_gaussianmodel(df, harmonize_list)
