@@ -5,6 +5,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+def step_wise(x):
+    N = 4
+    y = 1/2
+    for j in range(1, N):
+        print(j)
+        y+=((1/(2*(N-1)))*(np.tanh(100*(x-(j/N)))))
+    return y
+
 class Deep:
     """
     Class describing deep regression model.
@@ -21,7 +29,6 @@ class Deep:
         self.dataframe = dataframe
         # Divide the dataset in train, validation and test in a static way
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.dataframe, self.dataframe['AGE_AT_SCAN'], test_size=0.3, random_state=14)
-
 
     def make_MLP(self):
         """
@@ -44,10 +51,7 @@ class Deep:
         model = Model(inputs=inputs, outputs=outputs)
         model.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MAE'])
         model.summary()
-
-
         history = model.fit(self.X_train, self.y_train, validation_split = 0.4, epochs = 100, batch_size = 50, verbose = 0)
-
         return model, history
 
     def make_autoencoder(self):
@@ -154,5 +158,5 @@ class Deep:
         return
 
 
-
 #if __name__ == "__main__":
+

@@ -19,12 +19,13 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import RobustScaler
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
+from sklearn.model_selection import GridSearchCV
 
 from regression import Regression
 from features import Preprocessing
 from deeplearning import Deep
 
-############################################################### FUNCTIONS
+# FUNCTIONS
 def file_split(dataframe):
     """
     Split dataframe in healthy (control) and autistic subjects groups
@@ -92,9 +93,9 @@ def run_model(dataframe,model,hyparams):
         we can run the model using these parameters.
         This time the cross vazlidation is done using StratifiedKFold
     """
-    y_test,predict_y, MSE, MAE = regression.stratified_k_fold(x_train,y_train, y_train_class, 5, model_cv.best_estimator_)
+    y_test,predict_y, MSE, MAE = regression.stratified_k_fold(x_train,y_train, y_train_class, 10, model_cv.best_estimator_)
 
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(10, 10))
     plt.scatter(y_test, predict_y, c="y")
     plt.xlabel("Ground truth Age(years)")
     plt.ylabel("Predicted Age(years)")
@@ -107,10 +108,9 @@ def run_model(dataframe,model,hyparams):
     plt.text(
             y_test.max() - 20,
             predict_y.max() - 20,
-            f"MSE= {round(MSE,3)}",
+            f"Mean Absolute Error={MSE}",
             fontsize=14,
         )
-    plt.text(y_test.max() - 20, predict_y.max() -22, f'MAE= {round(MAE,3)}',fontsize=14)
     plt.title(
             "Ground-truth Age versus Predict Age using \n \
             Gaussian Regression  with {} harmonization method".format(
@@ -137,21 +137,42 @@ models = [
     SVR(),
 ]
 
-
+hyperparams = [{"Feature__k": [10, 20, 30],
+                "Feature__score_func":[f_regression]}, {
+        # "Model__kernel": [200, 300, 400, 500],
+        "Feature__k": [10, 20, 30],
+        "Model__n_restarts_optimizer": [0, 1, 2],
+        "Model__random_state": [18],
+    }, {
+        "Feature__k": [10, 20, 30],
+        "Model__n_estimators": [10, 200, 300, 400],
+        "Model__max_features": ["sqrt", "log2"],
+        "Model__max_depth": [4, 5, 6, 7, 8],
+        "Model__random_state": [18],
+    }, {
+        "Feature__k": [10, 20, 30],
+        "Model__alpha": [ 0.1, 0.3, 0.6,1],
+        "Model__random_state": [18],
+    }, {
+        "Feature__k": [10, 20, 30],
+        "Model__kernel": ['linear', 'rbf','poly'],
+        "Model__degree": [ 3, 4],
+    }]
+    
 harmonize_list = ["raw", "combat", "neuro"]
 
 for harmonize_option in harmonize_list:
     """
-    Compare different harminization tecquiniques
+    Compare different harmonization techniques
     """
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
     df_AS, df_TD = file_split(dataframe)
-    for model in models:
-    """
-    Compare different regression model
-    """
-        run_models(model,hyparams,df_TD)
+    for i, model in enumerate(models):
+        """
+        Compare different regression model
+        """
+        run_model(df_TD,model,hyperparams[i])
 
 
 
