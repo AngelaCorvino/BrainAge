@@ -24,65 +24,141 @@ from regression import Regression
 from features import Preprocessing
 from deeplearning import Deep
 
+############################################################### FUNCTIONS
 def file_split(dataframe):
-        """
-        Split dataframe in healthy (control) and autistic subjects groups
-        """
-        df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
-        df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
-        return df_AS, df_TD
+    """
+    Split dataframe in healthy (control) and autistic subjects groups
+    """
+    df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
+    df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
+    return df_AS, df_TD
 
 
+
+def run_model(dataframe,model,hyparams):
+    """
+    Run run a grid-search for  hyperparaemters tuning,
+    then run the model with the best combinatio of hyperparameters.
+
+    Parameters
+    ----------
+
+    dataframe : dataframe-like
+                The dataframe of data to be passed to the function.
+
+    model:      function-like
+                The regression model to be passed to the function.
+
+
+    hyparams:   dictionary-like
+                A list of hyperparameters to be pssed to the function
+                grid search  finsd the combination that generates the best result
+
+
+    """
+
+    pipe = Pipeline(
+        steps=[
+            ("Feature", SelectKBest(score_func=f_regression)),
+            ("Scaler", RobustScaler()),
+            ("Model", model),
+        ]
+    )
+
+
+    (
+        x_train,
+        x_test,
+        y_train,
+        y_test,
+        y_train_class,
+        y_test_class,
+    ) = train_test_split(
+        df_TD.drop(["AGE_AT_SCAN"], axis=1),
+        df_TD["AGE_AT_SCAN"],
+        df_TD["AGE_CLASS"],
+        test_size=0.25,
+        random_state=18,
+        )
+    model_cv = GridSearchCV(
+            pipe, cv=10, n_jobs=-1, param_grid=hyparams, scoring="neg_mean_squared_error"
+        )
+    model_cv.fit(x_train, y_train)
+
+    print("Best estimator is:", model_cv.best_estimator_)
+
+    """
+        Now that we have our optimal list of parameters,
+        we can run the model using these parameters.
+        This time the cross vazlidation is done using StratifiedKFold
+    """
+    y_test,predict_y, MSE, MAE = regression.stratified_k_fold(x_train,y_train, y_train_class, 10, model_cv.best_estimator_)
+
+    plt.figure(figsize=(10, 10))
+    plt.scatter(y_test, predict_y, c="y")
+    plt.xlabel("Ground truth Age(years)")
+    plt.ylabel("Predicted Age(years)")
+    plt.plot(
+        np.linspace(y_test.min(), predict_y.max(), 100),
+        np.linspace(y_test.min(), predict_y.max(), 100),
+        c="r",
+        label="Expected prediction line",
+        )
+    plt.text(
+            y_test.max() - 20,
+            predict_y.max() - 20,
+            f"Mean Absolute Error={MSE}",
+            fontsize=14,
+        )
+    plt.title(
+            "Ground-truth Age versus Predict Age using \n \
+            Gaussian Regression  with {} harmonization method".format(
+                harmonize_option
+            )
+        )
+    plt.show()
+
+    return
+
+
+
+########################################################PREPROCESSING
 prep = Preprocessing()
 df = prep.read_file("data/FS_features_ABIDE_males.csv")
 regression = Regression()
-df = prep(df, 'raw', False)
-#SPLITTING DATA here we need a check on whether there is a string in the dataframe!!!
-#df_AS, df_TD = file_split(df.drop(['SITE', 'FILE_ID'], axis = 1))
-df_AS, df_TD = file_split(df)
-models = [LinearRegression(), GaussianProcessRegressor(), RandomForestRegressor(), Lasso(), SVR()]
-#
-# def run_models(models, model_results = []):
-#     a = Regression("data/FS_features_ABIDE_males.csv")
-#     a.rescale('Robust')
-#     for model in models:
-#         predict_age1, MSE1, MAE1 = a.k_Fold(10, model)
-#         predict_ag2, MSE2, MAE2 = a.Stratifiedk_Fold(10, model)
-#         model_results.append([MSE1, MAE1,MSE2,MAE2])
-#
-#     return model_results
-# m=run_models(models)
 
 
-#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-#
-# for model in models:
-#     pipe = Pipeline(steps=[('Feautureselection',prep.feature_selection(df_TD))
-#                         ('Scaler', RobustScaler()),
-#                       ('regressionmodel', model)])
-#     #pipe = pipe.fit(X.reshape(-1,1), y)
-#     pipe.fit(X_train, y_train)
-#     print(model)
-#     print("model score: %.3f" % pipe.score(X_test, y_test))
+models = [
+    LinearRegression(),
+    GaussianProcessRegressor(),
+    RandomForestRegressor(),
+    Lasso(),
+    SVR(),
+]
 
 
+harmonize_list = ["raw", "combat", "neuro"]
 
-def run_models(dataframe, models, model_results = []):
+for harmonize_option in harmonize_list:
+    """
+    Compare different harminization tecquiniques
+    """
+    print("Harmonization model:", harmonize_option)
+    dataframe = prep(df, harmonize_option, False)
+    df_AS, df_TD = file_split(dataframe)
     for model in models:
-        pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_classif, k=10)), ('Scaler', RobustScaler()), ('regressionmodel', model)])
-        predict_age1, MSE1, MAE1 = regression.k_fold(dataframe.drop(['AGE_AT_SCAN'],axis=1), dataframe['AGE_AT_SCAN'], 10, pipe)
-        predict_ag2, MSE2, MAE2 = regression.stratified_k_fold(dataframe.drop(['AGE_AT_SCAN'], axis=1), dataframe['AGE_AT_SCAN'], dataframe['AGE_CLASS'], 10, pipe)
-        model_results.append([MSE1, MAE1, MSE2, MAE2])
-    return model_results
+    """
+    Compare different regression model
+    """
+        run_models(model,hyparams,df_TD)
 
 
-#m=run_models(df_TD, models)
 
-
-#Deep learning
-
-deep = Deep(df_TD)
-deepmodel, deephistory = deep.make_autoencoder()
-deep.plot_training_validation_loss(deephistory)
-deep.reconstruction_error(deepmodel)
-deep.outliers(deepmodel)
+#
+# #Deep learning
+#
+# deep = Deep(df_TD)
+# deepmodel, deephistory = deep.make_autoencoder()
+# deep.plot_training_validation_loss(deephistory)
+# deep.reconstruction_error(deepmodel)
+# deep.outliers(deepmodel)

@@ -139,29 +139,21 @@ def run_gaussianmodel(dataframe, harmonize_list):
             random_state=18,
         )
         gr_cv = GridSearchCV(
-            pipe, cv=10, n_jobs=-1, param_grid=hyparams, scoring="roc_auc"
+            pipe, cv=10, n_jobs=-1, param_grid=hyparams, scoring="neg_mean_squared_error"
         )
-        """
-         If the estimator is a classifier and y is either binary or multiclass,
-          StratifiedKFold is used. In all other cases, KFold is used.
-        """
 
-        gr_cv.fit(x_train, y_train_class)
-        """
-        Considering that the stratified kfold works better
-        we coul decide to choose the  best hyperparameyer on age class.
-        In this way we can use the stratified k-folf
-        """
+
+        gr_cv.fit(x_train, y_train)
+
         print("Best estimator is:", gr_cv.best_estimator_)
 
         """
         Now that we have our optimal list of parameters,
-         we can run the basic  model using these parameters.
-         This time we fir on age at scan, not age class
+        we can run the model using these parameters.
+        This time the cross vazlidation is done using StratifiedKFold
         """
-        gr2 = gr_cv.best_estimator_.fit(x_train, y_train)
-        predict_y = gr2.predict(x_test)
-        MSE = mean_squared_error(y_test, predict_y, squared=False)
+        y_test,predict_y, MSE, MAE = regression.stratified_k_fold(x_train,y_train, y_train_class, 10, gr_cv.best_estimator_)
+
         plt.figure(figsize=(10, 10))
         plt.scatter(y_test, predict_y, c="y")
         plt.xlabel("Ground truth Age(years)")
@@ -173,14 +165,14 @@ def run_gaussianmodel(dataframe, harmonize_list):
             label="Expected prediction line",
         )
         plt.text(
-            y_test.max() - 10,
-            predict_y.max() - 10,
+            y_test.max() - 20,
+            predict_y.max() - 20,
             f"Mean Absolute Error={MSE}",
             fontsize=14,
         )
         plt.title(
             "Ground-truth Age versus Predict Age using \n \
-            Gaussian Regresion  with {} harminization method".format(
+            Gaussian Regression  with {} harmonization method".format(
                 harmonize_option
             )
         )
@@ -195,7 +187,7 @@ def run_randomforest(dataframe, harmonize_list):
     """
     hyparams = {
         "Feature__k":[10, 20, 30],
-        "Model__n_estimators": [200, 300, 400, 500],
+        "Model__n_estimators": [10,200, 300, 400, 500],
         "Model__max_features": ["sqrt", "log2"],
         "Model__max_depth": [4, 5, 6, 7, 8],
         "Model__random_state": [18],
@@ -227,30 +219,21 @@ def run_randomforest(dataframe, harmonize_list):
             random_state=18,
         )
         rf_cv = GridSearchCV(
-            pipe, cv=10, n_jobs=-1, param_grid=hyparams, scoring="roc_auc"
-        )
-        """
-         If the estimator is a classifier and y is either binary or multiclass,
-          StratifiedKFold is used. In all other cases, KFold is used.
-        """
+            pipe, cv=10, n_jobs=-1, param_grid=hyparams, scoring="neg_mean_squared_error")
 
-        rf_cv.fit(x_train, y_train_class)
-        """
-        Considering that the stratified kfold works better
-        we coul decide to choose the  best hyperparameyer on age class.
-        In this way we can use the stratified k-folf
-        """
+
+        rf_cv.fit(x_train, y_train)
+
         print("Best estimator is:", rf_cv.best_estimator_)
 
         """
         Now that we have our optimal list of parameters,
-         we can run the basic RandomForestClassifier model using
-         these parameters.
-         This time we fir on age at scan, not age class
+        we can run the basic RandomForestClassifier model using
+        these parameters.
+        At this point we can do cross validation with stratified_k_fold
         """
-        rf2 = rf_cv.best_estimator_.fit(x_train, y_train)
-        predict_y = rf2.predict(x_test)
-        MSE = mean_squared_error(y_test, predict_y, squared=False)
+        y_test,predict_y, MSE, MAE = regression.stratified_k_fold(x_train,y_train, y_train_class, 10, rf_cv.best_estimator_)
+
         plt.figure(figsize=(10, 10))
         plt.scatter(y_test, predict_y, c="y")
         plt.xlabel("Ground truth Age(years)")
@@ -269,7 +252,7 @@ def run_randomforest(dataframe, harmonize_list):
         )
         plt.title(
             "Ground-truth Age versus Predict Age using \n \
-            Random Forest with {} harminization method".format(
+            Random Forest with {} data".format(
                 harmonize_option
             )
         )
@@ -277,7 +260,7 @@ def run_randomforest(dataframe, harmonize_list):
     return
 
 
-run_randomforest(df,  harmonize_list)
+#run_randomforest(df,  harmonize_list)
 run_gaussianmodel(df, harmonize_list)
 # #Deep learning
 #

@@ -181,7 +181,8 @@ class Preprocessing:
         1-Load your data and all numeric covariates
         2-Run harmonization and store the adjusted data.
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
@@ -189,7 +190,8 @@ class Preprocessing:
                      Feature to be accounted as confounder. Default is 'SITE'
         covariate1 : string-like
 
-        :Returns:
+        Returns
+        -------
 
         dataframe_harmonized: dataframe-like
                               The dataframe containing harmonized data
@@ -210,7 +212,8 @@ class Preprocessing:
         """
         Harmonize dataset with ComBat model
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
@@ -239,7 +242,8 @@ class Preprocessing:
         """
         Gives a list of the feature whose correlation with the given feature is higher than 0.5.
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
