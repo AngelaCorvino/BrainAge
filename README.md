@@ -61,14 +61,16 @@ For our application, we adapted the autoencoder described by S. Hawkins et alt. 
 
 Several feature selection techniques can be applied to remove irrelevant, noisy, and redundant features, avoiding overfitting and improving prediction performance, reducing the computational complexity of the learning algorithm, and proving a deeper insight into the data, which highlights which of the features are most informative for age prediction [An Introduction to Variable and Feature Selection](https://www.jmlr.org/papers/volume3/guyon03a/guyon03a.pdf?ref=driverlayer.com/web)
 
-## Cross validation and Grid Search
+## k-fold Cross validation
+Cross Validation. Cross validation works by splitting our dataset into random groups, holding one group out as the test, and training the model on the remaining groups. This process is repeated for each group being held as the test group, then the average of the models is used for the resulting model.
+One of the most common types of cross validation is k-fold cross validation, where ‘k’ is the number of folds within the dataset.
+
+K-fold cross validation is implemented every time we want to evaluate the performance of the estimator. In particular we choose to use Stratified k-fold in order to preserve the class distribution in the dataset when creating  training and test splits.
+ This means that if, for example, the ratio of <20 years subjects (class0) to >20 years (class1) subject is 1/3, then each datasets  include 3x data points from class1 and x data point from class 0.
+ 
+ ## Hyperparameters Tuning with Grid Search
+ Grid search is the simplest algorithm for hyperparameter tuning. Basically, we divide the domain of the hyperparameters into a discrete grid. Then, we try every combination of values of this grid, calculating some performance metrics using cross-validation. The point of the grid that maximizes the average value in cross-validation, is the optimal combination of values for the hyperparameters.
  <img src="BrainAge/images/grid_search_workflow.png" width="250"/>
-Every time we fit a model on training data we can implement cross validation.
-
-
-When implementing K-fold we want the class distribution in the dataset to be preserved in the training and test splits. This means that if, for example, the ratio of <20 years subjects (class0) to >20 years (class1)subject is 1/3. If we set k=4, then the test sets include three data points from class1 and one data point from class 0. Thus, training sets include three data points from class 0 and nine data points from class 1.
-This can be done with Stratified Kfold.
-We can also extend the binary concept of classo 0 and 1 to multiclass . In particular we are going to divede the dataset in four class.
 
 
 ## Requirements
