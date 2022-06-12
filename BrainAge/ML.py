@@ -92,9 +92,9 @@ def run_model(dataframe,model,hyparams):
         we can run the model using these parameters.
         This time the cross vazlidation is done using StratifiedKFold
     """
-    y_test,predict_y, MSE, MAE = regression.stratified_k_fold(x_train,y_train, y_train_class, 10, model_cv.best_estimator_)
+    y_test,predict_y, MSE, MAE = regression.stratified_k_fold(x_train,y_train, y_train_class, 5, model_cv.best_estimator_)
 
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(8, 8))
     plt.scatter(y_test, predict_y, c="y")
     plt.xlabel("Ground truth Age(years)")
     plt.ylabel("Predicted Age(years)")
@@ -107,9 +107,10 @@ def run_model(dataframe,model,hyparams):
     plt.text(
             y_test.max() - 20,
             predict_y.max() - 20,
-            f"Mean Absolute Error={MSE}",
+            f"MSE= {round(MSE,3)}",
             fontsize=14,
         )
+    plt.text(y_test.max() - 20, predict_y.max() -22, f'MAE= {round(MAE,3)}',fontsize=14)
     plt.title(
             "Ground-truth Age versus Predict Age using \n \
             Gaussian Regression  with {} harmonization method".format(
