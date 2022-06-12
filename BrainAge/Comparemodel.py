@@ -49,10 +49,9 @@ def run_linearmodel(dataframe,harmonize_list ):
         print('Harmonization model:',harmonize_option)
         dataframe=prep(df, harmonize_option,False)
         df_AS, df_TD = file_split(dataframe)
-        bins=6
-        for i in range(bins):      
+        for i in range(5):      
             print(i, ' = ', df_TD['AGE_CLASS'].value_counts()[i])
-
+        print(df_TD[['AGE_AT_SCAN','AGE_CLASS']])
         pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_regression, k=10)),
                                 ('Scaler', RobustScaler()),
                                 ('regressionmodel',LinearRegression())])
