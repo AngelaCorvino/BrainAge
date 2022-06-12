@@ -1,5 +1,3 @@
-import warnings
-warnings.filterwarnings("ignore")
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
@@ -95,16 +93,9 @@ if __name__ == "__main__":
         df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
         return df_AS, df_TD
     prep = Preprocessing()
-<<<<<<< HEAD
-    df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-
-    dataframe=prep(df, 'raw')
-=======
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
     df = prep(df, 'combat')
-    print(df['DX_GROUP'])
     df_TD, df_ASD = file_split(df)
->>>>>>> 6333de80e9f80bbf14b1399f56d6d3ecc8018d23
     reg = Regression()
     model = LinearRegression()
     test_y,predict_y, MSE, MAE = reg.stratified_k_fold(df_TD.drop(['AGE_AT_SCAN'],axis=1),                                                   df_TD['AGE_AT_SCAN'], df_TD['AGE_CLASS'], 10, model)

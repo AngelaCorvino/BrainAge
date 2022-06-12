@@ -30,6 +30,7 @@ class Preprocessing:
                                Dataframe containing harmonized data.
         """
         self.add_features(dataframe)
+        self.add_age_binning(dataframe)
         #PLOTTING DATA
         if plot_option == True:
             self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
@@ -38,17 +39,17 @@ class Preprocessing:
 
         if harmonize_option == 'raw':
             dataframe = dataframe.drop(['FILE_ID','SITE'], axis = 1)
-            self.add_age_binning(dataframe)
+
             return dataframe
         elif harmonize_option == 'combat':
             dataframe = self.add_site_binning(dataframe)
             dataframe_combat = self.com_harmonize(dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN')
             dataframe_combat = dataframe_combat.drop(['SITE_CLASS'], axis = 1)
-            self.add_age_binning(dataframe_combat)
+
             return dataframe_combat
         elif harmonize_option == 'neuro':
             dataframe_neuro = self.neuro_harmonize(dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN')
-            self.add_age_binning(dataframe_neuro)
+
             return dataframe_neuro
 
     #def __str__(self):
@@ -200,6 +201,7 @@ class Preprocessing:
             my_model, array_neuro_harmonized,s_data = harmonizationLearn(np.array(dataframe), covars, return_s_data = True)
             df_neuro_harmonized = pd.DataFrame(array_neuro_harmonized)
             df_neuro_harmonized.columns = dataframe.keys()
+            df_neuro_harmonized[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']] = dataframe[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']]
         except RuntimeWarning :
             print( 'How can we solve this?')
         return df_neuro_harmonized
@@ -229,7 +231,8 @@ class Preprocessing:
         )["data"]
         df_combat_harmonized = pd.DataFrame(array_combat_harmonized.transpose())
         df_combat_harmonized.columns = dataframe.keys()
-        
+        df_combat_harmonized[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']] = dataframe[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']]
+
         return df_combat_harmonized
 
     def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
