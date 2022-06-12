@@ -92,12 +92,8 @@ class Preprocessing:
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         """
-        bins = [5,10,13,15,20,60]
-        #bins = pd.IntervalIndex.from_tuples([(0,3),(3,5),(5,10),(10,15),(15,20)])
-        dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, bins, labels = [x for x in range(len(bins)-1)])
-        #for i in range(len(bins)-1):      
-        #    print(i, ' = ', dataframe['AGE_CLASS'].value_counts()[i])
-        
+        bins = 6
+        dataframe['AGE_CLASS'] = pd.qcut(dataframe.AGE_AT_SCAN, bins, labels = [x for x in range(bins)])
         return
 
     def add_site_binning(self, dataframe): #capire se si può fare senza return come add_age_binning
