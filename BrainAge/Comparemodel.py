@@ -65,6 +65,7 @@ def run_linearmodel(dataframe, harmonize_list):
         ]
     )
     for harmonize_option in harmonize_list:
+<<<<<<< HEAD
         print("Harmonization model:", harmonize_option)
         dataframe = prep(df, harmonize_option, False)
         df_AS, df_TD = file_split(dataframe)
@@ -98,6 +99,23 @@ def run_linearmodel(dataframe, harmonize_list):
                 harmonize_option
             )
         )
+=======
+        print('Harmonization model:', harmonize_option)
+        dataframe=prep(df, harmonize_option, False)
+        df_AS, df_TD = file_split(dataframe)
+        pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_regression, k=10)),
+                                ('Scaler', RobustScaler()),
+                                ('regressionmodel', LinearRegression())])
+        test_age,predict_age, MSE, MAE =regression.stratified_k_fold(df_TD.drop(['AGE_AT_SCAN'],axis=1), df_TD['AGE_AT_SCAN'], df_TD['AGE_CLASS'], 10, pipe)
+        plt.figure(figsize=(10,10))
+        plt.scatter(test_age,predict_age,c='y')
+        plt.xlabel('Ground truth Age(years)')
+        plt.ylabel('Predicted Age(years)')
+        plt.plot(np.linspace(test_age.min(),test_age.max(),100),np.linspace(test_age.min(),test_age.max(),100), c='r', label='Expected prediction line')
+        plt.text(test_age.max()-2,predict_age.max()-2,f'Mean Absolute Error={MSE}',fontsize=14)
+        plt.title('Ground-truth Age versus Predict Age using \n \
+            Linear Regression with {} harmonization method'.format(harmonize_option))
+>>>>>>> 6333de80e9f80bbf14b1399f56d6d3ecc8018d23
         plt.show()
     return
 
@@ -124,6 +142,7 @@ def run_gaussianmodel(dataframe, harmonize_list):
         print("Harmonization model:", harmonize_option)
         dataframe = prep(df, harmonize_option, False)
         df_AS, df_TD = file_split(dataframe)
+<<<<<<< HEAD
 
         (
             x_train,
@@ -185,6 +204,18 @@ def run_gaussianmodel(dataframe, harmonize_list):
                 harmonize_option
             )
         )
+=======
+        pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_regression, k=10)), ('Scaler', RobustScaler()), ('regressionmodel',GaussianProcessRegressor())])
+        test_age, predict_age, MSE, MAE = regression.stratified_k_fold(df_TD.drop(['AGE_AT_SCAN'], axis=1), df_TD['AGE_AT_SCAN'], df_TD['AGE_CLASS'],                                                                         10,                                                                           pipe)
+        plt.figure(figsize=(10,10))
+        plt.scatter(test_age,predict_age,c='y')
+        plt.xlabel('Ground truth Age(years)')
+        plt.ylabel('Predicted Age(years)')
+        plt.plot(np.linspace(test_age.min(),test_age.max(),100),np.linspace(test_age.min(),test_age.max(),100), c='r', label='Expected prediction line')
+        plt.text(test_age.max()-2,predict_age.max()-2,f'Mean Absolute Error={MSE}',fontsize=14)
+        plt.title('Ground-truth Age versus Predict Age using \n \
+            Gaussian Regression with {} harminization method'.format(harmonize_option))
+>>>>>>> 6333de80e9f80bbf14b1399f56d6d3ecc8018d23
         plt.show()
 
     return

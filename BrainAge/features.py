@@ -30,7 +30,6 @@ class Preprocessing:
                                Dataframe containing harmonized data.
         """
         self.add_features(dataframe)
-        self.add_age_binning(dataframe)
         #PLOTTING DATA
         if plot_option == True:
             self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
@@ -39,14 +38,17 @@ class Preprocessing:
 
         if harmonize_option == 'raw':
             dataframe = dataframe.drop(['FILE_ID','SITE'], axis = 1)
+            self.add_age_binning(dataframe)
             return dataframe
         elif harmonize_option == 'combat':
             dataframe = self.add_site_binning(dataframe)
             dataframe_combat = self.com_harmonize(dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN')
             dataframe_combat = dataframe_combat.drop(['SITE_CLASS'], axis = 1)
+            self.add_age_binning(dataframe_combat)
             return dataframe_combat
         elif harmonize_option == 'neuro':
             dataframe_neuro = self.neuro_harmonize(dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN')
+            self.add_age_binning(dataframe_neuro)
             return dataframe_neuro
 
     #def __str__(self):
@@ -265,3 +267,8 @@ if __name__ == "__main__":
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
 
     df1 = prep(df, 'raw', plot_option = False)
+    df2 = prep(df, 'neuro', plot_option = False)
+    df3 = prep(df, 'combat', plot_option = False)
+    print(df1)
+    print(df2)
+    print(df3)
