@@ -26,17 +26,16 @@ Various statistical criteria exist for the classification of multivariate outlie
 One of the most commonly used tools in determining outliers is the Z-score. Z-score is just the number of standard deviations away from the mean that a certain data point is.
 It is also possible to use the Interquartile Range to Create Outlier Fences.
 
+For our application, we adapted the autoencoder described by S. Hawkins et alt. (https://link.springer.com/content/pdf/10.1007/3-540-46145-0_17.pdf) to our data, building a symmetric, four-linear-layer network with N = 424 (the number of features under examination). The three inner layers have 30, 2 and 30 neurons respectively, their activation functions are a hyperbolic tangent, a step-wise function and a hyperbolic tangent again. The fourth layer generates an output with the same dimensions as the input and a sigmoid filter maps the output into the final vector. We trained the autoencoder comparing the output vector with the input features using the Mean Squared Error (MSE) as the loss function.
+ 
+
 ## K-fold
 
 
 When implementing K-fold we want the class distribution in the dataset to be preserved in the training and test splits. This means that if, for example, the ratio of <20 years subjects (class0) to >20 years (class1)subject is 1/3. If we set k=4, then the test sets include three data points from class1 and one data point from class 0. Thus, training sets include three data points from class 0 and nine data points from class 1.
 This can be done with Stratified Kfold.
 We can also extend the binary concept of classo 0 and 1 to multiclass . In particular we are going to divede the dataset in four class.
-## Finding counfounders
 
-For our application, we adapted the autoencoder described in 'S. Hawkins, H. He, G. Williams, R. Baxter, Outlier detection using repli-
- cator neural networks' to our data, building a symmetric, four-linear-layer network with N = 424 (the number of features under examination). The three inner layers have 30, 2 and 30 neurons respectively, their activation functions are a hyperbolic tangent, a step-wise function and a hyperbolic tangent again. The fourth layer generates an output with the same dimensions as the input and a sigmoid filter maps the output into the final vector. We trained the autoencoder comparing the output vector with the input features using the Mean Squared Error (MSE) as the loss function.
- 
 ## Data Harmonization 
 
 
