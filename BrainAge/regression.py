@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore")
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
@@ -89,7 +91,7 @@ class Regression:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-    
+
     dataframe=prep(df, 'raw')
     reg = Regression()
     model = LinearRegression()
