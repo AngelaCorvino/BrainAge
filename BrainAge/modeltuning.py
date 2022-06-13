@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
+from scipy.stats import pearsonr
 # import verstack
 
 from sklearn.svm import SVR

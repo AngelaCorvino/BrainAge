@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
+from scipy.stats import pearsonr
 # import verstack
 
 from sklearn.svm import SVR
@@ -78,12 +79,14 @@ def run_model(dataframe, model, harmonize_option):
     (x_train, x_test, y_train, y_test) = train_test_split(
         dataframe.drop(["AGE_AT_SCAN",'SEX','DX_GROUP'], axis=1),
         dataframe["AGE_AT_SCAN"],
-        dataframe["AGE_CLASS"],
-        test_size=1,
+        test_size=0.9,
         random_state=18,
     )
-
+    print(y_test)
     predict_y=model_fit.predict(x_test) # similar
+    MSE=mean_squared_error(y_test, predict_y)
+    MAE=mean_absolute_error(y_test, predict_y)
+    #PR=pearsonr(y_test,predict_y)[0]
 
 
     plt.figure(figsize=(8, 8))
@@ -102,25 +105,25 @@ def run_model(dataframe, model, harmonize_option):
         f"MSE= {round(MSE,3)}",
         fontsize=14,
     )
-    plt.text(
-        y_test.max() - 18,
-        predict_y.max() - 16,
-        f"PR= {round(PR,3)}",
-        fontsize=14,
-    )
+    # plt.text(
+    #     y_test.max() - 18,
+    #     predict_y.max() - 16,
+    #     f"PR= {round(PR,3)}",
+    #     fontsize=14,
+    # )
     plt.text(
         y_test.max() - 18, predict_y.max() - 20, f"MAE= {round(MAE,3)}", fontsize=14
     )
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
-            {}  with {} data".format(model.__class__.__name__,
+            {}  with {} AD data".format(model.__class__.__name__,
             harmonize_option),
             fontsize=20,
     )
     plt.tick_params(axis="x", which="major", labelsize=18)
     plt.tick_params(axis="y", which="major", labelsize=18)
-    plt.legend(title='Number of features: {}'.format(model_cv.best_params_['Feature__k']),fontsize=18)
-    plt.savefig('images/%s_%s.png'%(model.__class__.__name__,harmonize_option), dpi=200, format='png')
+    plt.legend()
+    plt.savefig('images/AD%s_%s.png'%(model.__class__.__name__,harmonize_option), dpi=200, format='png')
     #plt.show()
 
     return
@@ -153,6 +156,6 @@ for harmonize_option in harmonize_list:
     df_AS, df_TD = file_split(dataframe)
     for i, model in enumerate(models):
         """
-        Predicting age of autistic subjects 
+        Predicting age of autistic subjects
         """
         run_model(df_AS, model,harmonize_option)
