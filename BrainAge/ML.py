@@ -145,7 +145,7 @@ hyperparams = [
     {
         "Feature__k": [10, 20, 30],
         "Feature__score_func":[f_regression],
-        "Model__epochs": [100, 200],
+        "Model__epochs": [10, 20],
 
     },
     {
