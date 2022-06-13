@@ -104,11 +104,10 @@ class Regression:
         for train_index, test_index in cv.split(X, y_bins):
             predict_y=model.fit(X[train_index], y[train_index]).predict(X[test_index])
             print('MAE: %.3f' % mean_absolute_error(y[test_index], predict_y))
-
             MSE.append(mean_squared_error(y[test_index], predict_y, squared=False))
             MAE.append(mean_absolute_error(y[test_index], predict_y))
-            PR.append(pearsonr(y[test_index],predict_y)[0])
-        return y[test_index],predict_y, np.mean(MSE), np.mean(MAE),np.mean(PR)
+            #PR.append(pearsonr(y[test_index],predict_y)[0])
+        return model,y[test_index],predict_y, np.mean(MSE), np.mean(MAE)#,np.mean(PR,axis=0)
 
 if __name__ == "__main__":
     def file_split(dataframe):
@@ -125,3 +124,4 @@ if __name__ == "__main__":
     reg = Regression()
     model = LinearRegression()
     test_y,predict_y, MSE, MAE,PR = reg.stratified_k_fold(df_TD.drop(['AGE_AT_SCAN'],axis=1),                                                   df_TD['AGE_AT_SCAN'], df_TD['AGE_CLASS'], 10, model)
+    print(PR)
