@@ -2,7 +2,7 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
-
+pd.set_option('display.max_rows',None)
 from neuroHarmonize import harmonizationLearn
 from neuroCombat import neuroCombat
 
@@ -15,7 +15,8 @@ class Preprocessing:
         """
         Allows to you call an istance as a function.
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of raw data  to be passed to the preprocessing class.
@@ -24,7 +25,8 @@ class Preprocessing:
         plot_option : boolean
                       If True shows some plots of data. Default is True
 
-        :Returns:
+        Returns
+        -------
 
         dataframe_harmonized : dataframe-like
                                Dataframe containing harmonized data.
@@ -36,14 +38,19 @@ class Preprocessing:
             self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
             self.plot_histogram(dataframe, 'AGE_AT_SCAN')
         self.self_normalize(dataframe)
-
+        #HARMONIZING DATA
         if harmonize_option == 'raw':
             dataframe = dataframe.drop(['FILE_ID','SITE'], axis = 1)
-
             return dataframe
+            
         elif harmonize_option == 'combat':
             dataframe = self.add_site_binning(dataframe)
-            dataframe_combat = self.com_harmonize(dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN')
+            try:
+                assert np.sum(np.sum(dataframe.isna())) == 0, 'There are NaN values in the dataframe!'
+                assert np.sum(np.sum(dataframe.isnull())) == 0, 'There are Null values in the dataframe!'
+            except AssertionError as msg:
+                print(msg)
+            dataframe_combat = self.com_harmonize(dataframe.drop(['FILE_ID','SITE'], axis = 1), confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN')
             dataframe_combat = dataframe_combat.drop(['SITE_CLASS'], axis = 1)
 
             return dataframe_combat
@@ -59,12 +66,14 @@ class Preprocessing:
         """
         Reads data in .csv file from url and returns them in a dataframe.
 
-        :Parameters:
+        Parameters
+        ----------
 
         file_url : string-like
                    The string containing data adress to be passed to Preprocessing.
 
-        :Returns:
+        Returns
+        -------
 
         dataframe : dataframe-like
                     The dataframe of raw data.
@@ -76,7 +85,8 @@ class Preprocessing:
         """
         Adds columns with derived features to dataframe.
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of raw data  to be passed to the function.
@@ -90,27 +100,29 @@ class Preprocessing:
         """
         Creates a column called AGE_CLASS with AGE_AT_SCAN binning and attaches it to dataframe.
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         """
         bins = 6
-        dataframe['AGE_CLASS'] = pd.qcut(dataframe.AGE_AT_SCAN, bins, labels = [x for x in range(bins)])
+        dataframe['AGE_CLASS'] = pd.qcut(dataframe.AGE_AT_SCAN, bins, labels = [x for x in range(1, bins+1)])
         return
 
     def add_site_binning(self, dataframe): #capire se si può fare senza return come add_age_binning
         """
         Creates a map  where SITE  is binned in the column SITE_CLASS and then merges it with the dataframe.
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         """
         try :
             sites = dataframe['SITE'].value_counts(dropna = False, sort = False).keys().to_list()
-            maps = (pd.DataFrame({'SITE_CLASS': [x for x in range(len(sites))], 'SITE': sites}).explode('SITE').reset_index(drop=True))
+            maps = (pd.DataFrame({'SITE_CLASS': [x for x in range(1, len(sites)+1)], 'SITE': sites}).explode('SITE').reset_index(drop=True))
             dataframe = dataframe.join(maps.set_index('SITE'), on='SITE')
         except KeyError:
              print("Column SITE does not exist")
@@ -120,7 +132,8 @@ class Preprocessing:
         """
         Plots histogram of a given feature on the indicated dataframe, masking values <0.
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
@@ -135,7 +148,8 @@ class Preprocessing:
         """
         Plots boxplot of featurey by featurex.
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
@@ -156,7 +170,8 @@ class Preprocessing:
         """
         Makes self normalization on data.
 
-        :Parameters:
+        Parameters
+        ----------
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
@@ -216,25 +231,26 @@ class Preprocessing:
         ----------
 
         dataframe : dataframe-like
-                    The dataframe of data to be passed to the function.
+                    Dataframe containing neuroimaging data to correct with shape = (samples, features) e.g. cortical thickness measurements, image voxels, etc
         confounder : string-like
-                     Categorical feature to be accounted as confounder. Default 'SITE_CLASS'.
+                     Categorical feature to be accounted as confounder, which indicates batch (scanner) column name in covars (e.g. "scanner") Default 'SITE_CLASS'.
         covariate : string-like
-                    Default is 'AGE_AT_SCAN'.
-        :Returns:
+                    Contains the batch/scanner covariate as well as additional covariates (optional) that should be preserved during harmonization. Default is 'AGE_AT_SCAN'.
+
+        Returns
+        -------
 
         dataframe_harmonized: dataframe-like
                               The dataframe containing harmonized data
         """
-        dataframe =  dataframe.drop(['FILE_ID','SITE'], axis = 1)
         array_combat_harmonized = neuroCombat(
             dat = dataframe.transpose(),
             covars = dataframe[[confounder, covariate]],
-            batch_col = confounder,
+            batch_col = confounder
         )["data"]
         df_combat_harmonized = pd.DataFrame(array_combat_harmonized.transpose())
         df_combat_harmonized.columns = dataframe.keys()
-        df_combat_harmonized[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']] = dataframe[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']]
+        #df_combat_harmonized[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']] = dataframe[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']]
 
         return df_combat_harmonized
 
@@ -251,7 +267,9 @@ class Preprocessing:
                   Target feature on which to compute correlation.
         plot_heatmap : boolean
                        If True, show heatmap of data correlation with feature. Default is False.
-        :Returns:
+                       
+        Returns
+        -------
 
         listoffeatures : list
                          List of selected features.
@@ -276,6 +294,6 @@ if __name__ == "__main__":
     df1 = prep(df, 'raw', plot_option = False)
     df2 = prep(df, 'neuro', plot_option = False)
     df3 = prep(df, 'combat', plot_option = False)
-    print(df1)
-    print(df2)
-    print(df3)
+    #print(df1)
+    #print(df2)
+    #print(df3)
