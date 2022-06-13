@@ -290,7 +290,6 @@ class Preprocessing:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-
     df1 = prep(df, 'raw', plot_option = False)
     df2 = prep(df, 'neuro', plot_option = False)
     df3 = prep(df, 'combat', plot_option = False)
