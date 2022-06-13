@@ -192,7 +192,7 @@ for harmonize_option in harmonize_list:
 
 #
 # #Deep learning
-pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_classif, k=10)), ('Scaler', RobustScaler()), ('Deepmodel', DeepRegression(epochs=10))])
+pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_regression, k=10)), ('Scaler', RobustScaler()), ('Deepmodel', DeepRegression(epochs=10))])
 predict_y, MSE, MAE = regression.k_fold(dataframe.drop(['AGE_AT_SCAN'],axis=1), dataframe['AGE_AT_SCAN'], 10, pipe)
 
 

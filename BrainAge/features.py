@@ -250,7 +250,7 @@ class Preprocessing:
         )["data"]
         df_combat_harmonized = pd.DataFrame(array_combat_harmonized.transpose())
         df_combat_harmonized.columns = dataframe.keys()
-        #df_combat_harmonized[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']] = dataframe[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']]
+        df_combat_harmonized[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']] = dataframe[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']]
 
         return df_combat_harmonized
 
