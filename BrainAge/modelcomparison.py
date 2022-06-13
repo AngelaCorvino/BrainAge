@@ -75,9 +75,19 @@ def run_model(dataframe, model, hyparams,harmonize_option):
         test_size=0.25,
         random_state=18,
     )
-    model_cv = GridSearchCV(
+
+    if model == DeepRegression():
+    #if model.__class__.__name__== DeepRegression:
+        print('No cross validation for deep model')
+        model_cv = GridSearchCV(
+        pipe, cv=None, n_jobs=-1, param_grid=hyparams, scoring="neg_mean_squared_error",verbose=True
+        )
+    else:
+        print('Cross validation for regression model')
+        model_cv = GridSearchCV(
         pipe, cv=10, n_jobs=-1, param_grid=hyparams, scoring="neg_mean_squared_error",verbose=True
-    )
+        )
+
     model_cv.fit(x_train, y_train)
 
     #print("Best estimator is:", model_cv.best_estimator_)
@@ -88,16 +98,10 @@ def run_model(dataframe, model, hyparams,harmonize_option):
         we can run the model using these parameters.
         This time the cross vazlidation is done using StratifiedKFold
     """
-    if model == DeepRegression():
-        print('it is working')
-        predict_y=model_cv.best_params_.fit(x_train, y_train).predict(x_test)
-        MAE=mean_absolute_error(y_test, predict_y)
-        MSE=mean_squared_error(y_test, predict_y)
 
-    else:
-        y_test, predict_y, MSE, MAE = regression.stratified_k_fold(
-        x_train, y_train, y_train_class, 10, model_cv.best_estimator_
-    )
+    y_test, predict_y, MSE, MAE = regression.stratified_k_fold(
+        x_train, y_train, y_train_class, 10, model_cv.best_estimator_)
+
 
     plt.figure(figsize=(8, 8))
     plt.scatter(y_test, predict_y, c="y")
@@ -110,13 +114,13 @@ def run_model(dataframe, model, hyparams,harmonize_option):
         label="Expected prediction line",
     )
     plt.text(
-        y_test.max() - 20,
-        predict_y.max() - 20,
+        y_test.max() - 18,
+        predict_y.max() - 18,
         f"MSE= {round(MSE,3)}",
         fontsize=14,
     )
     plt.text(
-        y_test.max() - 20, predict_y.max() - 22, f"MAE= {round(MAE,3)}", fontsize=14
+        y_test.max() - 18, predict_y.max() - 20, f"MAE= {round(MAE,3)}", fontsize=14
     )
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
@@ -126,7 +130,7 @@ def run_model(dataframe, model, hyparams,harmonize_option):
     )
     plt.tick_params(axis="x", which="major", labelsize=18)
     plt.tick_params(axis="y", which="major", labelsize=18)
-    plt.legend(fontsize=18)
+    plt.legend(title='Number of features: {}'.format(model_cv.best_params_['Feature__k']),fontsize=18)
     plt.savefig('images/%s_%s.png'%(model.__class__.__name__,harmonize_option), dpi=200, format='png')
     #plt.show()
 
@@ -150,9 +154,9 @@ models = [
 
 hyperparams = [
     {
-        "Feature__k": [10, 20, 30],
+        "Feature__k": [100, 200,'all'],
         "Feature__score_func":[f_regression],
-        "Model__epochs": [5, 10],
+        "Model__epochs": [100, 200],
 
     },
     {
