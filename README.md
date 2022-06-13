@@ -84,14 +84,10 @@ To use our Python codes the following packages are needed: numpy, scikit-learn, 
 #Step1 : Clone
 Clone the directory 
 
-#Step2 : Compare model on control subjects
+#Step2 : Compare model on control subjects and use the best performing model on autistic subjects 
 
 Run the Python code modelcomparison.py to
 - peform data preprocessing ( self normalization and data harmonization ) 
 - predic the age of healthy subjects comparing different regression models and a deep model.
 - find the best estimator (combination of model and hyperparametrs ) 
-
-#Steo 3: Autistic Subjects
-
-Run the python code to
-- use the best performing model (best estimator) to predict the age of ustistic subjects
+- use the best performing model (best estimator) to predict the age of autistic subjects
