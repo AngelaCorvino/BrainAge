@@ -8,7 +8,10 @@
 
 This repository belongs to Angela Corvino and Agata Minnocci. It contains our exam project for the course of Computing Methods for Experimental Physics and Data Analysis.
 
-The aim of our project is to implement an algorithm that has the ability to predict brain age analysing features extracted from brain MRIs of a cohort of subjects with Autism Spectrum Disorder and controls. The algorithm will also compare different regression models and evaluate their performance on this task.
+The aim of our project is to implement an algorithm that has the ability to predict brain age analysing features extracted from brain MRIs of a cohort of subjects with Autism Spectrum Disorder and controls. The algorithm will:
+-implent a data harmonization system
+-look for possible outliers 
+-compare different regression models and evaluate their performance.
 
 ## Data
 
@@ -83,12 +86,12 @@ Clone the directory
 
 #Step2 : Compare model on control subjects
 
-Run the Python code Modelcomparison.py to
+Run the Python code modelcomparison.py to
 - peform data preprocessing ( self normalization and data harmonization ) 
-- predic the age of healthy subjects comparing different regression models
-- predict the age of healty subjects using a neuraò network.
--
+- predic the age of healthy subjects comparing different regression models and a deep model.
+- find the best estimator (combination of model and hyperparametrs ) 
+
 #Steo 3: Autistic Subjects
 
 Run the python code to
-- use the best performing model to predict the age of ustistic subjects
+- use the best performing model (best estimator) to predict the age of ustistic subjects
