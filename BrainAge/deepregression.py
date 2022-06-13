@@ -1,12 +1,13 @@
 from keras.layers import Dense, Dropout, Input, Flatten
 from keras.models import Model, load_model
 from sklearn.model_selection import train_test_split
+from sklearn.base    import BaseEstimator
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
 from features import Preprocessing
-class DeepRegression():
+class DeepRegression(BaseEstimator):
     """
 
     Class describing deep regression model.
@@ -30,7 +31,7 @@ class DeepRegression():
 
     def __init__(
         self,
-        epochs,
+        epochs=100,
         plot_loss=False,
     ):
         self.epochs = epochs

@@ -133,6 +133,7 @@ regression = Regression()
 
 
 models = [
+    DeepRegression(),
     LinearRegression(),
     GaussianProcessRegressor(),
     RandomForestRegressor(),
@@ -141,6 +142,12 @@ models = [
 ]
 
 hyperparams = [
+    {
+        "Feature__k": [10, 20, 30],
+        "Feature__score_func":[f_regression],
+        "Model__epochs": [100, 200],
+
+    },
     {
         "Feature__k": [10, 20, 30],
         "Feature__score_func":[f_regression],
@@ -175,22 +182,6 @@ hyperparams = [
 ###############################################################################
 harmonize_list = ["raw", "combat", "neuro"]
 
-# for harmonize_option in harmonize_list:
-#     """
-#     Compare different harmonization techniques
-#     """
-#     print("Harmonization model:", harmonize_option)
-#     dataframe = prep(df, harmonize_option, False)
-#     df_AS, df_TD = file_split(dataframe)
-#     for i, model in enumerate(models):
-#         """
-#         Compare different regression model
-#         """
-#         run_model(df_TD, model, hyperparams[i],harmonize_option)
-#
-#     # run_deepmodel
-
-
 for harmonize_option in harmonize_list:
     """
     Compare different harmonization techniques
@@ -198,20 +189,6 @@ for harmonize_option in harmonize_list:
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
     df_AS, df_TD = file_split(dataframe)
-<<<<<<< HEAD
-    (x_train, x_test, y_train, y_test, y_train_class, y_test_class,) = train_test_split(
-         df_TD.drop(["AGE_AT_SCAN",'SEX','DX_GROUP'], axis=1),
-         df_TD["AGE_AT_SCAN"],
-         df_TD["AGE_CLASS"],
-        test_size=0.25,
-        random_state=18,
-    )
-    pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_regression, k=10)), ('Scaler', RobustScaler()), ('Deepmodel',DeepRegression(epochs=10,plot_loss=True))])
-    #DeepRegression(epochs=10)
-    predict_y=pipe.fit(x_train, y_train).predict(x_test)
-    #y_test,predict_y, MSE, MAE = regression.k_fold(df_TD.drop(['AGE_AT_SCAN'],axis=1), df_TD['AGE_AT_SCAN'], 10, pipe)
-    #print(predict_y)
-=======
     for i, model in enumerate(models):
         """
         Compare different regression model
@@ -220,11 +197,7 @@ for harmonize_option in harmonize_list:
 
     # run_deepmodel
 
-#
-# #Deep learning
-pipe = Pipeline(steps=[('Feature', SelectKBest(score_func=f_regression, k=10)), ('Scaler', RobustScaler()), ('Deepmodel', DeepRegression(epochs=10))])
-predict_y, MSE, MAE = regression.k_fold(dataframe.drop(['AGE_AT_SCAN'],axis=1), dataframe['AGE_AT_SCAN'], 10, pipe)
->>>>>>> 41f5268491fb95ae5a644dfe75a500cac7f17601
+
 
 
 
