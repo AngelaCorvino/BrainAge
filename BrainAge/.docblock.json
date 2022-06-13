@@ -1,0 +1,16 @@
+{
+    "style": "numpy",
+    "indent": true,
+    "parameters": true,
+    "quote_type": "double",
+    "default_desc_text": true,
+    "use_defaults": false,
+    "returns": true,
+    "raises": false,
+    "examples": false,
+    "types": {
+        "use_types": true,
+        "separate_types": false
+    },
+    "lint": false
+}
