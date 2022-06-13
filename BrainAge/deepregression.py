@@ -34,7 +34,7 @@ class DeepRegression():
         plot_loss=True,
     ):
         self.epochs = epochs
-        self.plot_loss = plot_loss
+        self.plot_loss = plot_loss # io toglierei anche questi attributi, passandoli direttamente alle funzioni che li usano
 
 
     def fit(self, X, y):
@@ -104,3 +104,65 @@ class DeepRegression():
 
 
         return self
+        
+            def plot_training_validation_loss(self,history):
+        '''
+        This function plots the training and validation loss curves of the trained model,
+        enabling visual diagnosis of underfitting (bias) or overfitting (variance).
+        Arguments:
+          history
+
+        Returns:
+          fig: a visual representation of the model's training loss and validation
+          loss curves.
+         '''
+        #      plt.plot(rnn_hist.history["val_loss"],label = 'val')
+        #      plt.plot(rnn_hist.history["loss"],label = 'train')
+        #      plt.legend()
+        #      plt.show()
+        #
+        training_validation_loss = pd.DataFrame.from_dict(history.history, orient='columns')
+
+
+        plt.scatter(training_validation_loss.index,training_validation_loss["loss"],
+                           marker='.',
+                           label= 'Training Loss',
+                           )
+        plt.scatter(training_validation_loss.index,training_validation_loss["val_loss"],
+                        marker='.',
+                        label = 'Validation Loss',
+                            )
+
+
+        plt.title('Training and Validation Loss')
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.legend()
+
+        return plt.show()
+        
+            def reconstruction_error(self,model):
+        """
+        This function calculates the reconstruction error and displays a histogram of
+        the training mean absolute error.
+        Arguments:
+        model: the trained  model
+          x_train: 3D data to be used in model training (dataframe).
+          Returns:
+          fig: a visual representation of the training MAE distribution.
+        """
+
+        x_train_pred = model.predict(self.X_train)
+        train_mae_loss = np.mean(np.abs(x_train_pred - np.array(self.X_train)), axis = 1)
+        histogram = train_mae_loss.flatten()
+        plt.hist(histogram,
+                                      label = 'MAE Loss')
+
+        plt.title('Mean Absolute Error Loss')
+        plt.xlabel("Training MAE Loss (%)")
+        plt.ylabel("Number of Samples")
+
+
+        print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
+
+        return plt.show()
