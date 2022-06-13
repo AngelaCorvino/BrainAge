@@ -32,8 +32,7 @@ We define harmonization as the explicit removal of site-related effects in multi
 For the removal of site effects, different harmonization procedures were compared:
 (i) absence of harmonization ;
 (ii) removal of site effects using ComBat with age as biological covariate of interest (age covariate);
-(iii) removal of site effects using ComBat without specifying (preserving) the age as a biological covariate 
-(iv) removal of site effects using neuroHarmonize  specifying the age as a biological covariate.
+(iii) removal of site effects using neuroHarmonize  specifying the age as a biological covariate.
 
 Why do we have to use the age as covariate ?
 We have to consider the interaction between the site variable and the age of the subjects.
