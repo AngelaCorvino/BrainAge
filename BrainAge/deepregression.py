@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-
+from features import Preprocessing
 class DeepRegression():
     """
 
@@ -22,7 +22,7 @@ class DeepRegression():
 
     Attributes
     ----------
-    model 
+    model
 
 
 
@@ -53,6 +53,7 @@ class DeepRegression():
         self : object
             Fitted Estimator.
         """
+        print('ciao')
         inputs = Input(shape=(425))
         hidden = Dense(128, activation ='relu')(inputs)
         hidden = Dense(12, activation ='relu')(hidden)
@@ -65,12 +66,6 @@ class DeepRegression():
         self.model.summary()
         history = self.model.fit(X, y, validation_split = 0.3, epochs = self.epochs, batch_size = 50, verbose = 0)
         return self
-
-
-
-
-
-
 
         if self.plot_loss==True:
             '''
@@ -104,65 +99,37 @@ class DeepRegression():
 
 
         return self
-        
-            def plot_training_validation_loss(self,history):
-        '''
-        This function plots the training and validation loss curves of the trained model,
-        enabling visual diagnosis of underfitting (bias) or overfitting (variance).
-        Arguments:
-          history
 
-        Returns:
-          fig: a visual representation of the model's training loss and validation
-          loss curves.
-         '''
-        #      plt.plot(rnn_hist.history["val_loss"],label = 'val')
-        #      plt.plot(rnn_hist.history["loss"],label = 'train')
-        #      plt.legend()
-        #      plt.show()
+
+
+        #     def reconstruction_error(self,model):
+        # """
+        # This function calculates the reconstruction error and displays a histogram of
+        # the training mean absolute error.
+        # Arguments:
+        # model: the trained  model
+        #   x_train: 3D data to be used in model training (dataframe).
+        #   Returns:
+        #   fig: a visual representation of the training MAE distribution.
+        # """
         #
-        training_validation_loss = pd.DataFrame.from_dict(history.history, orient='columns')
-
-
-        plt.scatter(training_validation_loss.index,training_validation_loss["loss"],
-                           marker='.',
-                           label= 'Training Loss',
-                           )
-        plt.scatter(training_validation_loss.index,training_validation_loss["val_loss"],
-                        marker='.',
-                        label = 'Validation Loss',
-                            )
-
-
-        plt.title('Training and Validation Loss')
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.legend()
-
-        return plt.show()
-        
-            def reconstruction_error(self,model):
-        """
-        This function calculates the reconstruction error and displays a histogram of
-        the training mean absolute error.
-        Arguments:
-        model: the trained  model
-          x_train: 3D data to be used in model training (dataframe).
-          Returns:
-          fig: a visual representation of the training MAE distribution.
-        """
-
-        x_train_pred = model.predict(self.X_train)
-        train_mae_loss = np.mean(np.abs(x_train_pred - np.array(self.X_train)), axis = 1)
-        histogram = train_mae_loss.flatten()
-        plt.hist(histogram,
-                                      label = 'MAE Loss')
-
-        plt.title('Mean Absolute Error Loss')
-        plt.xlabel("Training MAE Loss (%)")
-        plt.ylabel("Number of Samples")
-
-
-        print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
-
-        return plt.show()
+        # x_train_pred = model.predict(self.X_train)
+        # train_mae_loss = np.mean(np.abs(x_train_pred - np.array(self.X_train)), axis = 1)
+        # histogram = train_mae_loss.flatten()
+        # plt.hist(histogram,
+        #                               label = 'MAE Loss')
+        #
+        # plt.title('Mean Absolute Error Loss')
+        # plt.xlabel("Training MAE Loss (%)")
+        # plt.ylabel("Number of Samples")
+        #
+        #
+        # print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
+        #
+        # return plt.show()
+if __name__ == "__main__":
+    prep = Preprocessing()
+    df = prep.read_file("data/FS_features_ABIDE_males.csv")
+    dataframe = prep(df, 'raw', False)
+    a=DeepRegression(epochs=10)
+    a.fit(dataframe.drop(['AGE_AT_SCAN'],axis=1), dataframe['AGE_AT_SCAN'])
