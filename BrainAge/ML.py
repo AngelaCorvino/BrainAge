@@ -88,7 +88,14 @@ def run_model(dataframe, model, hyparams,harmonize_option):
         we can run the model using these parameters.
         This time the cross vazlidation is done using StratifiedKFold
     """
-    y_test, predict_y, MSE, MAE = regression.stratified_k_fold(
+    if model == DeepRegression():
+        print('it is working')
+        predict_y=model_cv.best_params_.fit(x_train, y_train).predict(x_test)
+        MAE=mean_absolute_error(y_test, predict_y)
+        MSE=mean_squared_error(y_test, predict_y)
+
+    else:
+        y_test, predict_y, MSE, MAE = regression.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
 
@@ -145,7 +152,7 @@ hyperparams = [
     {
         "Feature__k": [10, 20, 30],
         "Feature__score_func":[f_regression],
-        "Model__epochs": [10, 20],
+        "Model__epochs": [5, 10],
 
     },
     {

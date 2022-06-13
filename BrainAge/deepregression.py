@@ -64,7 +64,7 @@ class DeepRegression(BaseEstimator):
         self.model = Model(inputs=inputs, outputs=outputs)
         self.model.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MAE'])
         self.model.summary()
-        history = self.model.fit(X, y, validation_split = 0.3, epochs = self.epochs, batch_size = 50, verbose = 1)
+        history = self.model.fit(X, y, validation_split = 0.3, epochs = self.epochs, batch_size = 50, verbose = 0)
         return self
 
         if self.plot_loss==True:
