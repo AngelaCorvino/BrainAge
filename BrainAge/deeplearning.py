@@ -14,14 +14,27 @@ def step_wise(x):
     return y
 
 class Deep:
-    """
-    Class describing deep regression model.
+    """Class describing deep regression model.
+
     Parameters
     ----------
-    file_url : string-like
-        The path that point to the data.
+    dataframe : type
+        Description of parameter `dataframe`.
+
+    Attributes
+    ----------
+    X_train : type
+        Description of attribute `X_train`.
+    X_test : type
+        Description of attribute `X_test`.
+    y_train : type
+        Description of attribute `y_train`.
+    y_test : type
+        Description of attribute `y_test`.
+    dataframe
 
     """
+
     def __init__(self, dataframe):
         """
         Constructor.
@@ -32,12 +45,16 @@ class Deep:
 
 
     def make_autoencoder(self):
-        '''
-        Autoencoder trained comparing the output vector with the input features, using the Mean Squared Error (MSE) as loss function.
-        :Returns:
+        """Autoencoder trained comparing the output vector with the input features, using the Mean Squared Error (MSE) as loss function.
+
+        Returns
+        -------
+        type
+            Description of returned object.
         model : the trained model.
         history : a summary of how the model trained (training error, validation error).
-        '''
+
+        """
         inputs = Input(shape=(425))
         hidden = Dense(30, activation ='tanh')(inputs)
         hidden = Dense(2, activation ='sigmoid')(hidden) #this should be a stepwise function
@@ -54,10 +71,10 @@ class Deep:
 
 
         return model, history
-      
+
     def outliers(self,model):
         """
-       
+
         """
         x_train_pred = model.predict(self.X_train)
         x_test_pred = model.predict(self.X_test)
@@ -67,11 +84,10 @@ class Deep:
         histogram = train_mae_loss.flatten()
         print("Number of anomaly samples: ", np.sum(anomalies))
         print("Indices of anomaly samples: ", np.where(anomalies))
-  
+
         print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
 
         return
 
 
 #if __name__ == "__main__":
-

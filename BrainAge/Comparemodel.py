@@ -28,8 +28,18 @@ from deeplearning import Deep
 
 ############################################################### FUNCTIONS
 def file_split(dataframe):
-    """
-    Split dataframe in healthy (control) and autistic subjects groups
+    """Split dataframe in healthy (control) and autistic subjects groups
+
+    Parameters
+    ----------
+    dataframe : type
+        Description of parameter `dataframe`.
+
+    Returns
+    -------
+    type
+        Description of returned object.
+
     """
     df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
     df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
@@ -54,8 +64,18 @@ harmonize_list = ["raw", "combat", "neuro"]
 
 
 def run_linearmodel(dataframe):
-    """
-    Define dictonary in which searching the best set of hyperparameters
+    """ Define dictonary in which searching the best set of hyperparameters
+
+    Parameters
+    ----------
+    dataframe : type
+        Description of parameter `dataframe`.
+
+    Returns
+    -------
+    type
+        Description of returned object.
+
     """
     hyparams = {"Feature__k": [10, 20, 30],
                 "Feature__score_func":[f_regression]}
@@ -120,8 +140,18 @@ def run_linearmodel(dataframe):
 
 
 def run_gaussianmodel(dataframe):
-    """
-    Define dictonary in which searching the best set of hyperparameters
+    """Define dictonary in which searching the best set of hyperparameters
+
+    Parameters
+    ----------
+    dataframe : type
+        Description of parameter `dataframe`.
+
+    Returns
+    -------
+    type
+        Description of returned object.
+
     """
     hyparams = {
         # "Model__kernel": [200, 300, 400, 500],
