@@ -79,7 +79,7 @@ class Regression:
         MAE=[]
         for train_index, test_index in cv.split(X, y_bins):
             predict_y=model.fit(X[train_index], y[train_index]).predict(X[test_index])
-            print('MSE:',mean_squared_error(y[test_index], predict_y, squared=False))
+            print('MSE: %.3f' % mean_squared_error(y[test_index], predict_y, squared=False))
             MSE.append(mean_squared_error(y[test_index], predict_y, squared=False))
             MAE.append(mean_absolute_error(y[test_index], predict_y))
         return y[test_index],predict_y, np.mean(MSE), np.mean(MAE)
