@@ -8,6 +8,7 @@ from keras import backend as K
 from keras.utils.generic_utils import get_custom_objects
 
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -97,38 +98,36 @@ class Outliers:
         """
         x_train_pred = self.model.predict(self.X_train)
         x_test_pred = self.model.predict(self.X_test)
-        train_mae_loss = np.mean(
-            np.abs(x_train_pred - np.array(self.X_train)), axis=1
-        ).reshape((-1))
-        test_mae_loss = np.mean(np.abs(x_test_pred - np.array(self.X_test)), axis=1).reshape(
-            (-1)
-        )
-        anomalies = (test_mae_loss >= 0.5 * np.max(train_mae_loss)).tolist()
-        histogram = train_mae_loss.flatten()
-        print("Number of anomaly samples: ", np.sum(anomalies))
-        print("Indices of anomaly samples: ", np.where(anomalies))
-        print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
-        x_train_pred = self.model.predict(self.X_train)
+        train_mae_loss = np.mean(np.abs(x_train_pred - np.array(self.X_train)), axis=1).reshape((-1))
+        train_mse_loss = (np.square(np.subtract(np.array(self.X_train), x_train_pred)).mean(axis = 1))
+        test_mae_loss = np.mean(np.abs(x_test_pred - np.array(self.X_test)), axis=1).reshape((-1))
+        test_mse_loss = (np.square(np.subtract(np.array(self.X_test), x_test_pred)).mean(axis = 1))
+        anomalies = (test_mse_loss >= np.max(train_mse_loss)).tolist()
 
-        histogram = train_mae_loss.flatten()
-        plt.hist(histogram, label="MAE Loss")
-
-        plt.title("Mean Absolute Error Loss")
-        plt.xlabel("Training MAE Loss (%)")
-        plt.ylabel("Number of Samples")
+        histogram_train = train_mse_loss
+        print(train_mse_loss)
+        plt.figure(1)
+        plt.hist(x = histogram_train, density = True, bins = 1000, label = 'MSE Loss')
+        plt.title='Mean Absolute Error Loss'
+        plt.xlabel="Training MSE Loss (%)"
+        plt.ylabel="Number of Samples"
         plt.show()
 
-        # histogram1 = test_mae_loss.flatten()
-        # plt.hist(histogram1,
-        #                               label = 'MAE Loss')
+        histogram_test = train_mse_loss
+        print(test_mse_loss)
+        plt.figure(2)
+        plt.hist(x = histogram_test, density = True, bins = 1000, label = 'MSE Loss')
+        plt.title='Mean Absolute Error Loss'
+        plt.xlabel="Testing MSE Loss (%)"
+        plt.ylabel="Number of Samples"
+        plt.show()
 
-        # plt.title('Mean Absolute Error Loss')
-        # plt.xlabel("Test MAE Loss (%)")
-        # plt.ylabel("Number of Samples")
+        print("Number of anomaly samples: ", np.sum(anomalies))
+        print("Indices of anomaly samples: ", np.where(anomalies))
+        print("Reconstruction MAE error threshold: {} ".format(np.max(train_mae_loss)))
+        print("Reconstruction MSE error threshold: {} ".format(np.max(train_mse_loss)))
 
-        print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
-
-        return plt.show()
+        return
 
 
 if __name__ == "__main__":
