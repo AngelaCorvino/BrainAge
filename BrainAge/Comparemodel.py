@@ -24,7 +24,7 @@ from sklearn.model_selection import train_test_split
 
 from regression import Regression
 from features import Preprocessing
-from deeplearning import Deep
+from outliers import Outliers
 
 ############################################################### FUNCTIONS
 def file_split(dataframe):
