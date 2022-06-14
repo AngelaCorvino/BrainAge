@@ -84,21 +84,13 @@ class Outliers:
         x_train_pred = model.predict(X_train)
 
         histogram = train_mae_loss.flatten()
-<<<<<<< HEAD
         plt.hist(histogram, label="MAE Loss")
 
         plt.title("Mean Absolute Error Loss")
-=======
-        plt.hist(histogram,
-                                       label = 'MAE Loss')
-
-        plt.title('Mean Absolute Error Loss')
->>>>>>> d04dd51d29dc855d99575c3ae3336e7f0ace3396
         plt.xlabel("Training MAE Loss (%)")
         plt.ylabel("Number of Samples")
         plt.show()
 
-<<<<<<< HEAD
         # histogram1 = test_mae_loss.flatten()
         # plt.hist(histogram1,
         #                               label = 'MAE Loss')
@@ -106,17 +98,6 @@ class Outliers:
         # plt.title('Mean Absolute Error Loss')
         # plt.xlabel("Test MAE Loss (%)")
         # plt.ylabel("Number of Samples")
-=======
-
-        #histogram1 = test_mae_loss.flatten()
-        #plt.hist(histogram1,
-        #                               label = 'MAE Loss')
-
-        #plt.title('Mean Absolute Error Loss')
-        #plt.xlabel("Test MAE Loss (%)")
-        #plt.ylabel("Number of Samples")
-
->>>>>>> d04dd51d29dc855d99575c3ae3336e7f0ace3396
 
         print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
 
