@@ -187,11 +187,13 @@ models = [
     SVR(),
 ]
 
+
 hyperparams = [
     {
-        "Feature__k": [100, 200, "all"],
+        "Feature__k": [50,100, 200, "all"],
         "Feature__score_func": [f_regression],
-        "Model__epochs": [10, 20],
+        "Model__epochs": [100, 200],
+        "Model__drop_rate": [0.2,0.4,0.6],
     },
     {
         "Feature__k": [10, 20, 30],
@@ -222,6 +224,7 @@ hyperparams = [
         "Feature__score_func": [f_regression],
         "Model__kernel": ["linear", "rbf", "poly"],
         "Model__degree": [3, 4],
+        "Model__random_state": [18],
     },
 ]
 ###############################################################################
