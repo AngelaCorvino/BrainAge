@@ -116,7 +116,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
         This cross validation is done using StratifiedKFold
     """
 
-    model_fit, y_test, predict_y, MSE, MAE,PR = regression.stratified_k_fold(
+    model_fit, y_test, predict_y, MSE, MAE, PR = regression.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
     """
@@ -144,12 +144,12 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
         f"MSE= {round(MSE,3)}",
         fontsize=14,
     )
-    # plt.text(
-    #     y_test.max() - 18,
-    #     predict_y.max() - 16,
-    #     f"PR= {round(PR,3)}",
-    #     fontsize=14,
-    # )
+    plt.text(
+        y_test.max() - 18,
+        predict_y.max() - 16,
+        f"PR= {round(PR,3)}",
+        fontsize=14,
+    )
     plt.text(
         y_test.max() - 18, predict_y.max() - 20, f"MAE= {round(MAE,3)}", fontsize=14
     )

@@ -105,7 +105,9 @@ class Regression:
             print("MAE: %.3f" % mean_absolute_error(y[test_index], predict_y))
             MSE.append(mean_squared_error(y[test_index], predict_y, squared=True))
             MAE.append(mean_absolute_error(y[test_index], predict_y))
-            PR.append(pearsonr(y[test_index],predict_y)[0])
+            y[test_index] = np.squeeze(y[test_index])
+            predict_y = np.squeeze(predict_y)
+            PR.append(pearsonr(y[test_index], predict_y)[0])
         return (
             model,
             y[test_index],
@@ -126,7 +128,7 @@ if __name__ == "__main__":
 
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    df = prep(df, "combat")
+    df = prep(df, "combat", False)
     df_TD, df_ASD = file_split(df)
     reg = Regression()
     model = LinearRegression()
