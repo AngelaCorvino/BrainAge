@@ -89,7 +89,8 @@ To use our Python codes the following packages are needed: numpy, scikit-learn, 
 Clone the directory 
 
 #Step 2: Remove outliers
-Run the python code outliers.py which identify the poutliers and remove them.
+Run the python code outliers.py 
+-identify the outliers and remove them.
 
 
 #Step3 : Compare model on control subjects 
