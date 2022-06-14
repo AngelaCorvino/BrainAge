@@ -2,16 +2,20 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
-pd.set_option('display.max_rows',None)
+
 from neuroHarmonize import harmonizationLearn
 from neuroCombat import neuroCombat
+
+pd.set_option("display.max_rows", None)
+
 
 
 class Preprocessing:
     """
     Class containing functions for data
     """
-    def __call__(self, dataframe, harmonize_option, plot_option = True):
+
+    def __call__(self, dataframe, harmonize_option, plot_option=True):
         """
         Allows to you call an istance as a function.
 
@@ -33,33 +37,43 @@ class Preprocessing:
         """
         self.add_features(dataframe)
         self.add_age_binning(dataframe)
-        #PLOTTING DATA
+        # PLOTTING DATA
         if plot_option == True:
-            self.plot_boxplot(dataframe,'SITE','AGE_AT_SCAN')
-            self.plot_histogram(dataframe, 'AGE_AT_SCAN')
+            self.plot_boxplot(dataframe, "SITE", "AGE_AT_SCAN")
+            self.plot_histogram(dataframe, "AGE_AT_SCAN")
         self.self_normalize(dataframe)
-        #HARMONIZING DATA
-        if harmonize_option == 'raw':
-            dataframe = dataframe.drop(['FILE_ID','SITE'], axis = 1)
+        # HARMONIZING DATA
+        if harmonize_option == "raw":
+            dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
             return dataframe
-            
-        elif harmonize_option == 'combat':
+
+        elif harmonize_option == "combat":
             dataframe = self.add_site_binning(dataframe)
             try:
-                assert np.sum(np.sum(dataframe.isna())) == 0, 'There are NaN values in the dataframe!'
-                assert np.sum(np.sum(dataframe.isnull())) == 0, 'There are Null values in the dataframe!'
+                assert (
+                    np.sum(np.sum(dataframe.isna())) == 0
+                ), "There are NaN values in the dataframe!"
+                assert (
+                    np.sum(np.sum(dataframe.isnull())) == 0
+                ), "There are Null values in the dataframe!"
             except AssertionError as msg:
                 print(msg)
-            dataframe_combat = self.com_harmonize(dataframe.drop(['FILE_ID','SITE'], axis = 1), confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN')
-            dataframe_combat = dataframe_combat.drop(['SITE_CLASS'], axis = 1)
+            dataframe_combat = self.com_harmonize(
+                dataframe.drop(["FILE_ID", "SITE"], axis=1),
+                confounder="SITE_CLASS",
+                covariate="AGE_AT_SCAN",
+            )
+            dataframe_combat = dataframe_combat.drop(["SITE_CLASS"], axis=1)
 
             return dataframe_combat
-        elif harmonize_option == 'neuro':
-            dataframe_neuro = self.neuro_harmonize(dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN')
+        elif harmonize_option == "neuro":
+            dataframe_neuro = self.neuro_harmonize(
+                dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"
+            )
 
             return dataframe_neuro
 
-    #def __str__(self):
+    # def __str__(self):
     #    return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(df.size, df.shape, df.head(5))
 
     def read_file(self, file_url):
@@ -70,7 +84,8 @@ class Preprocessing:
         ----------
 
         file_url : string-like
-                   The string containing data adress to be passed to Preprocessing.
+                   The string containing data adress to be passed to
+                   Preprocessing.
 
         Returns
         -------
@@ -78,7 +93,7 @@ class Preprocessing:
         dataframe : dataframe-like
                     The dataframe of raw data.
         """
-        dataframe = pd.read_csv(file_url, sep = ";")
+        dataframe = pd.read_csv(file_url, sep=";")
         return dataframe
 
     def add_features(self, dataframe):
@@ -91,10 +106,12 @@ class Preprocessing:
         dataframe : dataframe-like
                     The dataframe of raw data  to be passed to the function.
         """
-        dataframe['TotalWhiteVol'] = dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
-        dataframe['SITE'] = dataframe.FILE_ID.apply(lambda x: x.split('_')[0])
-        dataframe = dataframe.drop(['FILE_ID'], axis = 1)
-        return
+        dataframe["TotalWhiteVol"] = (
+            dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
+        )
+        dataframe["SITE"] = dataframe.FILE_ID.apply(lambda x: x.split("_")[0])
+        dataframe = dataframe.drop(["FILE_ID"], axis=1)
+
 
     def add_age_binning(self, dataframe):
         """
@@ -107,10 +124,14 @@ class Preprocessing:
                     The dataframe of data to be passed to the function.
         """
         bins = 6
-        dataframe['AGE_CLASS'] = pd.qcut(dataframe.AGE_AT_SCAN, bins, labels = [x for x in range(1, bins+1)])
-        return
+        dataframe["AGE_CLASS"] = pd.qcut(
+            dataframe.AGE_AT_SCAN, bins, labels=[x for x in range(1, bins + 1)]
+        )
 
-    def add_site_binning(self, dataframe): #capire se si può fare senza return come add_age_binning
+
+    def add_site_binning(
+        self, dataframe
+    ):  # capire se si può fare senza return come add_age_binning
         """
         Creates a map  where SITE  is binned in the column SITE_CLASS and then merges it with the dataframe.
 
@@ -120,12 +141,23 @@ class Preprocessing:
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         """
-        try :
-            sites = dataframe['SITE'].value_counts(dropna = False, sort = False).keys().to_list()
-            maps = (pd.DataFrame({'SITE_CLASS': [x for x in range(1, len(sites)+1)], 'SITE': sites}).explode('SITE').reset_index(drop=True))
-            dataframe = dataframe.join(maps.set_index('SITE'), on='SITE')
+        try:
+            sites = (
+                dataframe["SITE"]
+                .value_counts(dropna=False, sort=False)
+                .keys()
+                .to_list()
+            )
+            maps = (
+                pd.DataFrame(
+                    {"SITE_CLASS": [x for x in range(1, len(sites) + 1)], "SITE": sites}
+                )
+                .explode("SITE")
+                .reset_index(drop=True)
+            )
+            dataframe = dataframe.join(maps.set_index("SITE"), on="SITE")
         except KeyError:
-             print("Column SITE does not exist")
+            print("Column SITE does not exist")
         return dataframe
 
     def plot_histogram(self, dataframe, feature):
@@ -140,9 +172,8 @@ class Preprocessing:
         feature : string-like
                   The feature to plot the histogram of.
         """
-        dataframe[dataframe.loc[:, feature]>0].hist([feature])
+        dataframe[dataframe.loc[:, feature] > 0].hist([feature])
         plt.show()
-        return
 
     def plot_boxplot(self, dataframe, featurex, featurey):
         """
@@ -158,13 +189,13 @@ class Preprocessing:
         featurey : string-like
                    The feature in the y-axis of the boxplot.
         """
-        sns_boxplot = sns.boxplot(x = featurex, y = featurey, data = dataframe)
-        sns_boxplot.set_xticklabels(labels = sns_boxplot.get_xticklabels(), rotation=50)
+        sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=dataframe)
+        sns_boxplot.set_xticklabels(labels=sns_boxplot.get_xticklabels(), rotation=50)
         sns_boxplot.grid()
-        sns_boxplot.set_title('Box plot of '+ featurey + ' by ' + featurex)
+        sns_boxplot.set_title("Box plot of " + featurey + " by " + featurex)
         sns_boxplot.set_ylabel(featurey)
         plt.show()
-        return
+
 
     def self_normalize(self, dataframe):
         """
@@ -177,20 +208,30 @@ class Preprocessing:
                     The dataframe of data to be passed to the function.
 
         """
-        #Surface
-        column_list=dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]].columns.tolist()
-        dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]]=dataframe.loc[:,['SurfArea' in i for i in dataframe.columns]].divide(dataframe[column_list].sum(axis=1),axis=0)
+        # Surface
+        column_list = dataframe.loc[
+            :, ["SurfArea" in i for i in dataframe.columns]
+        ].columns.tolist()
+        dataframe.loc[:, ["SurfArea" in i for i in dataframe.columns]] = dataframe.loc[
+            :, ["SurfArea" in i for i in dataframe.columns]
+        ].divide(dataframe[column_list].sum(axis=1), axis=0)
 
-        #Thickness
-        dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]]=dataframe.loc[:,['ThickAvg' in i for i in dataframe.columns]].divide((dataframe['lh_MeanThickness']+ dataframe['rh_MeanThickness']), axis=0)
-        #print(dataframe.iloc[:,:20])
+        # Thickness
+        dataframe.loc[:, ["ThickAvg" in i for i in dataframe.columns]] = dataframe.loc[
+            :, ["ThickAvg" in i for i in dataframe.columns]
+        ].divide(
+            (dataframe["lh_MeanThickness"] + dataframe["rh_MeanThickness"]), axis=0
+        )
+        # print(dataframe.iloc[:,:20])
 
-        #Volume
-        dataframe.loc[:,['Vol' in i for i in dataframe.columns]]=dataframe.loc[:,['Vol' in i for i in dataframe.columns]].divide((dataframe['TotalGrayVol']+ dataframe['TotalWhiteVol']), axis=0)
+        # Volume
+        dataframe.loc[:, ["Vol" in i for i in dataframe.columns]] = dataframe.loc[
+            :, ["Vol" in i for i in dataframe.columns]
+        ].divide((dataframe["TotalGrayVol"] + dataframe["TotalWhiteVol"]), axis=0)
 
         return
 
-    def neuro_harmonize(self, dataframe, confounder = 'SITE', covariate1 = 'AGE_AT_SCAN'):
+    def neuro_harmonize(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
         """
         Harmonize dataset with neuroHarmonize model:
         1-Load your data and all numeric covariates
@@ -213,17 +254,23 @@ class Preprocessing:
         """
         try:
             covars = dataframe[[confounder, covariate1]]
-            dataframe = dataframe.drop(['FILE_ID','SITE'], axis = 1)
-            #dataframe=dataframe.astype(np.float)
-            my_model, array_neuro_harmonized,s_data = harmonizationLearn(np.array(dataframe), covars, return_s_data = True)
+            dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
+            # dataframe=dataframe.astype(np.float)
+            my_model, array_neuro_harmonized, s_data = harmonizationLearn(
+                np.array(dataframe), covars, return_s_data=True
+            )
             df_neuro_harmonized = pd.DataFrame(array_neuro_harmonized)
             df_neuro_harmonized.columns = dataframe.keys()
-            df_neuro_harmonized[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']] = dataframe[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']]
-        except RuntimeWarning :
-            print( 'How can we solve this?')
+            df_neuro_harmonized[
+                ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ"]
+            ] = dataframe[["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ"]]
+        except RuntimeWarning:
+            print("How can we solve this?")
         return df_neuro_harmonized
 
-    def com_harmonize(self, dataframe, confounder = 'SITE_CLASS', covariate = 'AGE_AT_SCAN'):
+    def com_harmonize(
+        self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"
+    ):
         """
         Harmonize dataset with ComBat model
 
@@ -244,17 +291,19 @@ class Preprocessing:
                               The dataframe containing harmonized data
         """
         array_combat_harmonized = neuroCombat(
-            dat = dataframe.transpose(),
-            covars = dataframe[[confounder, covariate]],
-            batch_col = confounder
+            dat=dataframe.transpose(),
+            covars=dataframe[[confounder, covariate]],
+            batch_col=confounder,
         )["data"]
         df_combat_harmonized = pd.DataFrame(array_combat_harmonized.transpose())
         df_combat_harmonized.columns = dataframe.keys()
-        df_combat_harmonized[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']] = dataframe[['AGE_AT_SCAN','AGE_CLASS','DX_GROUP','SEX','FIQ']]
+        df_combat_harmonized[
+            ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ"]
+        ] = dataframe[["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ"]]
 
         return df_combat_harmonized
 
-    def feature_selection(self, dataframe, feature = 'AGE_AT_SCAN', plot_heatmap = False):
+    def feature_selection(self, dataframe, feature="AGE_AT_SCAN", plot_heatmap=False):
         """
         Gives a list of the feature whose correlation with the given feature is higher than 0.5.
 
@@ -267,7 +316,7 @@ class Preprocessing:
                   Target feature on which to compute correlation.
         plot_heatmap : boolean
                        If True, show heatmap of data correlation with feature. Default is False.
-                       
+
         Returns
         -------
 
@@ -277,7 +326,7 @@ class Preprocessing:
         y : series-like?
         """
         agecorr = dataframe.corr()[feature]
-        listoffeatures = agecorr[np.abs(agecorr)>0.5].keys()
+        listoffeatures = agecorr[np.abs(agecorr) > 0.5].keys()
         if plot_heatmap == True:
             dataframe_restricted = dataframe[listoffeatures]
             heatmap = sns.heatmap(dataframe_restricted.corr(), annot=True)
@@ -285,14 +334,15 @@ class Preprocessing:
         listoffeatures = listoffeatures.drop(feature)
         X = dataframe[listoffeatures]
         y = dataframe[feature]
-        return  listoffeatures, X, y
+        return listoffeatures, X, y
+
 
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    df1 = prep(df, 'raw', plot_option = False)
-    df2 = prep(df, 'neuro', plot_option = False)
-    df3 = prep(df, 'combat', plot_option = False)
-    #print(df1)
-    #print(df2)
-    #print(df3)
+    df1 = prep(df, "raw", plot_option=False)
+    df2 = prep(df, "neuro", plot_option=False)
+    df3 = prep(df, "combat", plot_option=False)
+    # print(df1)
+    # print(df2)
+    # print(df3)

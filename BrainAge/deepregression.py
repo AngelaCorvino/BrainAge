@@ -1,12 +1,14 @@
 from keras.layers import Dense, Dropout, Input, Flatten
 from keras.models import Model, load_model
-from sklearn.model_selection import train_test_split
-from sklearn.base    import BaseEstimator
+
+from sklearn.base import BaseEstimator
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
+
 
 from features import Preprocessing
+
+
 class DeepRegression(BaseEstimator):
     """
 
@@ -35,8 +37,7 @@ class DeepRegression(BaseEstimator):
         plot_loss=False,
     ):
         self.epochs = epochs
-        self.plot_loss = plot_loss # io toglierei anche questi attributi, passandoli direttamente alle funzioni che li usano
-
+        self.plot_loss = plot_loss  # io toglierei anche questi attributi, passandoli direttamente alle funzioni che li usano
 
     def fit(self, X, y):
         """
@@ -55,44 +56,54 @@ class DeepRegression(BaseEstimator):
             Fitted Estimator.
         """
         inputs = Input(shape=X.shape[1])
-        hidden = Dense(128, activation ='relu')(inputs)
-        hidden = Dense(12, activation ='relu')(hidden)
-        hidden = Dense(12, activation ='relu')(hidden)
-        hidden = Dense(12, activation ='relu')(hidden)
-        outputs = Dense(1, activation ='linear')(hidden)
+        hidden = Dense(128, activation="relu")(inputs)
+        hidden = Dense(12, activation="relu")(hidden)
+        hidden = Dense(12, activation="relu")(hidden)
+        hidden = Dense(12, activation="relu")(hidden)
+        outputs = Dense(1, activation="linear")(hidden)
 
         self.model = Model(inputs=inputs, outputs=outputs)
-        self.model.compile(loss = 'mean_absolute_error', optimizer = 'adam', metrics=['MAE'])
+        self.model.compile(
+            loss="mean_absolute_error", optimizer="adam", metrics=["MAE"]
+        )
         self.model.summary()
-        history = self.model.fit(X, y, validation_split = 0.3, epochs = self.epochs, batch_size = 50, verbose = 0)
+        history = self.model.fit(
+            X, y, validation_split=0.3, epochs=self.epochs, batch_size=50, verbose=0
+        )
         return self
 
-        if self.plot_loss==True:
-            '''
-            This parameter allows to plot the training and validation loss curves of the trained model,
-            enabling visual diagnosis of underfitting (bias) or overfitting (variance).
+        if self.plot_loss == True:
+            """
+            This parameter allows to plot the training and validation loss
+            curves of the trained model, enabling visual diagnosis of
+            underfitting (bias) or overfitting (variance).
 
 
             Returns
             -------
-            fig: a visual representation of the model's training loss and validation
-            loss curves.
-            '''
-            print('problem here')
-            training_validation_loss = pd.DataFrame.from_dict(history.history, orient='columns')
+            fig: a visual representation of the model's training loss and
+            validation loss curves.
+            """
+            print("problem here")
+            training_validation_loss = pd.DataFrame.from_dict(
+                history.history, orient="columns"
+            )
 
             plt.figure(figsize=(8, 8))
-            plt.scatter(training_validation_loss.index,training_validation_loss["loss"],
-                   marker='.',
-                   label= 'Training Loss',
-                   )
-            plt.scatter(training_validation_loss.index,training_validation_loss["val_loss"],
-                marker='.',
-                label = 'Validation Loss',
-                    )
+            plt.scatter(
+                training_validation_loss.index,
+                training_validation_loss["loss"],
+                marker=".",
+                label="Training Loss",
+            )
+            plt.scatter(
+                training_validation_loss.index,
+                training_validation_loss["val_loss"],
+                marker=".",
+                label="Validation Loss",
+            )
 
-
-            plt.title('Training and Validation Loss')
+            plt.title("Training and Validation Loss")
             plt.xlabel("Epoch")
             plt.ylabel("Loss")
             plt.legend()
@@ -100,8 +111,6 @@ class DeepRegression(BaseEstimator):
 
     def predict(self, X):
         return self.model.predict(X)
-
-
 
         #     def reconstruction_error(self,model):
         # """
@@ -128,9 +137,11 @@ class DeepRegression(BaseEstimator):
         # print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
         #
         # return plt.show()
+
+
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    dataframe = prep(df, 'raw', False)
-    a=DeepRegression(epochs=10)
-    a.fit(dataframe.drop(['AGE_AT_SCAN'],axis=1), dataframe['AGE_AT_SCAN'])
+    dataframe = prep(df, "raw", False)
+    a = DeepRegression(epochs=10)
+    a.fit(dataframe.drop(["AGE_AT_SCAN"], axis=1), dataframe["AGE_AT_SCAN"])

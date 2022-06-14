@@ -70,24 +70,24 @@ class Outliers:
         histogram = train_mae_loss.flatten()
         plt.hist(histogram,
                                        label = 'MAE Loss')
-        
+
         plt.title('Mean Absolute Error Loss')
         plt.xlabel("Training MAE Loss (%)")
         plt.ylabel("Number of Samples")
         plt.show()
-        
-        
+
+
         #histogram1 = test_mae_loss.flatten()
         #plt.hist(histogram1,
         #                               label = 'MAE Loss')
-        
+
         #plt.title('Mean Absolute Error Loss')
         #plt.xlabel("Test MAE Loss (%)")
         #plt.ylabel("Number of Samples")
-        
-        
+
+
         print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
-        
+
         return plt.show()
 
 
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
         df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
         return df_AS, df_TD
-    
+
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
     df = prep(df, 'neuro', plot_option = False)
@@ -106,5 +106,3 @@ if __name__ == "__main__":
     out = Outliers()
     model, history = out.make_autoencoder(X_train)
     out.outliers(model, X_train, X_test)
-    
-    
