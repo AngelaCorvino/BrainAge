@@ -1,10 +1,9 @@
+import pickle
 import seaborn as sns
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import pickle
 from scipy.stats import pearsonr
-# import verstack
+
 
 from sklearn.svm import SVR
 from sklearn.linear_model import LinearRegression
@@ -12,24 +11,14 @@ from sklearn.linear_model import Lasso
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.ensemble import RandomForestRegressor
 
-from sklearn.metrics import accuracy_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import RobustScaler
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_regression
-from sklearn.model_selection import GridSearchCV
+
 
 from regression import Regression
 from features import Preprocessing
 from deepregression import DeepRegression
-
-
-
-
 
 
 # FUNCTIONS
@@ -72,27 +61,27 @@ def run_model(dataframe, model, harmonize_option):
 
     """
 
-    with open('models/%s_%s_pkl'%(model.__class__.__name__,harmonize_option) , 'rb') as f:
-        model_fit= pickle.load(f)
+    with open(
+        "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "rb"
+    ) as f:
+        model_fit = pickle.load(f)
 
-
-    (x_train, x_test, y_train, y_test) = train_test_split(
-        dataframe.drop(["AGE_AT_SCAN",'SEX','DX_GROUP'], axis=1),
+    (_, x_test, _, y_test) = train_test_split(
+        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP"], axis=1),
         dataframe["AGE_AT_SCAN"],
         test_size=0.9,
         random_state=18,
     )
     print(y_test)
-    predict_y=model_fit.predict(x_test) # similar
-    MSE=mean_squared_error(y_test, predict_y)
-    MAE=mean_absolute_error(y_test, predict_y)
-    #PR=pearsonr(y_test,predict_y)[0]
-
+    predict_y = model_fit.predict(x_test)  # similar
+    MSE = mean_squared_error(y_test, predict_y)
+    MAE = mean_absolute_error(y_test, predict_y)
+    # PR=pearsonr(y_test,predict_y)[0]
 
     plt.figure(figsize=(8, 8))
     plt.scatter(y_test, predict_y, c="y")
-    plt.xlabel("Ground truth Age(years)",fontsize=18)
-    plt.ylabel("Predicted Age(years)",fontsize=18)
+    plt.xlabel("Ground truth Age(years)", fontsize=18)
+    plt.ylabel("Predicted Age(years)", fontsize=18)
     plt.plot(
         np.linspace(y_test.min(), predict_y.max(), 100),
         np.linspace(y_test.min(), predict_y.max(), 100),
@@ -116,17 +105,20 @@ def run_model(dataframe, model, harmonize_option):
     )
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
-            {}  with {} AD data".format(model.__class__.__name__,
-            harmonize_option),
-            fontsize=20,
+            {}  with {} AD   q12data".format(
+            model.__class__.__name__, harmonize_option
+        ),
+        fontsize=20,
     )
     plt.tick_params(axis="x", which="major", labelsize=18)
     plt.tick_params(axis="y", which="major", labelsize=18)
     plt.legend()
-    plt.savefig('images/AD%s_%s.png'%(model.__class__.__name__,harmonize_option), dpi=200, format='png')
-    #plt.show()
+    plt.savefig(
+        "images/AD%s_%s.png" % (model.__class__.__name__, harmonize_option),
+        dpi=200,
+        format="png",
+    )
 
-    return
 
 
 ########################################################PREPROCESSING
@@ -158,4 +150,4 @@ for harmonize_option in harmonize_list:
         """
         Predicting age of autistic subjects
         """
-        run_model(df_AS, model,harmonize_option)
+        run_model(df_AS, model, harmonize_option)
