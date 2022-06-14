@@ -116,7 +116,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
         This cross validation is done using StratifiedKFold
     """
 
-    model_fit, y_test, predict_y, MSE, MAE = regression.stratified_k_fold(
+    model_fit, y_test, predict_y, MSE, MAE,PR = regression.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
     """
