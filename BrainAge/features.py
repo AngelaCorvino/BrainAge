@@ -1,12 +1,6 @@
 import pandas as pd
 import seaborn as sns
 import numpy as np
-<<<<<<< HEAD
-from neuroHarmonize import harmonizationLearn
-from neuroCombat import neuroCombat
-
-import statsmodels.api as sm
-=======
 import matplotlib.pyplot as plt
 
 from neuroHarmonize import harmonizationLearn
@@ -14,21 +8,11 @@ from neuroCombat import neuroCombat
 
 pd.set_option("display.max_rows", None)
 
->>>>>>> main
 
 
 class Preprocessing:
     """
     Class containing functions for data
-<<<<<<< HEAD
-
-     Parameters
-    ----------
-    file_url : string-like
-        The string containing data adress to be passed to Preprocessing.
-
-=======
->>>>>>> main
     """
 
     def __call__(self, dataframe, harmonize_option, plot_option=True):
@@ -103,17 +87,6 @@ class Preprocessing:
                    The string containing data adress to be passed to
                    Preprocessing.
 
-<<<<<<< HEAD
-    def add_features(self, dataframe):
-        """
-        Add columns with derived features and drop useless column
-        """
-        dataframe['TotalWhiteVol'] = dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
-        dataframe['SITE'] = dataframe.FILE_ID.apply(lambda x: x.split('_')[0])
-        dataframe = dataframe.drop([ 'FILE_ID'], axis = 1)
-        return dataframe
-
-=======
         Returns
         -------
 
@@ -126,7 +99,6 @@ class Preprocessing:
     def add_features(self, dataframe):
         """
         Adds columns with derived features to dataframe.
->>>>>>> main
 
         Parameters
         ----------
@@ -143,12 +115,7 @@ class Preprocessing:
 
     def add_age_binning(self, dataframe):
         """
-<<<<<<< HEAD
-        dataframe['AGE_CLASS'] = pd.cut(dataframe.AGE_AT_SCAN, 6, labels = [x for x in range(6)])
-        return dataframe
-=======
         Creates a column called AGE_CLASS with AGE_AT_SCAN binning and attaches it to dataframe.
->>>>>>> main
 
         Parameters
         ----------
@@ -156,35 +123,6 @@ class Preprocessing:
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         """
-<<<<<<< HEAD
-        Create a map  where SITE  is binned in the column SITE_Class
-         and then merge it withe dataframe
-        """
-        try :
-            grouping_lists=['Caltech','CMU','KKI','Leuven','MaxMun','NYU',
-        'OHSU','Olin','Pitt','SBL','SDSU','Stanford','Trinity','UCLA', 'UM','USM','Yale']
-            labels=[x for x in range(len(grouping_lists))]
-
-            maps = (pd.DataFrame({'SITE_CLASS': labels, 'SITE': grouping_lists})
-            .explode('SITE')
-            .reset_index(drop=True))
-
-            dataframe = dataframe.merge(maps, on = 'SITE', how='left').fillna('Other')
-
-        except KeyError:
-             print("Column SITE does not exist")
-        return dataframe
-
-
-    def file_split(self, df):
-        """
-        Split dataframe in healthy (control) and autistic subjects groups
-        """
-        df_AS = df.loc[df.DX_GROUP == 1]
-        df_TD = df.loc[df.DX_GROUP == -1]
-        return df_AS, df_TD
-
-=======
         bins = 6
         dataframe["AGE_CLASS"] = pd.qcut(
             dataframe.AGE_AT_SCAN, bins, labels=[x for x in range(1, bins + 1)]
@@ -222,7 +160,6 @@ class Preprocessing:
             print("Column SITE does not exist")
         return dataframe
 
->>>>>>> main
     def plot_histogram(self, dataframe, feature):
         """
         Plots histogram of a given feature on the indicated dataframe, masking values <0.
@@ -294,22 +231,7 @@ class Preprocessing:
 
         return
 
-<<<<<<< HEAD
-    def neuro_harmonization(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
-        # load your data and all numeric covariates
-        covars = dataframe[[confounder, covariate1]]
-        dataframe = np.array(dataframe)
-
-        print(covars)
-        # run harmonization and store the adjusted data
-        my_model, df_neuroharmonized,s_data = harmonizationLearn(dataframe, covars,return_s_data=True)
-
-        return df_neuroharmonized
-
-    def com_harmonization(self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"):
-=======
     def neuro_harmonize(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
->>>>>>> main
         """
         Harmonize dataset with neuroHarmonize model:
         1-Load your data and all numeric covariates
@@ -350,13 +272,6 @@ class Preprocessing:
         self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"
     ):
         """
-<<<<<<< HEAD
-        dataframe=  dataframe.drop([ 'SITE'], axis = 1)
-        df_combat = neuroCombat(
-            dat = dataframe.transpose(),
-            covars = dataframe[[confounder, covariate]],
-            batch_col = confounder,
-=======
         Harmonize dataset with ComBat model
 
         Parameters
@@ -379,7 +294,6 @@ class Preprocessing:
             dat=dataframe.transpose(),
             covars=dataframe[[confounder, covariate]],
             batch_col=confounder,
->>>>>>> main
         )["data"]
         df_combat_harmonized = pd.DataFrame(array_combat_harmonized.transpose())
         df_combat_harmonized.columns = dataframe.keys()
@@ -426,34 +340,6 @@ class Preprocessing:
 if __name__ == "__main__":
 
     prep = Preprocessing()
-<<<<<<< HEAD
-
-    df = prep.file_reader("data/FS_features_ABIDE_males.csv")
-    df=prep.add_features(df)
-    print(df)
-    df=prep.add_binning(df)
-
-    df_combatharmonized=prep.com_harmonization(df)
-    #df_nueroharmonized=prep.neuro_harmonization(df)
-    print(df)
-
-    #for x,words in enumerate(df.SITE.values().tolist()):
-    #    print(x,words)
-    # grouping_lists=[x for x in enumerate (df.SITE.keys())]
-    # print(grouping_lists)
-    #
-    # df = df.drop([ 'FILE_ID','SITE'], axis = 1)
-    # print(df)
-    # df_combatharmonized= prep.com_harmonization(df)
-    # print(df_combatharmonized)
-
-
-    # prep.plot_histogram(df, 'AGE_AT_SCAN')
-    # (df_AS, df_TD) = prep.file_split(df)
-    #prep.plot_boxplot(df_TD, 'SITE', 'AGE_AT_SCAN')
-    # prep.add_binning(df)
-    # features, X, y = prep.feature_selection(df_TD)
-=======
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
     df1 = prep(df, "raw", plot_option=False)
     df2 = prep(df, "neuro", plot_option=False)
@@ -461,4 +347,3 @@ if __name__ == "__main__":
     # print(df1)
     # print(df2)
     # print(df3)
->>>>>>> main
