@@ -95,8 +95,8 @@ class Outliers:
         """
         Identifies ouliers using autoencoder.
         """
-        x_train_pred = model.predict(self.X_train)
-        x_test_pred = model.predict(self.X_test)
+        x_train_pred = self.model.predict(self.X_train)
+        x_test_pred = self.model.predict(self.X_test)
         train_mae_loss = np.mean(
             np.abs(x_train_pred - np.array(self.X_train)), axis=1
         ).reshape((-1))
@@ -108,18 +108,15 @@ class Outliers:
         print("Number of anomaly samples: ", np.sum(anomalies))
         print("Indices of anomaly samples: ", np.where(anomalies))
         print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
-        x_train_pred = model.predict(self.X_train)
+        x_train_pred = self.model.predict(self.X_train)
 
         histogram = train_mae_loss.flatten()
-
         plt.hist(histogram, label="MAE Loss")
 
         plt.title("Mean Absolute Error Loss")
-
         plt.xlabel("Training MAE Loss (%)")
         plt.ylabel("Number of Samples")
         plt.show()
-
 
         # histogram1 = test_mae_loss.flatten()
         # plt.hist(histogram1,
