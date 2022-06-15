@@ -45,7 +45,6 @@ class Preprocessing:
         #PROCESSING DATA
         if prep_option == "not_normalized":
             dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
-            print('ciao')
 
         elif prep_option == "normalized":
             self.self_normalize(dataframe)
@@ -58,17 +57,14 @@ class Preprocessing:
                 assert (
                     np.sum(np.sum(dataframe.isna())) == 0
                 ), "There are NaN values in the dataframe!"
-                assert (
-                    np.sum(np.sum(dataframe.isnull())) == 0
-                ), "There are Null values in the dataframe!"
             except AssertionError as msg:
                 print(msg)
-            dataframe_combat = self.com_harmonize(
+            dataframe = self.com_harmonize(
                 dataframe.drop(["FILE_ID", "SITE"], axis=1),
                 confounder="SITE_CLASS",
                 covariate="AGE_AT_SCAN",
             )
-            dataframe= dataframe.drop(["SITE_CLASS"], axis=1)
+            dataframe = dataframe.drop(["SITE_CLASS"], axis=1)
 
         elif prep_option == "neuro_harmonized":
             dataframe = self.neuro_harmonize(
@@ -374,8 +370,11 @@ if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
     df1 = prep(df, "not_normalized", plot_option=False)
-    df2 = prep(df, "neuro_harmonized", plot_option=False)
-    df3 = prep(df, "combat_harmonized", plot_option=False)
-    print(df1.sub(df2,axis=1))
-
-    print(df1)
+    df2 = prep(df, "normalized", plot_option=False)
+    df3 = prep(df, "neuro_harmonized", plot_option=False)
+    df4 = prep(df, "combat_harmonized", plot_option=False)
+    print(df1.shape)
+    print(df2.shape)
+    print(df3.shape)
+    print(df4.shape)
+    print(df1.drop(['AGE_CLASS'], axis = 1).sub(df3.drop(['AGE_CLASS'], axis = 1)).shape)
