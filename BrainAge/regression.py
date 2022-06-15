@@ -7,7 +7,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
-
+from sklearn.linear_model import LinearRegression
 from features import Preprocessing
 
 
@@ -103,20 +103,21 @@ class Regression:
         for train_index, test_index in cv.split(X, y_bins):
             predict_y = model.fit(X[train_index], y[train_index]).predict(X[test_index])
             print("MAE: %.3f" % mean_absolute_error(y[test_index], predict_y))
-            MSE.append(mean_squared_error(y[test_index], predict_y, squared=False))
+            MSE.append(mean_squared_error(y[test_index], predict_y, squared=True))
             MAE.append(mean_absolute_error(y[test_index], predict_y))
-            # PR.append(pearsonr(y[test_index],predict_y)[0])
+            y[test_index] = np.squeeze(y[test_index])
+            predict_y = np.squeeze(predict_y)
+            PR.append(pearsonr(y[test_index], predict_y)[0])
         return (
             model,
             y[test_index],
             predict_y,
             np.mean(MSE),
             np.mean(MAE),
-        )  # ,np.mean(PR,axis=0)
+            np.mean(PR,axis=0))
 
 
 if __name__ == "__main__":
-
     def file_split(dataframe):
         """
         Split dataframe in healthy (control) and autistic subjects groups
@@ -127,11 +128,11 @@ if __name__ == "__main__":
 
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    df = prep(df, "combat")
+    df = prep(df, "combat", False)
     df_TD, df_ASD = file_split(df)
     reg = Regression()
     model = LinearRegression()
-    test_y, predict_y, MSE, MAE, PR = reg.stratified_k_fold(
+    model_fit,test_y, predict_y, MSE, MAE, PR = reg.stratified_k_fold(
         df_TD.drop(["AGE_AT_SCAN"], axis=1),
         df_TD["AGE_AT_SCAN"],
         df_TD["AGE_CLASS"],
