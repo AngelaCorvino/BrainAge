@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 import pandas as pd
 import seaborn as sns
 import numpy as np
@@ -15,7 +16,7 @@ class Preprocessing:
     Class containing functions for data
     """
 
-    def __call__(self, dataframe, harmonize_option, plot_option=True):
+    def __call__(self, dataframe, prep_option, plot_option=True):
         """
         Allows to you call an istance as a function.
 
@@ -24,7 +25,7 @@ class Preprocessing:
 
         dataframe : dataframe-like
                     The dataframe of raw data  to be passed to the preprocessing class.
-        harmonize_option : string-like
+        prep_option : string-like
                            String containing one of the options: 'raw', 'combat', 'neuro'.
         plot_option : boolean
                       If True shows some plots of data. Default is True
@@ -41,16 +42,17 @@ class Preprocessing:
         if plot_option == True:
             self.plot_boxplot(dataframe, "SITE", "AGE_AT_SCAN")
             self.plot_histogram(dataframe, "AGE_AT_SCAN")
-        if harmonize_option == "not_normalized":
+        #PROCESSING DATA
+        if prep_option == "not_normalized":
             dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
-            return dataframe
-        self.self_normalize(dataframe)
-        # HARMONIZING DATA
-        if harmonize_option == "raw":
-            dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
-            return dataframe
+            print('ciao')
 
-        elif harmonize_option == "combat":
+        elif prep_option == "normalized":
+            self.self_normalize(dataframe)
+            dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
+
+        elif prep_option == "combat_harmonized":
+            self.self_normalize(dataframe)
             dataframe = self.add_site_binning(dataframe)
             try:
                 assert (
@@ -66,15 +68,14 @@ class Preprocessing:
                 confounder="SITE_CLASS",
                 covariate="AGE_AT_SCAN",
             )
-            dataframe_combat = dataframe_combat.drop(["SITE_CLASS"], axis=1)
+            dataframe= dataframe.drop(["SITE_CLASS"], axis=1)
 
-            return dataframe_combat
-        elif harmonize_option == "neuro":
-            dataframe_neuro = self.neuro_harmonize(
+        elif prep_option == "neuro_harmonized":
+            dataframe = self.neuro_harmonize(
                 dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"
             )
 
-            return dataframe_neuro
+        return dataframe
 
     # def __str__(self):
     #    return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(df.size, df.shape, df.head(5))
@@ -98,11 +99,11 @@ class Preprocessing:
         """
         dataframe = pd.read_csv(file_url, sep=";")
         return dataframe
-        
+
     def split_file(self, dataframe):
         """
         Splits dataframe in ASD cases and controls.
-        
+
         Parameters
         ----------
 
@@ -114,7 +115,7 @@ class Preprocessing:
 
         df_AS : dataframe-like
                 The dataframe containing ASD cases.
-        
+
         df_TD : dataframe-like
                 The dataframe containing controls.
 
@@ -258,7 +259,7 @@ class Preprocessing:
 
         return
 
-    def neuro_harmonize(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
+    def neuro_harmonize(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN",boxplot=False):
         """
         Harmonize dataset with neuroHarmonize model:
         1-Load your data and all numeric covariates
@@ -293,6 +294,10 @@ class Preprocessing:
             ] = dataframe[["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ"]]
         except RuntimeWarning:
             print("How can we solve this?")
+
+        if boxplot==True:
+            self.plot_boxplot(df_neuro_harmonized,df_neuro_harmonized['SITE_CLASS'],df_neuro_harmonized["lh_MeanThickness"])
+            self.plot_boxplot(dataframe,dataframe['SITE_CLASS'],dataframe["lh_MeanThickness"])
         return df_neuro_harmonized
 
     def com_harmonize(
@@ -368,9 +373,9 @@ if __name__ == "__main__":
 
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    df1 = prep(df, "raw", plot_option=False)
-    df2 = prep(df, "neuro", plot_option=False)
-    df3 = prep(df, "combat", plot_option=False)
-    # print(df1)
-    # print(df2)
-    # print(df3)
+    df1 = prep(df, "not_normalized", plot_option=False)
+    df2 = prep(df, "neuro_harmonized", plot_option=False)
+    df3 = prep(df, "combat_harmonized", plot_option=False)
+    print(df1.sub(df2,axis=1))
+
+    print(df1)

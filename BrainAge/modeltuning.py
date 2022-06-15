@@ -210,7 +210,7 @@ hyperparams = [
     },
 ]
 ###############################################################################
-harmonize_list = ["raw", "combat", "neuro"]
+harmonize_list = ["normalized", "combat_harmonized", "neuro_harmonized"]
 for harmonize_option in harmonize_list:
     """
     Compare different harmonization techniques
