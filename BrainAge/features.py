@@ -45,6 +45,10 @@ class Preprocessing:
         #PROCESSING DATA
         if prep_option == "not_normalized":
             dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
+<<<<<<< HEAD
+=======
+
+>>>>>>> b26c0b0c1b9ac9c9bade134281320ce27149edba
 
         elif prep_option == "normalized":
             self.self_normalize(dataframe)
@@ -52,7 +56,8 @@ class Preprocessing:
 
         elif prep_option == "combat_harmonized":
             self.self_normalize(dataframe)
-            dataframe = self.add_site_binning(dataframe)
+            dataframe=self.add_site_binning(dataframe)
+            print(dataframe['SITE_CLASS'])
             try:
                 assert (
                     np.sum(np.sum(dataframe.isna())) == 0
@@ -135,6 +140,7 @@ class Preprocessing:
         )
         dataframe["SITE"] = dataframe.FILE_ID.apply(lambda x: x.split("_")[0])
         dataframe = dataframe.drop(["FILE_ID"], axis=1)
+        df["FIQ"] = df["FIQ"].where(df["FIQ"] > 0, 0)
 
 
     def add_age_binning(self, dataframe):
@@ -183,6 +189,7 @@ class Preprocessing:
         except KeyError:
             print("Column SITE does not exist")
         return dataframe
+
 
     def plot_histogram(self, dataframe, feature):
         """
@@ -253,7 +260,7 @@ class Preprocessing:
             :, ["Vol" in i for i in dataframe.columns]
         ].divide((dataframe["TotalGrayVol"] + dataframe["TotalWhiteVol"]), axis=0)
 
-        return
+
 
     def neuro_harmonize(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN",boxplot=False):
         """
@@ -371,6 +378,7 @@ if __name__ == "__main__":
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
     df1 = prep(df, "not_normalized", plot_option=False)
     df2 = prep(df, "normalized", plot_option=False)
+<<<<<<< HEAD
     df3 = prep(df, "neuro_harmonized", plot_option=False)
     df4 = prep(df, "combat_harmonized", plot_option=False)
     print(df1.shape)
@@ -378,3 +386,10 @@ if __name__ == "__main__":
     print(df3.shape)
     print(df4.shape)
     print(df1.drop(['AGE_CLASS'], axis = 1).sub(df3.drop(['AGE_CLASS'], axis = 1)).shape)
+=======
+    df3 = prep(df, "combat_harmonized", plot_option=False)
+    #print(df1.sub(df2,axis=0))
+
+    print(df1)
+    print(df2)
+>>>>>>> b26c0b0c1b9ac9c9bade134281320ce27149edba

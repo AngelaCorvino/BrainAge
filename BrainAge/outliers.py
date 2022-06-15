@@ -69,7 +69,24 @@ class Outliers:
         self.model = self.make_autoencoder()
 
     def __call__(self, epochs, nbins, plot=True):
-        """ """
+        """Short summary.
+
+        Parameters
+        ----------
+        epochs : type
+            Description of parameter `epochs`.
+        nbins : type
+            Description of parameter `nbins`.
+        plot : type
+            Description of parameter `plot`.
+
+        Returns
+        -------
+        type
+            Description of returned object.
+
+        """
+
         self.fit_autoencoder(epochs)
         indexes = self.outliers(nbins)
         if plot is True:
@@ -107,6 +124,19 @@ class Outliers:
         return model
 
     def fit_autoencoder(self, epochs):
+        """Short summary.
+
+        Parameters
+        ----------
+        epochs : type
+            Description of parameter `epochs`.
+
+        Returns
+        -------
+        type
+            Description of returned object.
+
+        """
         history = self.model.fit(
             self.X_train,
             self.X_train,
@@ -118,8 +148,18 @@ class Outliers:
         return history
 
     def outliers(self, nbins):
-        """
-        Identifies ouliers using autoencoder.
+        """Identifies ouliers using autoencoder.
+
+        Parameters
+        ----------
+        nbins : type
+            Description of parameter `nbins`.
+
+        Returns
+        -------
+        type
+            Description of returned object.
+
         """
         x_pred = self.model.predict(self.X_train)
 
@@ -191,6 +231,23 @@ class Outliers:
         return indexes
 
     def plot_distribution(self, dataframe, indexes, feature):
+        """Short summary.
+
+        Parameters
+        ----------
+        dataframe : type
+            Description of parameter `dataframe`.
+        indexes : type
+            Description of parameter `indexes`.
+        feature : type
+            Description of parameter `feature`.
+
+        Returns
+        -------
+        type
+            Description of returned object.
+
+        """
         y = dataframe.iloc[indexes]
         bins = int(max(y[feature]) - min(y[feature]))
         plt.figure(2)
@@ -208,6 +265,21 @@ class Outliers:
         return plt.show()
 
     def clean_dataframe(self, dataframe, indexes):
+        """Short summary.
+
+        Parameters
+        ----------
+        dataframe : type
+            Description of parameter `dataframe`.
+        indexes : type
+            Description of parameter `indexes`.
+
+        Returns
+        -------
+        type
+            Description of returned object.
+
+        """
         y = dataframe.iloc[indexes]
         clean = dataframe.drop(index=y.index)
         return clean
