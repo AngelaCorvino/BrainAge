@@ -64,16 +64,17 @@ class Preprocessing:
                 ), "There are Null values in the dataframe!"
             except AssertionError as msg:
                 print(msg)
-            dataframe_combat = self.com_harmonize(
+            dataframe= self.com_harmonize(
                 dataframe.drop(["FILE_ID", "SITE"], axis=1),
                 confounder="SITE_CLASS",
                 covariate="AGE_AT_SCAN",
+                boxplot=True,
             )
             dataframe= dataframe.drop(["SITE_CLASS"], axis=1)
 
         elif prep_option == "neuro_harmonized":
             dataframe = self.neuro_harmonize(
-                dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"
+                dataframe, confounder="SITE", covariate1="AGE_AT_SCAN",boxplot=True,
             )
 
         return dataframe
@@ -304,7 +305,7 @@ class Preprocessing:
         return df_neuro_harmonized
 
     def com_harmonize(
-        self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"
+        self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN",boxplot=False,
     ):
         """
         Harmonize dataset with ComBat model
@@ -335,7 +336,9 @@ class Preprocessing:
         df_combat_harmonized[
             ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ"]
         ] = dataframe[["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ"]]
-
+        if boxplot==True:
+            self.plot_boxplot(df_combat_harmonized,df_combat_harmonized['SITE_CLASS'],df_combat_harmonized["lh_MeanThickness"])
+            self.plot_boxplot(dataframe,dataframe['SITE_CLASS'],dataframe["lh_MeanThickness"])
         return df_combat_harmonized
 
     def feature_selection(self, dataframe, feature="AGE_AT_SCAN", plot_heatmap=False):
@@ -379,7 +382,3 @@ if __name__ == "__main__":
     df1 = prep(df, "not_normalized", plot_option=False)
     df2 = prep(df, "normalized", plot_option=False)
     df3 = prep(df, "combat_harmonized", plot_option=False)
-    #print(df1.sub(df2,axis=0))
-
-    print(df1)
-    print(df2)
