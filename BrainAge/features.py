@@ -44,43 +44,34 @@ class Preprocessing:
             self.plot_histogram(dataframe, "AGE_AT_SCAN")
         #PROCESSING DATA
         if prep_option == "not_normalized":
-            dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
-<<<<<<< HEAD
-=======
-
->>>>>>> b26c0b0c1b9ac9c9bade134281320ce27149edba
-
+            pass
         elif prep_option == "normalized":
             self.self_normalize(dataframe)
-            dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
 
         elif prep_option == "combat_harmonized":
             self.self_normalize(dataframe)
             dataframe=self.add_site_binning(dataframe)
-            print(dataframe['SITE_CLASS'])
             try:
                 assert (
                     np.sum(np.sum(dataframe.isna())) == 0
                 ), "There are NaN values in the dataframe!"
             except AssertionError as msg:
                 print(msg)
-<<<<<<< HEAD
             dataframe= self.com_harmonize(
-=======
-            dataframe = self.com_harmonize(
->>>>>>> 0a3e7c394b40c29f24a91d1b3543f6cc226a0f05
-                dataframe.drop(["FILE_ID", "SITE"], axis=1),
+                dataframe,
                 confounder="SITE_CLASS",
                 covariate="AGE_AT_SCAN",
-                boxplot=True,
             )
-            dataframe = dataframe.drop(["SITE_CLASS"], axis=1)
+            dataframe = dataframe.drop(["SITE_CLASS"], axis = 1)
 
         elif prep_option == "neuro_harmonized":
+            self.add_site(dataframe)
             dataframe = self.neuro_harmonize(
-                dataframe, confounder="SITE", covariate1="AGE_AT_SCAN",boxplot=True,
+                dataframe, confounder="SITE", covariate1="AGE_AT_SCAN",
             )
-
+            dataframe = dataframe.drop(["SITE"], axis = 1)
+        self.add_site(dataframe)
+        dataframe = dataframe.drop(["FILE_ID"], axis=1)
         return dataframe
 
     # def __str__(self):
@@ -143,10 +134,13 @@ class Preprocessing:
         dataframe["TotalWhiteVol"] = (
             dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
         )
-        dataframe["SITE"] = dataframe.FILE_ID.apply(lambda x: x.split("_")[0])
-        dataframe = dataframe.drop(["FILE_ID"], axis=1)
-        df["FIQ"] = df["FIQ"].where(df["FIQ"] > 0, 0)
+        dataframe["FIQ"] = dataframe["FIQ"].where(dataframe["FIQ"] > 0, 0)
 
+    def add_site(self, dataframe):
+        """
+        Adds column with Site description.
+        """
+        dataframe["SITE"] = dataframe.FILE_ID.apply(lambda x: x.split("_")[0])
 
     def add_age_binning(self, dataframe):
         """
@@ -267,7 +261,7 @@ class Preprocessing:
 
 
 
-    def neuro_harmonize(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN",boxplot=False):
+    def neuro_harmonize(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
         """
         Harmonize dataset with neuroHarmonize model:
         1-Load your data and all numeric covariates
@@ -303,14 +297,10 @@ class Preprocessing:
         except RuntimeWarning:
             print("How can we solve this?")
 
-        if boxplot==True:
-            self.plot_boxplot(df_neuro_harmonized,df_neuro_harmonized['SITE_CLASS'],df_neuro_harmonized["lh_MeanThickness"])
-            self.plot_boxplot(dataframe,dataframe['SITE_CLASS'],dataframe["lh_MeanThickness"])
         return df_neuro_harmonized
 
     def com_harmonize(
-        self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN",boxplot=False,
-    ):
+        self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"):
         """
         Harmonize dataset with ComBat model
 
@@ -340,9 +330,6 @@ class Preprocessing:
         df_combat_harmonized[
             ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ"]
         ] = dataframe[["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ"]]
-        if boxplot==True:
-            self.plot_boxplot(df_combat_harmonized,df_combat_harmonized['SITE_CLASS'],df_combat_harmonized["lh_MeanThickness"])
-            self.plot_boxplot(dataframe,dataframe['SITE_CLASS'],dataframe["lh_MeanThickness"])
         return df_combat_harmonized
 
     def feature_selection(self, dataframe, feature="AGE_AT_SCAN", plot_heatmap=False):
@@ -385,21 +372,14 @@ if __name__ == "__main__":
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
     df1 = prep(df, "not_normalized", plot_option=False)
     df2 = prep(df, "normalized", plot_option=False)
-<<<<<<< HEAD
-    df3 = prep(df, "neuro_harmonized", plot_option=False)
-    df4 = prep(df, "combat_harmonized", plot_option=False)
+    df_neuro_harmonized = prep(df, "neuro_harmonized", plot_option=False)
+    df_neuro_harmonized = prep.add_site_binning(df_neuro_harmonized)
+    df_combat_harmonized= prep(df, "combat_harmonized", plot_option=False)
+
     print(df1.shape)
     print(df2.shape)
-    print(df3.shape)
-    print(df4.shape)
-    print(df1.drop(['AGE_CLASS'], axis = 1).sub(df3.drop(['AGE_CLASS'], axis = 1)).shape)
-=======
-    df3 = prep(df, "combat_harmonized", plot_option=False)
-<<<<<<< HEAD
-=======
-    #print(df1.sub(df2,axis=0))
+    print(df_neuro_harmonized.shape)
+    print(df_combat_harmonized.shape)
 
-    print(df1)
-    print(df2)
->>>>>>> b26c0b0c1b9ac9c9bade134281320ce27149edba
->>>>>>> 0a3e7c394b40c29f24a91d1b3543f6cc226a0f05
+    prep.plot_boxplot(df_neuro_harmonized,'SITE','lh_MeanThickness')
+    prep.plot_boxplot(dataframe,'SITE','lh_MeanThickness')
