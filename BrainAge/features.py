@@ -41,6 +41,9 @@ class Preprocessing:
         if plot_option == True:
             self.plot_boxplot(dataframe, "SITE", "AGE_AT_SCAN")
             self.plot_histogram(dataframe, "AGE_AT_SCAN")
+        if harmonize_option == "not_normalized":
+            dataframe = dataframe.drop(["FILE_ID", "SITE"], axis=1)
+            return dataframe
         self.self_normalize(dataframe)
         # HARMONIZING DATA
         if harmonize_option == "raw":
@@ -95,6 +98,30 @@ class Preprocessing:
         """
         dataframe = pd.read_csv(file_url, sep=";")
         return dataframe
+        
+    def split_file(self, dataframe):
+        """
+        Splits dataframe in ASD cases and controls.
+        
+        Parameters
+        ----------
+
+        dataframe : dataframe-like
+                    The dataframe of data to be split.
+
+        Returns
+        -------
+
+        df_AS : dataframe-like
+                The dataframe containing ASD cases.
+        
+        df_TD : dataframe-like
+                The dataframe containing controls.
+
+        """
+        df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
+        df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
+        return df_AS, df_TD
 
     def add_features(self, dataframe):
         """

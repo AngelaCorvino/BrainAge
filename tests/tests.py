@@ -49,12 +49,12 @@ class TestBrainAge(unittest.TestCase):
         self.assertIn('SITE_CLASS', dataframe.keys(), 'SITE_CLASS was not added')
         self.assertEqual(dataframe.shape, (915, 427), 'SITE_CLASS was not added')
 
-    #def test_file_split(self):
-        #prep = Preprocessing()
-        #dataframe = prep.read_file(self.data)
-        #df_AS, df_TD = prep.file_split(dataframe)
-        #assert df_AS.shape == (451, 424)
-        #assert df_TD.shape == (464, 424)
+    def test_split_file(self):
+        prep = Preprocessing()
+        dataframe = prep.read_file(self.data)
+        df_AS, df_TD = prep.split_file(dataframe)
+        assert df_AS.shape == (451, 424)
+        assert df_TD.shape == (464, 424)
 
     def test_feature_selection(self):
         prep = Preprocessing()
