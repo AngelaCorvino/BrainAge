@@ -77,7 +77,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
     )
 
     (x_train, x_test, y_train, y_test, y_train_class, y_test_class,) = train_test_split(
-        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP"], axis=1),
+        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP","AGE_CLASS"], axis=1),
         dataframe["AGE_AT_SCAN"],
         dataframe["AGE_CLASS"],
         test_size=0.25,

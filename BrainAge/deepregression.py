@@ -71,7 +71,7 @@ class DeepRegression(BaseEstimator):
         )
         self.model.summary()
         history = self.model.fit(
-            X, y, validation_split=0.3, epochs=self.epochs, batch_size=32, verbose=0
+            X, y, validation_split=0.3, epochs=self.epochs, batch_size=32, verbose=1
         )
         return self
 
