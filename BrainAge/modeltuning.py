@@ -19,30 +19,12 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
 from sklearn.model_selection import GridSearchCV
 
-from regression import Regression
+from crossvalidation import Crossvalidation
 from features import Preprocessing
 from deepregression import DeepRegression
 
 
 # FUNCTIONS
-def file_split(dataframe):
-    """Split dataframe in healthy (control) and autistic subjects groups
-
-    Parameters
-    ----------
-    dataframe : type
-        Description of parameter `dataframe`.
-
-    Returns
-    -------
-    type
-        Description of returned object.
-
-    """
-    df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
-    df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
-    return df_AS, df_TD
-
 
 def tune_model(dataframe, model, hyparams, harmonize_option):
     """
@@ -116,7 +98,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
         This cross validation is done using StratifiedKFold
     """
 
-    model_fit, y_test, predict_y, MSE, MAE, PR = regression.stratified_k_fold(
+    model_fit, y_test, predict_y, MSE, MAE, PR = crossvalidation.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
     """
@@ -140,18 +122,18 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
     )
     plt.text(
         y_test.max() - 18,
-        predict_y.max() - 18,
+        predict_y.max() - 12,
         f"MSE= {round(MSE,3)}",
         fontsize=14,
     )
     plt.text(
         y_test.max() - 18,
-        predict_y.max() - 16,
+        predict_y.max() - 10,
         f"PR= {round(PR,3)}",
         fontsize=14,
     )
     plt.text(
-        y_test.max() - 18, predict_y.max() - 20, f"MAE= {round(MAE,3)}", fontsize=14
+        y_test.max() - 18, predict_y.max() - 14, f"MAE= {round(MAE,3)}", fontsize=14
     )
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
@@ -175,7 +157,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
 ########################################################PREPROCESSING
 prep = Preprocessing()
 df = prep.read_file("data/FS_features_ABIDE_males.csv")
-regression = Regression()
+crossvalidation = Crossvalidation()
 
 
 models = [
@@ -235,7 +217,7 @@ for harmonize_option in harmonize_list:
     """
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
-    df_AS, df_TD = file_split(dataframe)
+    df_AS, df_TD = prep.split_file(dataframe)
     for i, model in enumerate(models):
         """
         Tuning different regression model on healthy subjects

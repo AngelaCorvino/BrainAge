@@ -1,3 +1,7 @@
+"""
+Module implements a MLP and fit the model on healthy subjects.
+"""
+# pylint: disable=invalid-name
 from keras.layers import Dense, Dropout, Input, Flatten
 from keras.models import Model, load_model
 
@@ -6,7 +10,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-from features import Preprocessing
 
 
 class DeepRegression(BaseEstimator):
@@ -39,7 +42,7 @@ class DeepRegression(BaseEstimator):
     ):
         self.epochs = epochs
         self.drop_rate=drop_rate
-        self.plot_loss = plot_loss  # io toglierei anche questi attributi, passandoli direttamente alle funzioni che li usano
+        self.plot_loss = plot_loss
 
     def fit(self, X, y):
         """
@@ -73,21 +76,15 @@ class DeepRegression(BaseEstimator):
         history = self.model.fit(
             X, y, validation_split=0.3, epochs=self.epochs, batch_size=32, verbose=1
         )
-        return self
+
 
         if self.plot_loss == True:
             """
             This parameter allows to plot the training and validation loss
             curves of the trained model, enabling visual diagnosis of
             underfitting (bias) or overfitting (variance).
-
-
-            Returns
-            -------
-            fig: a visual representation of the model's training loss and
-            validation loss curves.
             """
-            print("problem here")
+
             training_validation_loss = pd.DataFrame.from_dict(
                 history.history, orient="columns"
             )
@@ -140,11 +137,3 @@ class DeepRegression(BaseEstimator):
         # print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
         #
         # return plt.show()
-
-
-if __name__ == "__main__":
-    prep = Preprocessing()
-    df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    dataframe = prep(df, "raw", False)
-    a = DeepRegression(epochs=10)
-    a.fit(dataframe.drop(["AGE_AT_SCAN"], axis=1), dataframe["AGE_AT_SCAN"])

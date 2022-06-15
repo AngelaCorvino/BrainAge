@@ -22,24 +22,6 @@ from deepregression import DeepRegression
 
 
 # FUNCTIONS
-def file_split(dataframe):
-    """Split dataframe in healthy (control) and autistic subjects groups
-
-    Parameters
-    ----------
-    dataframe : type
-        Description of parameter `dataframe`.
-
-    Returns
-    -------
-    type
-        Description of returned object.
-
-    """
-    df_AS = dataframe.loc[dataframe.DX_GROUP == 1]
-    df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
-    return df_AS, df_TD
-
 
 def run_model(dataframe, model, harmonize_option):
     """
@@ -67,7 +49,7 @@ def run_model(dataframe, model, harmonize_option):
         model_fit = pickle.load(f)
 
     (_, x_test, _, y_test) = train_test_split(
-        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP"], axis=1),
+        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP","AGE_CLASS"], axis=1),
         dataframe["AGE_AT_SCAN"],
         test_size=0.9,
         random_state=18,
@@ -145,7 +127,7 @@ for harmonize_option in harmonize_list:
     """
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
-    df_AS, df_TD = file_split(dataframe)
+    df_AS, df_TD = prep.split_file(dataframe)
     for i, model in enumerate(models):
         """
         Predicting age of autistic subjects
