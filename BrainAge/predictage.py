@@ -105,7 +105,7 @@ def run_model(dataframe, model, harmonize_option):
     )
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
-            {}  with {} AD   q12data".format(
+            {}  with {} AD data".format(
             model.__class__.__name__, harmonize_option
         ),
         fontsize=20,

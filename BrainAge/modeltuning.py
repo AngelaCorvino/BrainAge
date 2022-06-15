@@ -77,7 +77,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
     )
 
     (x_train, x_test, y_train, y_test, y_train_class, y_test_class,) = train_test_split(
-        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP"], axis=1),
+        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP","AGE_CLASS"], axis=1),
         dataframe["AGE_AT_SCAN"],
         dataframe["AGE_CLASS"],
         test_size=0.25,
@@ -116,7 +116,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
         This cross validation is done using StratifiedKFold
     """
 
-    model_fit, y_test, predict_y, MSE, MAE = regression.stratified_k_fold(
+    model_fit, y_test, predict_y, MSE, MAE, PR = regression.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
     """
@@ -144,12 +144,12 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
         f"MSE= {round(MSE,3)}",
         fontsize=14,
     )
-    # plt.text(
-    #     y_test.max() - 18,
-    #     predict_y.max() - 16,
-    #     f"PR= {round(PR,3)}",
-    #     fontsize=14,
-    # )
+    plt.text(
+        y_test.max() - 18,
+        predict_y.max() - 16,
+        f"PR= {round(PR,3)}",
+        fontsize=14,
+    )
     plt.text(
         y_test.max() - 18, predict_y.max() - 20, f"MAE= {round(MAE,3)}", fontsize=14
     )
@@ -187,11 +187,13 @@ models = [
     SVR(),
 ]
 
+
 hyperparams = [
     {
-        "Feature__k": [100, 200, "all"],
+        "Feature__k": [50,100, 200, "all"],
         "Feature__score_func": [f_regression],
-        "Model__epochs": [10, 20],
+        "Model__epochs": [100, 200],
+        "Model__drop_rate": [0.2,0.4,0.6],
     },
     {
         "Feature__k": [10, 20, 30],
@@ -222,6 +224,7 @@ hyperparams = [
         "Feature__score_func": [f_regression],
         "Model__kernel": ["linear", "rbf", "poly"],
         "Model__degree": [3, 4],
+        "Model__random_state": [18],
     },
 ]
 ###############################################################################

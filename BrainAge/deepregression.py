@@ -34,9 +34,11 @@ class DeepRegression(BaseEstimator):
     def __init__(
         self,
         epochs=100,
+        drop_rate=0.2,
         plot_loss=False,
     ):
         self.epochs = epochs
+        self.drop_rate=drop_rate
         self.plot_loss = plot_loss  # io toglierei anche questi attributi, passandoli direttamente alle funzioni che li usano
 
     def fit(self, X, y):
@@ -59,6 +61,7 @@ class DeepRegression(BaseEstimator):
         hidden = Dense(128, activation="relu")(inputs)
         hidden = Dense(12, activation="relu")(hidden)
         hidden = Dense(12, activation="relu")(hidden)
+        hidden = Dropout(self.drop_rate)(hidden)
         hidden = Dense(12, activation="relu")(hidden)
         outputs = Dense(1, activation="linear")(hidden)
 
@@ -68,7 +71,7 @@ class DeepRegression(BaseEstimator):
         )
         self.model.summary()
         history = self.model.fit(
-            X, y, validation_split=0.3, epochs=self.epochs, batch_size=50, verbose=0
+            X, y, validation_split=0.3, epochs=self.epochs, batch_size=32, verbose=1
         )
         return self
 
