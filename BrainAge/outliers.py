@@ -288,7 +288,7 @@ class Outliers:
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    df = prep(df, "raw", False)
+    df = prep(df, "normalized", False)
     df_AS, df_TD = prep.split_file(df)
     out = Outliers(df_TD)
     clean_dataframe = out(epochs=100, nbins=500, plot=True)

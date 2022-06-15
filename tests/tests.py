@@ -30,9 +30,15 @@ class TestBrainAge(unittest.TestCase):
         prep = Preprocessing()
         dataframe = prep.read_file(self.data)
         prep.add_features(dataframe)
-        self.assertIn('SITE', dataframe.keys(), 'SITE was not added')
         self.assertIn('TotalWhiteVol', dataframe.keys(), 'TotalWhiteVol was not added')
-        self.assertEqual(dataframe.shape, (915, 426), 'Two features were not added')
+        self.assertEqual(dataframe.shape, (915, 425), 'Features were not added')
+        
+    def test_add_site(self):
+        prep = Preprocessing()
+        dataframe = prep.read_file(self.data)
+        prep.add_site(dataframe)
+        self.assertIn('SITE', dataframe.keys(), 'SITE was not added')
+        self.assertEqual(dataframe.shape, (915, 425), 'SITE was not added')
         
     def test_add_age_binning(self):
         prep = Preprocessing()
@@ -44,10 +50,10 @@ class TestBrainAge(unittest.TestCase):
     def test_add_site_binning(self):
         prep = Preprocessing()
         dataframe = prep.read_file(self.data)
-        prep.add_features(dataframe)
+        prep.add_site(dataframe)
         dataframe = prep.add_site_binning(dataframe)
         self.assertIn('SITE_CLASS', dataframe.keys(), 'SITE_CLASS was not added')
-        self.assertEqual(dataframe.shape, (915, 427), 'SITE_CLASS was not added')
+        self.assertEqual(dataframe.shape, (915, 426), 'SITE_CLASS was not added')
 
     def test_split_file(self):
         prep = Preprocessing()

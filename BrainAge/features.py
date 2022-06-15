@@ -377,9 +377,9 @@ class Preprocessing:
         type_dict = {col: dataframe[col].apply(lambda x: type(x)).unique().tolist() for col in dataframe.columns}
         value = [str]
         if value in type_dict.values():
-            print(f"Yes, value: '{value}' exists in dataframe")
+            print(f"The dataframe still contains '{value}'")
         else:
-            print(f"No, value: '{value}' does not exist in dataframe")
+            print(f"The dataframe is free of '{value}'")
         return dataframe
 
 if __name__ == "__main__":
@@ -394,6 +394,6 @@ if __name__ == "__main__":
     print(df_neuro_harmonized.shape)
     df_combat_harmonized= prep(df, "combat_harmonized", plot_option=False)
     print(df_combat_harmonized.shape)
-    prep.plot_boxplot(df_neuro_harmonized,'SITE','lh_MeanThickness')
-    prep.plot_boxplot(df_neuro_harmonized,'SITE','lh_MeanThickness')
+    prep.plot_boxplot(df2,'SITE',"TotalWhiteVol")
+    prep.plot_boxplot(df_neuro_harmonized,'SITE',"TotalWhiteVol")
     prep.remove_strings(df1)
