@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name, redefined-outer-name
-
+import scipy.stats as stats
+import scipy.optimize
 from keras.layers import Dense
 from keras.layers import Input
 from keras.layers import Activation
@@ -39,6 +40,11 @@ def step_wise(x, N = 4, a = 100):
         y += (1 / (2 * (N - 1))) * (K.tanh(a * (x - (j / N))))
     return y
 
+def gaussian(x, x0, sigma, a):
+    return a*(1/np.sqrt(np.pi*sigma**2))*np.exp(-(x-x0)**2/(sigma**2))
+    
+def sumgaussian(x, x0, x1, sigma0, sigma1, a, b):
+    return a*gaussian(x, x0, sigma0) + b*gaussian(x, x1, sigma1)
 
 class Outliers:
     """Class identifying outliers.
@@ -98,35 +104,72 @@ class Outliers:
         """
         x_train_pred = self.model.predict(self.X_train)
         x_test_pred = self.model.predict(self.X_test)
+
         train_mae_loss = np.mean(np.abs(x_train_pred - np.array(self.X_train)), axis=1).reshape((-1))
-        train_mse_loss = (np.square(np.subtract(np.array(self.X_train), x_train_pred)).mean(axis = 1))
+        train_mae_loss /= np.abs(stats.zscore(train_mae_loss))
+        # train_mse_loss = np.square(np.subtract(np.array(self.X_train), x_train_pred))
+        # print(train_mse_loss)
+        # train_mse_loss=train_mse_loss.mean(axis = 1)
+        # print(train_mse_loss)
         test_mae_loss = np.mean(np.abs(x_test_pred - np.array(self.X_test)), axis=1).reshape((-1))
-        test_mse_loss = (np.square(np.subtract(np.array(self.X_test), x_test_pred)).mean(axis = 1))
-        anomalies = (test_mse_loss >= np.max(train_mse_loss)).tolist()
-
-        histogram_train = train_mse_loss
-        print(train_mse_loss)
+        test_mae_loss /= np.abs(stats.zscore(test_mae_loss))
+        #test_mse_loss = (np.square(np.subtract(np.array(self.X_test), x_test_pred)).mean(axis = 1))
+        initial_outliers = (test_mae_loss >= np.max(train_mae_loss)).tolist()
+        print("Number of outlier samples: ", np.sum(initial_outliers))
+        print("Indices of outlier samples: ", np.where(initial_outliers))
+        
+        nbins = 500
+        
+        #Plot_train_variables
+        d_0=(train_mae_loss.max()-train_mae_loss.min())/nbins
+        xdiscrete_0=np.linspace(train_mae_loss.min()+d_0/2, train_mae_loss.max()-d_0/2, nbins)
+        xcont_0=np.linspace(train_mae_loss.min(), train_mae_loss.max(), 1000)
+        #Plot_train
         plt.figure(1)
-        plt.hist(x = histogram_train, density = True, bins = 1000, label = 'MSE Loss')
-        plt.title='Mean Absolute Error Loss'
-        plt.xlabel="Training MSE Loss (%)"
-        plt.ylabel="Number of Samples"
+        n_0, bins_0, _ = plt.hist(x = train_mae_loss, bins = nbins, color='lightskyblue', label = 'Sample counts')
+        plt.title('Mean Absolute Error Loss')
+        plt.xlabel("Train MSE Loss (Z-score)")
+        plt.ylabel("Number of Samples")       
+        #fit_train
+        fit_0, fitCov_0 = scipy.optimize.curve_fit(gaussian, xdiscrete_0, n_0)
+        fit_err_0 = np.sqrt(abs(np.diag(fitCov_0)))
+        print(f' Train fit parameters: \n x_0 = {fit_0[0] : .3f} +-{fit_err_0[0] : .3f}\n sigma_0 = {fit_0[1] : .3f} +-{fit_err_0[1] : .3f}\n A = {fit_0[2] : .3f} +-{fit_err_0[2] : .3f}\n')
+        #Plot_fit_train
+        plt.plot(xcont_0, gaussian(xcont_0, *fit_0), color = 'red', linewidth=1, label='fit')
         plt.show()
 
-        histogram_test = train_mse_loss
-        print(test_mse_loss)
+        #Plot_test_variables
+        d_1=(test_mae_loss.max()-test_mae_loss.min())/nbins
+        xdiscrete_1=np.linspace(test_mae_loss.min()+d_1/2, test_mae_loss.max()-d_1/2, nbins)
+        xcont_1=np.linspace(test_mae_loss.min(), test_mae_loss.max(), 1000)
+        #Plot_test
         plt.figure(2)
-        plt.hist(x = histogram_test, density = True, bins = 1000, label = 'MSE Loss')
-        plt.title='Mean Absolute Error Loss'
-        plt.xlabel="Testing MSE Loss (%)"
-        plt.ylabel="Number of Samples"
+        n_1, bins_1, _ = plt.hist(x = test_mae_loss, bins = nbins, color='lightskyblue', label = 'Sample counts')
+        plt.title('Mean Absolute Error Loss')
+        plt.xlabel("Test MSE Loss (Z-score)")
+        plt.ylabel("Number of Samples")
+        
+        #fit_test
+        fit_1, fitCov_1 = scipy.optimize.curve_fit(gaussian, xdiscrete_1, n_1)
+        fit_err_1 = np.sqrt(abs(np.diag(fitCov_1)))
+        print(f' Test fit parameters: \n x_0 = {fit_1[0] : .3f} +-{fit_err_1[0] : .3f}\n sigma_0 = {fit_1[1] : .3f} +-{fit_err_1[1] : .3f}\n A = {fit_1[2] : .3f} +-{fit_err_1[2] : .3f}\n')
+        #print(f' First fit parameters: \n x_0 = {fit[0] : .3f} +-{fit_err[0] : .3f}\n x_1 = {fit[1] : .3f} +-{fit_err[1] : .3f}\n sigma_0 = {fit[2] : .3f} +-{fit_err[2] : .3f}\n sigma_1 = {fit[3] : .3f} +-{fit_err[3] : .3f}\n A = {fit[4] : .3f} +-{fit_err[4] : .3f}\n B = {fit[5] : .3f} +-{fit_err[5] : .3f}\n')
+        #Plot_fit_test
+        plt.plot(xcont_1, gaussian(xcont_1, *fit_1), color = 'red', linewidth=1, label='fit')
         plt.show()
-
-        print("Number of anomaly samples: ", np.sum(anomalies))
-        print("Indices of anomaly samples: ", np.where(anomalies))
-        print("Reconstruction MAE error threshold: {} ".format(np.max(train_mae_loss)))
-        print("Reconstruction MSE error threshold: {} ".format(np.max(train_mse_loss)))
-
+        
+        def condition(x, fit_1):
+            if x >= (fit_1[0] + 3*fit_1[1]) : return True
+            if x <= (fit_1[0] - 3*fit_1[1]) : return True
+            else : return False
+            
+        final_outliers = [condition(x, fit_1) for x in test_mae_loss]
+        
+        print("Number of final outlier samples: ", np.sum(final_outliers))
+        print("Indices of final outlier samples: ", np.where(final_outliers))
+        
+        # print("Reconstruction MAE error threshold: {} ".format(np.max(train_mae_loss)))
+        # print("Reconstruction MSE error threshold: {} ".format(np.max(train_mse_loss)))
         return
 
 
