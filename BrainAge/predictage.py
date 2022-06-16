@@ -16,15 +16,25 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
-from regression import Regression
+from outliers import Outliers
 from preprocessing import Preprocessing
 from deepregression import DeepRegression
 
+###############################################################OPTIONS
+models = [
+    DeepRegression(),
+    LinearRegression(),
+    GaussianProcessRegressor(),
+    RandomForestRegressor(),
+    Lasso(),
+    SVR(),
+]
+
+harmonize_list = ["normalized", "combat", "neuro"]
 
 ################################################# FUNCTIONS
 def run_model(dataframe, model, harmonize_option):
     """
-
 
     Parameters
     ----------
@@ -53,7 +63,7 @@ def run_model(dataframe, model, harmonize_option):
         test_size=0.9,
         random_state=18,
     )
-    print(y_test)
+
     predict_y = model_fit.predict(x_test)  # similar
     MSE = mean_squared_error(y_test, predict_y)
     MAE = mean_absolute_error(y_test, predict_y)
@@ -101,22 +111,11 @@ def run_model(dataframe, model, harmonize_option):
     )
 
 
-########################################################OPTIONS
-models = [
-    DeepRegression(),
-    LinearRegression(),
-    GaussianProcessRegressor(),
-    RandomForestRegressor(),
-    Lasso(),
-    SVR(),
-]
 
-harmonize_list = ["normalized", "combat", "neuro"]
 
 ##################################################MAIN
 prep = Preprocessing()
 df = prep.read_file("data/FS_features_ABIDE_males.csv")
-regression = Regression()
 
 for harmonize_option in harmonize_list:
     #"""
@@ -124,11 +123,12 @@ for harmonize_option in harmonize_list:
     #"""
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
-    df_AS, df_TD = prep.split_file(dataframe)
+    dataframe = prep.remove_strings(dataframe)
+    df_AS, df_TD = prep.split_file(dataframe.drop(["AGE_CLASS"], axis = 1))
     out_td = Outliers(df_TD)
-    df_TD = clean_dataframe = out_td(epochs=200, nbins=500, plot=False)
+    df_TD = clean_dataframe = out_td(nbins=500, plot=False)
     out_as = Outliers(df_AS)
-    df_AS = clean_dataframe = out_as(epochs=200, nbins=500, plot=False)
+    df_AS = clean_dataframe = out_as(nbins=500, plot=False)
     for i, model in enumerate(models):
         #"""
         #Predicting age of autistic subjects
