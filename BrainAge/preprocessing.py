@@ -226,9 +226,9 @@ class Preprocessing:
         featurey : string-like
                    The feature in the y-axis of the boxplot.
         """
-        sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=dataframe)
+        sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=dataframe,hue=f" {dataframe.__name__}")
         sns_boxplot.set_xticklabels(labels=sns_boxplot.get_xticklabels(), rotation=50)
-        sns_boxplot.grid()
+        sns_boxplot.grid(linestyle='-')
         sns_boxplot.set_title("Box plot of " + featurey + " by " + featurex)
         sns_boxplot.set_ylabel(featurey)
         plt.show()
@@ -288,7 +288,6 @@ class Preprocessing:
         """
         try:
             covars = dataframe[[confounder, covariate1]]
-            # dataframe=dataframe.astype(np.float)
             my_model, array_neuro_harmonized, s_data = harmonizationLearn(
                 np.array(dataframe.drop(["FILE_ID", "SITE"], axis=1)),
                 covars,
@@ -297,7 +296,7 @@ class Preprocessing:
             df_neuro_harmonized = pd.DataFrame(array_neuro_harmonized)
             df_neuro_harmonized.columns = dataframe.drop(
                 ["FILE_ID", "SITE"], axis=1
-            ).keys()
+            ).columns
             df_neuro_harmonized[
                 [
                     "AGE_AT_SCAN",
@@ -429,6 +428,8 @@ if __name__ == "__main__":
     print(df_neuro_harmonized.shape)
     df_combat_harmonized = prep(df, "combat_harmonized", plot_option=False)
     print(df_combat_harmonized.shape)
-    prep.plot_boxplot(df2, "SITE", "TotalWhiteVol")
-    prep.plot_boxplot(df_neuro_harmonized, "SITE", "TotalWhiteVol")
+    prep.plot_boxplot(df1, "SITE", "TotalGrayVol")
+    prep.plot_boxplot(df2, "SITE", "TotalGrayVol")
+    prep.plot_boxplot(df_neuro_harmonized, "SITE", "TotalGrayVol")
+    prep.plot_boxplot(df_combat_harmonized, "SITE", "TotalGrayVol")
     prep.remove_strings(df1)
