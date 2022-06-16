@@ -46,7 +46,7 @@ class Outliers:
         """
         Constructur
         """
-        self.dataframe=dataframe
+        self.dataframe = dataframe
         self.model=self.model_upload()
 
     def __call__(self, nbins, plot=True):
@@ -66,8 +66,6 @@ class Outliers:
             Description of returned object.
 
         """
-
-
         indexes = self.outliers(nbins)
         if plot is True:
             self.plot_distribution(indexes, "AGE_AT_SCAN")
@@ -98,7 +96,6 @@ class Outliers:
 
         """
         x_pred = self.model.predict(self.dataframe)
-
         test_mae_loss = np.mean(
             np.abs(x_pred - np.array(self.dataframe)), axis=1
         ).reshape((-1))
@@ -114,8 +111,8 @@ class Outliers:
             x=test_mae_loss, bins=nbins, color="lightskyblue", label="Sample counts"
         )
         plt.title("Mean Absolute Error Loss", fontsize=24)
-        plt.xlabel("Test MAE Loss", fontsize=18)
-        plt.ylabel("Number of Samples", fontsize=18)
+        plt.xlabel("Test MAE Loss", fontsize=20)
+        plt.ylabel("Number of Samples", fontsize=20)
 
         # fit as a gaussian
         p0 = [0.4, 0.05, 20]
@@ -188,8 +185,8 @@ class Outliers:
             label="Sample counts",
         )
         plt.title("Age Distribution of Outliers", fontsize=24)
-        plt.xlabel("Age(years)", fontsize=18)
-        plt.ylabel("Number of Samples", fontsize=18)
+        plt.xlabel("Age(years)", fontsize=20)
+        plt.ylabel("Number of Samples", fontsize=20)
         return plt.show()
 
     def clean_dataframe(self, indexes):

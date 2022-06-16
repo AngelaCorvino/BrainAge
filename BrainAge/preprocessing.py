@@ -235,10 +235,10 @@ class Preprocessing:
         """
         name = self.retrieve_name(dataframe)
         sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=dataframe)
-        sns_boxplot.set_xticklabels(labels=sns_boxplot.get_xticklabels(), rotation=50)
+        sns_boxplot.set_xticklabels(labels=sns_boxplot.get_xticklabels(), rotation=50, fontsize = 20)
         sns_boxplot.grid(linestyle='-')
-        sns_boxplot.set_title("Box plot of " + featurey + " by " + featurex + " in " + name)
-        sns_boxplot.set_ylabel(featurey)
+        sns_boxplot.set_title("Box plot of " + featurey + " by " + featurex + " in " + name, fontsize=24)
+        sns_boxplot.set_ylabel(featurey, fontsize=20)
         plt.show()
 
     def self_normalize(self, dataframe):
@@ -408,6 +408,7 @@ class Preprocessing:
         """
         Returns initial dataframe without columns containing strings.
         """
+        name = self.retrieve_name(dataframe)
         if "FILE_ID" in dataframe.keys():
             dataframe = dataframe.drop(["FILE_ID"], axis=1)
         if "SITE" in dataframe.keys():
@@ -418,9 +419,9 @@ class Preprocessing:
         }
         value = [str]
         if value in type_dict.values():
-            print(f"The dataframe still contains '{value}'")
+            print(f"The dataframe '{name}' still contains '{value}'")
         else:
-            print(f"The dataframe is free of '{value}'")
+            print(f"The dataframe '{name}' is free of '{value}'")
         return dataframe
         
     def retrieve_name(self, var):
@@ -431,8 +432,7 @@ class Preprocessing:
         name = [var_name for var_name, var_val in callers_local_vars if var_val is var]
         name = str(name)
         name = name.replace('[','').replace(']','').replace('\'','')
-        print('Dataframe name: "{}"'.format(name))
-        print(type(name))
+        #print('Dataframe name: "{}"'.format(name))
         return name
 
 
@@ -440,16 +440,16 @@ if __name__ == "__main__":
 
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    df1 = prep(df, "not_normalized", plot_option=False)
-    print(df1.shape)
-    df2 = prep(df, "normalized", plot_option=False)
-    print(df2.shape)
-    df_neuro_harmonized = prep(df, "neuro_harmonized", plot_option=False)
-    print(df_neuro_harmonized.shape)
-    df_combat_harmonized = prep(df, "combat_harmonized", plot_option=False)
-    print(df_combat_harmonized.shape)
-    prep.plot_boxplot(df1, "SITE", "TotalGrayVol")
-    prep.plot_boxplot(df2, "SITE", "TotalGrayVol")
-    prep.plot_boxplot(df_neuro_harmonized, "SITE", "TotalGrayVol")
-    prep.plot_boxplot(df_combat_harmonized, "SITE", "TotalGrayVol")
-    prep.remove_strings(df1)
+    Not_Normalized = prep(df, "not_normalized", plot_option=False)
+    print(Not_Normalized.shape)
+    Normalized = prep(df, "normalized", plot_option=False)
+    print(Normalized.shape)
+    Neuro_Harmonized = prep(df, "neuro_harmonized", plot_option=False)
+    print(Neuro_Harmonized.shape)
+    Combat_Harmonized = prep(df, "combat_harmonized", plot_option=False)
+    print(Combat_Harmonized.shape)
+    prep.plot_boxplot(Not_Normalized, "SITE", "TotalGrayVol")
+    prep.plot_boxplot(Normalized, "SITE", "TotalGrayVol")
+    prep.plot_boxplot(Neuro_Harmonized, "SITE", "TotalGrayVol")
+    prep.plot_boxplot(Combat_Harmonized, "SITE", "TotalGrayVol")
+    prep.remove_strings(Normalized)

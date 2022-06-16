@@ -126,9 +126,9 @@ for harmonize_option in harmonize_list:
     dataframe = prep.remove_strings(dataframe)
     df_AS, df_TD = prep.split_file(dataframe.drop(["AGE_CLASS"], axis = 1))
     out_td = Outliers(df_TD)
-    df_TD = clean_dataframe = out_td(nbins=500, plot=False)
+    df_TD = out_td(nbins=500, plot=False)
     out_as = Outliers(df_AS)
-    df_AS = clean_dataframe = out_as(nbins=500, plot=False)
+    df_AS = out_as(nbins=500, plot=False)
     for i, model in enumerate(models):
         #"""
         #Predicting age of autistic subjects
