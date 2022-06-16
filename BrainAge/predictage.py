@@ -23,6 +23,7 @@ from sklearn.model_selection import GridSearchCV
 from outliers import Outliers
 from preprocessing import Preprocessing
 from deepregression import DeepRegression
+from crossvalidation import Crossvalidation
 
 ###############################################################OPTIONS
 hyperparams = [
@@ -68,7 +69,7 @@ hyperparams = [
 harmonize_list = ["normalized", "combat_harmonized", "neuro_harmonized"]
 
 models = [
-    DeepRegression(plot_loss=True),
+    DeepRegression(plot_loss=False),
     LinearRegression(),
     GaussianProcessRegressor(),
     RandomForestRegressor(),
@@ -144,6 +145,7 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
     #    we can run the model using these parameters.
     #    This cross validation is done using StratifiedKFold
     # """
+    crossvalidation = Crossvalidation()
     model_fit, MSE, MAE, PR = crossvalidation.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
@@ -190,8 +192,10 @@ def predict_model(dataframe, model, harmonize_option):
     MAE = mean_absolute_error(y_test, predict_y)
     PR = pearsonr(y_test, predict_y)[0]
 
+
     plt.figure(figsize=(8, 8))
-    plt.scatter(y_test, predict_y, c="y")
+    plt.scatter(y_test, predict_y, alpha = 0.5, c = MSE.map(colors), cmap = 'viridis')
+    plt.colorbar()
     plt.xlabel("Ground truth Age(years)", fontsize=18)
     plt.ylabel("Predicted Age(years)", fontsize=18)
     plt.plot(
@@ -203,7 +207,7 @@ def predict_model(dataframe, model, harmonize_option):
     plt.text(
         y_test.max() - 18,
         predict_y.max() - 16,
-        f"MSE= {round(MSE,3)}",
+        f"MSE= {round(MSE,3)} (years)",
         fontsize=14
     )
     plt.text(
@@ -213,7 +217,7 @@ def predict_model(dataframe, model, harmonize_option):
         fontsize=14
     )
     plt.text(
-        y_test.max() - 18, predict_y.max() - 18, f"MAE= {round(MAE,3)}", fontsize=14
+        y_test.max() - 18, predict_y.max() - 18, f"MAE= {round(MAE,3)} (years)", fontsize=14
     )
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
@@ -285,7 +289,8 @@ for harmonize_option in harmonize_list:
             Tuning different regression model on healthy subjects
             """
             tune_model(df_TD_train, model, hyperparams[i], harmonize_option)
-
+            
+    for i, model in enumerate(models):
         age_truth_TD, delta_TD = predict_model(df_TD_test, model, harmonize_option)
         age_truth_AS, delta_AS = predict_model(df_AS, model, harmonize_option)
         compare_prediction(

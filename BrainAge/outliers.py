@@ -115,7 +115,7 @@ class Outliers:
         plt.ylabel("Number of Samples", fontsize=20)
 
         # Fit as a gaussian
-        p0 = [0.4, 0.05, 20]
+        p0 = [0.2, 0.05, 1]
         # p0 = [8000, 1000, 10]
         fit, fitCov = curve_fit(gaussian, xdiscrete_1, n_1, p0=p0)
         fit_err = np.sqrt(abs(np.diag(fitCov)))
