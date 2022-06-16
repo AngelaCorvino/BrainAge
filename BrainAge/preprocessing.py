@@ -28,7 +28,7 @@ class Preprocessing:
         dataframe : dataframe-like
                     The dataframe of raw data  to be passed to the preprocessing class.
         prep_option : string-like
-                           String containing one of the options: 'raw', 'combat', 'neuro'.
+                           String containing one of the options: 'not_normalized', 'normalized', 'combat', 'neuro'.
         plot_option : boolean
                       If True shows some plots of data. Default is True
 
@@ -38,9 +38,10 @@ class Preprocessing:
         dataframe_harmonized : dataframe-like
                                Dataframe containing harmonized data.
         """
-        self.add_features(dataframe)
+        self.add_TotalWhiteVol(dataframe)
         self.add_age_binning(dataframe)
         self.add_site(dataframe)
+        dataframe = self.remove_FIQ(dataframe)
         # PLOTTING DATA
         if plot_option is True:
             self.plot_boxplot(dataframe, "SITE", "AGE_AT_SCAN")
@@ -79,7 +80,7 @@ class Preprocessing:
             dataframe = dataframe_neuro
             print("Dataframe is normalized and harmonized with NeuroHarmonize")
 
-        dataframe = dataframe.drop(["FILE_ID"], axis=1)
+        dataframe.drop(["FILE_ID"], axis=1, inplace=True)
         return dataframe
 
     # def __str__(self):
@@ -129,7 +130,7 @@ class Preprocessing:
         df_TD = dataframe.loc[dataframe.DX_GROUP == -1]
         return df_AS, df_TD
 
-    def add_features(self, dataframe):
+    def add_TotalWhiteVol(self, dataframe):
         """
         Adds columns with derived features to dataframe.
 
@@ -142,8 +143,14 @@ class Preprocessing:
         dataframe["TotalWhiteVol"] = (
             dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
         )
-        dataframe["FIQ"] = dataframe["FIQ"].where(dataframe["FIQ"] > 0, 0)
-
+        
+    def remove_FIQ(self, dataframe):
+        """
+        
+        """
+        dataframe = dataframe.drop(["FIQ"], axis = 1)
+        return dataframe
+        
     def add_site(self, dataframe):
         """
         Adds column with Site description.
@@ -211,6 +218,7 @@ class Preprocessing:
         """
         dataframe[dataframe.loc[:, feature] > 0].hist([feature])
         plt.show()
+<<<<<<< HEAD
 
     def aux_retrieve_name(var):
         callers_local_vars = inspect.currentframe().f_back.f_back.f_locals.items()
@@ -218,6 +226,8 @@ class Preprocessing:
         print('Dataframe name: "{}"'.format(name))
         return name
 
+=======
+>>>>>>> d6a25145570972cc4746b13af777a112adb84dad
 
     def plot_boxplot(self, dataframe, featurex, featurey):
         """
@@ -315,7 +325,6 @@ class Preprocessing:
                     "AGE_CLASS",
                     "DX_GROUP",
                     "SEX",
-                    "FIQ",
                     "FILE_ID",
                     "SITE",
                 ]
@@ -325,7 +334,6 @@ class Preprocessing:
                     "AGE_CLASS",
                     "DX_GROUP",
                     "SEX",
-                    "FIQ",
                     "FILE_ID",
                     "SITE",
                 ]
@@ -369,9 +377,9 @@ class Preprocessing:
             ["FILE_ID", "SITE"], axis=1
         ).keys()
         df_combat_harmonized[
-            ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ", "FILE_ID", "SITE"]
+            ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FILE_ID", "SITE"]
         ] = dataframe[
-            ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ", "FILE_ID", "SITE"]
+            ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FILE_ID", "SITE"]
         ]
         return df_combat_harmonized
 

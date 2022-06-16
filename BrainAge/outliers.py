@@ -47,7 +47,7 @@ class Outliers:
         Constructur
         """
         self.dataframe = dataframe
-        self.model=self.model_upload()
+        self.model = self.model_upload()
 
     def __call__(self, nbins, plot=True):
         """Short summary.
@@ -114,7 +114,7 @@ class Outliers:
         plt.xlabel("Test MAE Loss", fontsize=20)
         plt.ylabel("Number of Samples", fontsize=20)
 
-        # fit as a gaussian
+        # Fit as a gaussian
         p0 = [0.4, 0.05, 20]
         # p0 = [8000, 1000, 10]
         fit, fitCov = curve_fit(gaussian, xdiscrete_1, n_1, p0=p0)
@@ -217,4 +217,4 @@ if __name__ == "__main__":
     df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
     out = Outliers(df_TD)
-    df_TD = out(nbins=500, plot=True)
+    df_TD = out(nbins = 500, plot=True)
