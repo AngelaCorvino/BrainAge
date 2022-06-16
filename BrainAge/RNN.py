@@ -44,7 +44,7 @@ def step_wise(x, N=4, a=100):
 
 
 class RNN:
-    """Class implementing peplicator neural network.
+    """Class implementing Replicator Neural Network.
 
     Parameters
     ----------
@@ -52,18 +52,14 @@ class RNN:
     """
 
     def __init__(self, X_train):
-        """Constructur.
+        """Constructor.
 
         Parameters
         ----------
-        X_train : datframe-liket
-            Dataframe given to train the RNN.
-
+        X_train : dataframe-like
+            Dataframe to replicate with the RNN.
         """
-
-
         self.X_train = X_train
-
 
     def __call__(self, epochs):
         """Short summary.
@@ -74,8 +70,8 @@ class RNN:
             Epochs needed to train the RNN .
 
         """
-        model=self.make_autoencoder()
-        self.fit_autoencoder(model,epochs)
+        model = self.make_autoencoder()
+        self.fit_autoencoder(model, epochs)
 
     def make_autoencoder(self):
         """Autoencoder trained comparing the output vector with the input features,
@@ -102,7 +98,7 @@ class RNN:
         model.summary()
         return model
 
-    def fit_autoencoder(self,model, epochs):
+    def fit_autoencoder(self, model, epochs):
         """Short summary.
 
         Parameters
@@ -130,8 +126,6 @@ class RNN:
             pickle.dump(model, files)
         return history
 
-
-
 if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
@@ -139,4 +133,4 @@ if __name__ == "__main__":
     df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
     autoencoder = RNN(df_TD)
-    df_TD = autoencoder(epochs=2000)
+    autoencoder(epochs=1000)
