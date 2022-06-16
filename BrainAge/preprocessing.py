@@ -2,6 +2,7 @@
 """
 Module contains a class Preprocessing, with methods allowing to upload dataframe from file, add derived features, preprocess with some normalization options and harmonization options.
 """
+import inspect
 import pandas as pd
 import seaborn as sns
 import numpy as np
@@ -210,6 +211,13 @@ class Preprocessing:
         """
         dataframe[dataframe.loc[:, feature] > 0].hist([feature])
         plt.show()
+        
+    def aux_retrieve_name(var):
+        callers_local_vars = inspect.currentframe().f_back.f_back.f_locals.items()
+        name = [var_name for var_name, var_val in callers_local_vars if var_val is var]
+        print('Dataframe name: "{}"'.format(name))
+        return name
+
 
     def plot_boxplot(self, dataframe, featurex, featurey):
         """
@@ -225,10 +233,11 @@ class Preprocessing:
         featurey : string-like
                    The feature in the y-axis of the boxplot.
         """
-        sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=dataframe,hue=f" {dataframe.__name__}")
+        name = self.retrieve_name(dataframe)
+        sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=dataframe)
         sns_boxplot.set_xticklabels(labels=sns_boxplot.get_xticklabels(), rotation=50)
         sns_boxplot.grid(linestyle='-')
-        sns_boxplot.set_title("Box plot of " + featurey + " by " + featurex)
+        sns_boxplot.set_title("Box plot of " + featurey + " by " + featurex + " in " + name)
         sns_boxplot.set_ylabel(featurey)
         plt.show()
 
@@ -413,6 +422,18 @@ class Preprocessing:
         else:
             print(f"The dataframe is free of '{value}'")
         return dataframe
+        
+    def retrieve_name(self, var):
+        """
+        Retrieves name of variable.
+        """
+        callers_local_vars = inspect.currentframe().f_back.f_back.f_locals.items()
+        name = [var_name for var_name, var_val in callers_local_vars if var_val is var]
+        name = str(name)
+        name = name.replace('[','').replace(']','').replace('\'','')
+        print('Dataframe name: "{}"'.format(name))
+        print(type(name))
+        return name
 
 
 if __name__ == "__main__":

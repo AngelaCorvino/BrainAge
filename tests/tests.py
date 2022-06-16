@@ -8,7 +8,7 @@ package_name = "BrainAge"
 
 sys.path.insert(0, package_name)
 
-from features import Preprocessing
+from preprocessing import Preprocessing
 
 class TestBrainAge(unittest.TestCase):
     """
