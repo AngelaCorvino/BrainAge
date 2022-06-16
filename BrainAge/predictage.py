@@ -20,6 +20,10 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
 from sklearn.model_selection import GridSearchCV
 
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from scipy.stats import pearsonr
+
 from outliers import Outliers
 from preprocessing import Preprocessing
 from deepregression import DeepRegression
@@ -62,7 +66,7 @@ hyperparams = [
         "Feature__score_func": [f_regression],
         "Model__kernel": ["linear", "rbf", "poly"],
         "Model__degree": [3, 4],
-        "Model__random_state": [18],
+        #"Model__random_state": [18], Dà un errore Invalid Parameter for estimator SVR(kernel='linear'). Valid parameters are: ['C', 'cache_size', 'coef0', 'degree', 'epsilon', 'gamma', 'kernel', 'max_iter', 'shrinking', 'tol', 'verbose'].
     },
 ]
 
@@ -192,10 +196,9 @@ def predict_model(dataframe, model, harmonize_option):
     MAE = mean_absolute_error(y_test, predict_y)
     PR = pearsonr(y_test, predict_y)[0]
 
-
     plt.figure(figsize=(8, 8))
-    plt.scatter(y_test, predict_y, alpha = 0.5, c = MSE.map(colors), cmap = 'viridis')
-    plt.colorbar()
+    plt.scatter(y_test, predict_y, alpha = 0.5, c='y') #, c = MSE.map(colors), cmap = 'viridis'
+    #plt.colorbar()
     plt.xlabel("Ground truth Age(years)", fontsize=18)
     plt.ylabel("Predicted Age(years)", fontsize=18)
     plt.plot(
@@ -240,8 +243,8 @@ def predict_model(dataframe, model, harmonize_option):
 
 def compare_prediction(y_test1, delta1, y_test2, delta2, model, harmonize_option):
     plt.figure(figsize=(8, 8))
-    plt.scatter(y_test1, delta1, c="1")
-    plt.scatter(y_test2, delta2, c="2")
+    plt.scatter(y_test1, delta1, c="b")
+    plt.scatter(y_test2, delta2, c="g")
     plt.xlabel("Ground truth Age(years)", fontsize=18)
     plt.ylabel("Delta Age(years)", fontsize=18)
     plt.title(
