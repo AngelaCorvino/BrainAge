@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name, redefined-outer-name, import-error
 """
-Cosa fa questo modulo
+Main which finds optimum hyperparameters for a given model using grid-search. Compares different optimized regression models in pipeline for different harmonizing options.
 """
 import pickle
 import matplotlib.pyplot as plt
@@ -12,7 +12,6 @@ from sklearn.linear_model import Lasso
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.ensemble import RandomForestRegressor
 
-
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
@@ -21,7 +20,7 @@ from sklearn.feature_selection import f_regression
 from sklearn.model_selection import GridSearchCV
 
 from crossvalidation import Crossvalidation
-from features import Preprocessing
+from preprocessing import Preprocessing
 from deepregression import DeepRegression
 
 
@@ -153,12 +152,10 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
         format="png",
     )
 
-
 ########################################################PREPROCESSING
 prep = Preprocessing()
 df = prep.read_file("data/FS_features_ABIDE_males.csv")
 crossvalidation = Crossvalidation()
-
 
 models = [
     DeepRegression(),

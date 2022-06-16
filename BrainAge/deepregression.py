@@ -1,8 +1,7 @@
 # pylint: disable=invalid-name, redefined-outer-name, import-error
 """
-Module implements a MLP and fit the model on healthy subjects.
+Module implements a MLP and fits it on given dataframe.
 """
-# pylint: disable=invalid-name
 from keras.layers import Dense, Dropout, Input
 from keras.models import Model
 
@@ -10,10 +9,8 @@ from sklearn.base import BaseEstimator
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 class DeepRegression(BaseEstimator):
     """
-
     Class describing deep regression model.
 
     Ordinary least squares Linear Regression.
@@ -28,9 +25,6 @@ class DeepRegression(BaseEstimator):
     Attributes
     ----------
     model
-
-
-
     """
 
     def __init__(

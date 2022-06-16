@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name, redefined-outer-name, import-error
 """
-Cosa fa questo modulo
+Module implements RNN which tries to replicate given data, selects samples with reconstruction error larger than 3 sigmas and removes outlier samples from final dataframe.
 """
 from scipy.optimize import curve_fit
 from keras.layers import Dense
@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Custom activation function
-from features import Preprocessing
+from preprocessing import Preprocessing
 
 
 def step_wise(x, N=4, a=100):

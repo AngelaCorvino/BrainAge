@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name, redefined-outer-name
 """
-Module implements training in cross validation with k-fold and stratifiedK-fold.
+Module implements training in cross validation with K-fold and stratified K-fold.
 """
 import numpy as np
 

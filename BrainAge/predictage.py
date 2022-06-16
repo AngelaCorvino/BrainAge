@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name, redefined-outer-name, import-error
 """
-Cosa fa questo modulo
+Main which loads previously trained model and uses it to find the predicted age of a given dataframe.
 """
 import pickle
 import matplotlib.pyplot as plt
@@ -16,9 +16,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
-
 from regression import Regression
-from features import Preprocessing
+from preprocessing import Preprocessing
 from deepregression import DeepRegression
 
 
@@ -122,7 +121,7 @@ models = [
 ##########################################################
 
 ###############################################################################
-harmonize_list = ["raw", "combat", "neuro"]
+harmonize_list = ["normalized", "combat", "neuro"]
 
 for harmonize_option in harmonize_list:
     #"""

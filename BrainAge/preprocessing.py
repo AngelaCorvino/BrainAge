@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name, redefined-outer-name
 """
-Cosa fa questo modulo
+Module contains a class Preprocessing, with methods allowing to upload dataframe from file, add derived features, preprocess with some normalization options and harmonization options.
 """
 import pandas as pd
 import seaborn as sns
