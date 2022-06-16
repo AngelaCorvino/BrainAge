@@ -69,7 +69,7 @@ hyperparams = [
 harmonize_list = ["normalized", "combat_harmonized", "neuro_harmonized"]
 
 models = [
-    DeepRegression(),
+    DeepRegression(plot_loss=True),
     LinearRegression(),
     GaussianProcessRegressor(),
     RandomForestRegressor(),
@@ -184,6 +184,7 @@ def predict_model(dataframe, model, harmonize_option):
     y_test=dataframe["AGE_AT_SCAN"]
 
     predict_y = model_fit.predict(x_test)  # similar
+    delta=predict_y-y_test
     MSE = mean_squared_error(y_test, predict_y)
     MAE = mean_absolute_error(y_test, predict_y)
     # PR=pearsonr(y_test,predict_y)[0]
@@ -215,7 +216,30 @@ def predict_model(dataframe, model, harmonize_option):
     )
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
-            {}  with {} AD data".format(
+            {}  with {} {} data".format(
+            model.__class__.__name__, harmonize_option,prep.retrieve_name(dataframe)
+        ),
+        fontsize=20,
+    )
+    plt.tick_params(axis="x", which="major", labelsize=18)
+    plt.tick_params(axis="y", which="major", labelsize=18)
+    plt.legend()
+    plt.savefig(
+        "images/%s%s_%s.png" % (prep.retrieve_name(dataframe),model.__class__.__name__, harmonize_option),
+        dpi=200,
+        format="png",
+    )
+    return y_test,delta
+
+def compare_prediction(y_test1,delta1,y_test2,delta2,model,harmonize_option):
+    plt.figure(figsize=(8, 8))
+    plt.scatter(y_test1, delta1, c="1")
+    plt.scatter(y_test2, delta2, c="2")
+    plt.xlabel("Ground truth Age(years)", fontsize=18)
+    plt.ylabel("Delta Age(years)", fontsize=18)
+    plt.title(
+        "Delta Age versus Ground-truth  Age using \n \
+            {}  with {} ".format(
             model.__class__.__name__, harmonize_option
         ),
         fontsize=20,
@@ -224,11 +248,10 @@ def predict_model(dataframe, model, harmonize_option):
     plt.tick_params(axis="y", which="major", labelsize=18)
     plt.legend()
     plt.savefig(
-        "images/AD%s_%s.png" % (model.__class__.__name__, harmonize_option),
+        "images/TDvsAS%s_%s.png" % (model.__class__.__name__, harmonize_option),
         dpi=200,
         format="png",
     )
-
 
 ##################################################MAIN
 prep = Preprocessing()
@@ -247,7 +270,7 @@ for harmonize_option in harmonize_list:
     df_TD = out_td(nbins=500, plot=False)
     out_as = Outliers(df_AS)
     df_AS = out_as(nbins=500, plot=False)
-    (dataframe_train, dataframe_test) = train_test_split(
+    (df_TD_train, df_TD_test) = train_test_split(
                 df_TD,
                 test_size=0.25,
                 random_state=18,
@@ -257,8 +280,9 @@ for harmonize_option in harmonize_list:
             """
             Tuning different regression model on healthy subjects
             """
-            tune_model(dataframe_train, model, hyperparams[i], harmonize_option)
+            tune_model(df_TD_train, model, hyperparams[i], harmonize_option)
 
 
-        predict_model(dataframe_test, model, harmonize_option)
-        predict_model(df_AS, model, harmonize_option)
+        age_truth_TD,delta_TD=predict_model(df_TD_test, model, harmonize_option)
+        age_truth_AS,delta_AS=predict_model(df_AS, model, harmonize_option)
+        compare_prediction(age_truth_TD,delta_TD,age_truth_AS,delta_AS,model,harmonize_option)

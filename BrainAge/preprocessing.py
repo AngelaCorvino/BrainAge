@@ -211,7 +211,7 @@ class Preprocessing:
         """
         dataframe[dataframe.loc[:, feature] > 0].hist([feature])
         plt.show()
-        
+
     def aux_retrieve_name(var):
         callers_local_vars = inspect.currentframe().f_back.f_back.f_locals.items()
         name = [var_name for var_name, var_val in callers_local_vars if var_val is var]
@@ -236,9 +236,13 @@ class Preprocessing:
         name = self.retrieve_name(dataframe)
         sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=dataframe)
         sns_boxplot.set_xticklabels(labels=sns_boxplot.get_xticklabels(), rotation=50, fontsize = 20)
-        sns_boxplot.grid(linestyle='-')
-        sns_boxplot.set_title("Box plot of " + featurey + " by " + featurex + " in " + name, fontsize=24)
+        plt.yticks(fontsize = 20)
+        sns_boxplot.set_axisbelow(True)
+        sns_boxplot.grid(True, linestyle='-', which='major', color='lightgrey',
+               alpha=0.5)
+        sns_boxplot.set_title("Box plot of "+ featurey+ " by "+featurex+" in "+ name+" dataframe", fontsize=24)
         sns_boxplot.set_ylabel(featurey, fontsize=20)
+
         plt.show()
 
     def self_normalize(self, dataframe):
@@ -423,7 +427,7 @@ class Preprocessing:
         else:
             print(f"The dataframe '{name}' is free of '{value}'")
         return dataframe
-        
+
     def retrieve_name(self, var):
         """
         Retrieves name of variable.
