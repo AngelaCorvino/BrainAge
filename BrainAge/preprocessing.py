@@ -10,8 +10,7 @@ import matplotlib.pyplot as plt
 from neuroHarmonize import harmonizationLearn
 from neuroCombat import neuroCombat
 
-pd.set_option("display.max_rows", None)
-
+#pd.set_option("display.max_rows", None)
 
 class Preprocessing:
     """
