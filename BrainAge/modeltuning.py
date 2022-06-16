@@ -1,9 +1,11 @@
+# pylint: disable=invalid-name, redefined-outer-name, import-error
+"""
+Cosa fa questo modulo
+"""
 import pickle
-import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
-from scipy.stats import pearsonr
 from sklearn.svm import SVR
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
@@ -13,7 +15,6 @@ from sklearn.ensemble import RandomForestRegressor
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import RobustScaler
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
@@ -25,6 +26,7 @@ from deepregression import DeepRegression
 
 
 # FUNCTIONS
+
 
 def tune_model(dataframe, model, hyparams, harmonize_option):
     """
@@ -59,7 +61,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
     )
 
     (x_train, x_test, y_train, y_test, y_train_class, y_test_class,) = train_test_split(
-        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP","AGE_CLASS"], axis=1),
+        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP", "AGE_CLASS"], axis=1),
         dataframe["AGE_AT_SCAN"],
         dataframe["AGE_CLASS"],
         test_size=0.25,
@@ -91,20 +93,17 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
     model_cv.fit(x_train, y_train)
 
     print("Best combination of hyperparameters:", model_cv.best_params_)
-
-    """
-        We have our optimal list of parameters,
-        we can run the model using these parameters.
-        This cross validation is done using StratifiedKFold
-    """
-
+    #"""
+    #    We have our optimal list of parameters,
+    #    we can run the model using these parameters.
+    #    This cross validation is done using StratifiedKFold
+    #"""
     model_fit, y_test, predict_y, MSE, MAE, PR = crossvalidation.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
-    """
-    Save the best performing model fitted in stratifiedkfold cross validation
-
-    """
+    #"""
+    #Save the best performing model fitted in stratifiedkfold cross validation
+    #"""
     with open(
         "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "wb"
     ) as files:
@@ -154,6 +153,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
         format="png",
     )
 
+
 ########################################################PREPROCESSING
 prep = Preprocessing()
 df = prep.read_file("data/FS_features_ABIDE_males.csv")
@@ -172,10 +172,10 @@ models = [
 
 hyperparams = [
     {
-        "Feature__k": [50,100, 200, "all"],
+        "Feature__k": [50, 100, 200, "all"],
         "Feature__score_func": [f_regression],
         "Model__epochs": [100, 200],
-        "Model__drop_rate": [0.2,0.4,0.6],
+        "Model__drop_rate": [0.2, 0.4, 0.6],
     },
     {
         "Feature__k": [10, 20, 30],
@@ -212,14 +212,14 @@ hyperparams = [
 ###############################################################################
 harmonize_list = ["normalized", "combat_harmonized", "neuro_harmonized"]
 for harmonize_option in harmonize_list:
-    """
-    Compare different harmonization techniques
-    """
+    #"""
+    #Compare different harmonization techniques
+    #"""
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
     df_AS, df_TD = prep.split_file(dataframe)
     for i, model in enumerate(models):
-        """
-        Tuning different regression model on healthy subjects
-        """
+        #"""
+        #Tuning different regression model on healthy subjects
+        #"""
         tune_model(df_TD, model, hyperparams[i], harmonize_option)

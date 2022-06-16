@@ -1,9 +1,10 @@
+# pylint: disable=invalid-name, redefined-outer-name, import-error
+"""
+Cosa fa questo modulo
+"""
 import pickle
-import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import pearsonr
-
 
 from sklearn.svm import SVR
 from sklearn.linear_model import LinearRegression
@@ -22,6 +23,7 @@ from deepregression import DeepRegression
 
 
 # FUNCTIONS
+
 
 def run_model(dataframe, model, harmonize_option):
     """
@@ -49,7 +51,7 @@ def run_model(dataframe, model, harmonize_option):
         model_fit = pickle.load(f)
 
     (_, x_test, _, y_test) = train_test_split(
-        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP","AGE_CLASS"], axis=1),
+        dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP", "AGE_CLASS"], axis=1),
         dataframe["AGE_AT_SCAN"],
         test_size=0.9,
         random_state=18,
@@ -102,7 +104,6 @@ def run_model(dataframe, model, harmonize_option):
     )
 
 
-
 ########################################################PREPROCESSING
 prep = Preprocessing()
 df = prep.read_file("data/FS_features_ABIDE_males.csv")
@@ -118,18 +119,20 @@ models = [
     SVR(),
 ]
 
+##########################################################
+
 ###############################################################################
 harmonize_list = ["raw", "combat", "neuro"]
 
 for harmonize_option in harmonize_list:
-    """
-    Compare different harmonization techniques
-    """
+    #"""
+    #Compare different harmonization techniques
+    #"""
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
     df_AS, df_TD = prep.split_file(dataframe)
     for i, model in enumerate(models):
-        """
-        Predicting age of autistic subjects
-        """
+        #"""
+        #Predicting age of autistic subjects
+        #"""
         run_model(df_AS, model, harmonize_option)

@@ -1,4 +1,7 @@
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, redefined-outer-name
+"""
+Cosa fa questo modulo
+"""
 import pandas as pd
 import seaborn as sns
 import numpy as np
@@ -8,7 +11,6 @@ from neuroHarmonize import harmonizationLearn
 from neuroCombat import neuroCombat
 
 pd.set_option("display.max_rows", None)
-
 
 
 class Preprocessing:
@@ -40,10 +42,10 @@ class Preprocessing:
         self.add_age_binning(dataframe)
         self.add_site(dataframe)
         # PLOTTING DATA
-        if plot_option == True:
+        if plot_option is True:
             self.plot_boxplot(dataframe, "SITE", "AGE_AT_SCAN")
             self.plot_histogram(dataframe, "AGE_AT_SCAN")
-        #PROCESSING DATA
+        # PROCESSING DATA
         if prep_option == "not_normalized":
             print("Dataframe is not normalised")
         elif prep_option == "normalized":
@@ -58,22 +60,25 @@ class Preprocessing:
                 ), "There are NaN values in the dataframe!"
             except AssertionError as msg:
                 print(msg)
-            dataframe_combat= self.com_harmonize(
+            dataframe_combat = self.com_harmonize(
                 dataframe,
                 confounder="SITE_CLASS",
                 covariate="AGE_AT_SCAN",
             )
-            dataframe_combat = dataframe_combat.drop(["SITE_CLASS"], axis = 1)
+            dataframe_combat = dataframe_combat.drop(["SITE_CLASS"], axis=1)
             dataframe = dataframe_combat
             print("Dataframe is normalized and harmonized with NeuroCombat")
 
         elif prep_option == "neuro_harmonized":
             self.self_normalize(dataframe)
             dataframe_neuro = self.neuro_harmonize(
-                dataframe, confounder="SITE", covariate1="AGE_AT_SCAN",
+                dataframe,
+                confounder="SITE",
+                covariate1="AGE_AT_SCAN",
             )
+            dataframe = dataframe_neuro
             print("Dataframe is normalized and harmonized with NeuroHarmonize")
-        
+
         dataframe = dataframe.drop(["FILE_ID"], axis=1)
         return dataframe
 
@@ -160,12 +165,12 @@ class Preprocessing:
             dataframe.AGE_AT_SCAN, bins, labels=[x for x in range(1, bins + 1)]
         )
 
-
     def add_site_binning(
         self, dataframe
     ):  # capire se si può fare senza return come add_age_binning
         """
-        Creates a map  where SITE  is binned in the column SITE_CLASS and then merges it with the dataframe.
+        Creates a map  where SITE  is binned in the column SITE_CLASS,
+        then merges it with the dataframe.
 
         Parameters
         ----------
@@ -191,7 +196,6 @@ class Preprocessing:
         except KeyError:
             print("Column SITE does not exist")
         return dataframe
-
 
     def plot_histogram(self, dataframe, feature):
         """
@@ -229,7 +233,6 @@ class Preprocessing:
         sns_boxplot.set_ylabel(featurey)
         plt.show()
 
-
     def self_normalize(self, dataframe):
         """
         Makes self normalization on data.
@@ -262,8 +265,6 @@ class Preprocessing:
             :, ["Vol" in i for i in dataframe.columns]
         ].divide((dataframe["TotalGrayVol"] + dataframe["TotalWhiteVol"]), axis=0)
 
-
-
     def neuro_harmonize(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
         """
         Harmonize dataset with neuroHarmonize model:
@@ -289,19 +290,42 @@ class Preprocessing:
             covars = dataframe[[confounder, covariate1]]
             # dataframe=dataframe.astype(np.float)
             my_model, array_neuro_harmonized, s_data = harmonizationLearn(
-                np.array(dataframe.drop(["FILE_ID", "SITE"], axis=1)), covars, return_s_data=True
+                np.array(dataframe.drop(["FILE_ID", "SITE"], axis=1)),
+                covars,
+                return_s_data=True,
             )
             df_neuro_harmonized = pd.DataFrame(array_neuro_harmonized)
-            df_neuro_harmonized.columns = dataframe.drop(["FILE_ID", "SITE"], axis=1).keys()
+            df_neuro_harmonized.columns = dataframe.drop(
+                ["FILE_ID", "SITE"], axis=1
+            ).keys()
             df_neuro_harmonized[
-                ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ", "FILE_ID", "SITE"]
-            ] = dataframe[["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ", "FILE_ID", "SITE"]]
+                [
+                    "AGE_AT_SCAN",
+                    "AGE_CLASS",
+                    "DX_GROUP",
+                    "SEX",
+                    "FIQ",
+                    "FILE_ID",
+                    "SITE",
+                ]
+            ] = dataframe[
+                [
+                    "AGE_AT_SCAN",
+                    "AGE_CLASS",
+                    "DX_GROUP",
+                    "SEX",
+                    "FIQ",
+                    "FILE_ID",
+                    "SITE",
+                ]
+            ]
         except RuntimeWarning:
             print("How can we solve this?")
         return df_neuro_harmonized
 
     def com_harmonize(
-        self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"):
+        self, dataframe, confounder="SITE_CLASS", covariate="AGE_AT_SCAN"
+    ):
         """
         Harmonize dataset with ComBat model
 
@@ -309,11 +333,14 @@ class Preprocessing:
         ----------
 
         dataframe : dataframe-like
-                    Dataframe containing neuroimaging data to correct with shape = (samples, features) e.g. cortical thickness measurements, image voxels, etc
+                    Dataframe containing neuroimaging data to correct with shape = (samples, features)
+                    e.g. cortical thickness measurements, image voxels, etc
         confounder : string-like
-                     Categorical feature to be accounted as confounder, which indicates batch (scanner) column name in covars (e.g. "scanner") Default 'SITE_CLASS'.
+                     Categorical feature to be accounted as confounder, which indicates batch (scanner) column name in covars
+                     (e.g. "scanner") Default 'SITE_CLASS'.
         covariate : string-like
-                    Contains the batch/scanner covariate as well as additional covariates (optional) that should be preserved during harmonization. Default is 'AGE_AT_SCAN'.
+                    Contains the batch/scanner covariate as well as additional covariates (optional)
+                    that should be preserved during harmonization. Default is 'AGE_AT_SCAN'.
 
         Returns
         -------
@@ -322,15 +349,19 @@ class Preprocessing:
                               The dataframe containing harmonized data
         """
         array_combat_harmonized = neuroCombat(
-            dat=dataframe.drop(["FILE_ID", "SITE"], axis = 1).transpose(),
+            dat=dataframe.drop(["FILE_ID", "SITE"], axis=1).transpose(),
             covars=dataframe[[confounder, covariate]],
             batch_col=confounder,
         )["data"]
         df_combat_harmonized = pd.DataFrame(array_combat_harmonized.transpose())
-        df_combat_harmonized.columns = dataframe.drop(["FILE_ID", "SITE"], axis = 1).keys()
+        df_combat_harmonized.columns = dataframe.drop(
+            ["FILE_ID", "SITE"], axis=1
+        ).keys()
         df_combat_harmonized[
             ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ", "FILE_ID", "SITE"]
-        ] = dataframe[["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ", "FILE_ID", "SITE"]]
+        ] = dataframe[
+            ["AGE_AT_SCAN", "AGE_CLASS", "DX_GROUP", "SEX", "FIQ", "FILE_ID", "SITE"]
+        ]
         return df_combat_harmonized
 
     def feature_selection(self, dataframe, feature="AGE_AT_SCAN", plot_heatmap=False):
@@ -357,7 +388,7 @@ class Preprocessing:
         """
         agecorr = dataframe.corr()[feature]
         listoffeatures = agecorr[np.abs(agecorr) > 0.5].keys()
-        if plot_heatmap == True:
+        if plot_heatmap is True:
             dataframe_restricted = dataframe[listoffeatures]
             heatmap = sns.heatmap(dataframe_restricted.corr(), annot=True)
             plt.show()
@@ -365,22 +396,26 @@ class Preprocessing:
         X = dataframe[listoffeatures]
         y = dataframe[feature]
         return listoffeatures, X, y
-        
+
     def remove_strings(self, dataframe):
         """
         Returns initial dataframe without columns containing strings.
         """
         if "FILE_ID" in dataframe.keys():
-            dataframe = dataframe.drop(["FILE_ID"], axis = 1)
+            dataframe = dataframe.drop(["FILE_ID"], axis=1)
         if "SITE" in dataframe.keys():
-            dataframe = dataframe.drop(["SITE"], axis = 1)
-        type_dict = {col: dataframe[col].apply(lambda x: type(x)).unique().tolist() for col in dataframe.columns}
+            dataframe = dataframe.drop(["SITE"], axis=1)
+        type_dict = {
+            col: dataframe[col].apply(lambda x: type(x)).unique().tolist()
+            for col in dataframe.columns
+        }
         value = [str]
         if value in type_dict.values():
             print(f"The dataframe still contains '{value}'")
         else:
             print(f"The dataframe is free of '{value}'")
         return dataframe
+
 
 if __name__ == "__main__":
 
@@ -392,8 +427,8 @@ if __name__ == "__main__":
     print(df2.shape)
     df_neuro_harmonized = prep(df, "neuro_harmonized", plot_option=False)
     print(df_neuro_harmonized.shape)
-    df_combat_harmonized= prep(df, "combat_harmonized", plot_option=False)
+    df_combat_harmonized = prep(df, "combat_harmonized", plot_option=False)
     print(df_combat_harmonized.shape)
-    prep.plot_boxplot(df2,'SITE',"TotalWhiteVol")
-    prep.plot_boxplot(df_neuro_harmonized,'SITE',"TotalWhiteVol")
+    prep.plot_boxplot(df2, "SITE", "TotalWhiteVol")
+    prep.plot_boxplot(df_neuro_harmonized, "SITE", "TotalWhiteVol")
     prep.remove_strings(df1)

@@ -1,15 +1,14 @@
+# pylint: disable=invalid-name, redefined-outer-name, import-error
 """
 Module implements a MLP and fit the model on healthy subjects.
 """
 # pylint: disable=invalid-name
-from keras.layers import Dense, Dropout, Input, Flatten
-from keras.models import Model, load_model
+from keras.layers import Dense, Dropout, Input
+from keras.models import Model
 
 from sklearn.base import BaseEstimator
 import matplotlib.pyplot as plt
 import pandas as pd
-
-
 
 
 class DeepRegression(BaseEstimator):
@@ -41,7 +40,7 @@ class DeepRegression(BaseEstimator):
         plot_loss=False,
     ):
         self.epochs = epochs
-        self.drop_rate=drop_rate
+        self.drop_rate = drop_rate
         self.plot_loss = plot_loss
 
     def fit(self, X, y):
@@ -77,13 +76,12 @@ class DeepRegression(BaseEstimator):
             X, y, validation_split=0.3, epochs=self.epochs, batch_size=32, verbose=1
         )
 
-
-        if self.plot_loss == True:
-            """
-            This parameter allows to plot the training and validation loss
-            curves of the trained model, enabling visual diagnosis of
-            underfitting (bias) or overfitting (variance).
-            """
+        if self.plot_loss is True:
+            #"""
+            #This parameter allows to plot the training and validation loss
+            #curves of the trained model, enabling visual diagnosis of
+            #underfitting (bias) or overfitting (variance).
+            #"""
 
             training_validation_loss = pd.DataFrame.from_dict(
                 history.history, orient="columns"
@@ -110,6 +108,9 @@ class DeepRegression(BaseEstimator):
             plt.show()
 
     def predict(self, X):
+        """
+        Describe predict function
+        """
         return self.model.predict(X)
 
         #     def reconstruction_error(self,model):

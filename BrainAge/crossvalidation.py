@@ -1,6 +1,7 @@
-"""Module implements training in cross validation with k-fold and stratifiedK-fold.
+# pylint: disable=invalid-name, redefined-outer-name
 """
-# pylint: disable=invalid-name
+Module implements training in cross validation with k-fold and stratifiedK-fold.
+"""
 import numpy as np
 
 from scipy.stats import pearsonr
@@ -10,14 +11,13 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 
 
-
 class Crossvalidation:
     """
     Class implementing model training in cross validation.
     """
 
     def k_fold(self, X, y, n_splits, model):
-        """ Fit and predict using cross validation
+        """Fit and predict using cross validation
         with a model (or pipeline) supplied by the user.
 
         Parameters
@@ -52,15 +52,11 @@ class Crossvalidation:
 
             print("Model parameters:", model.get_params())
 
-
-
             MSE.append(mean_squared_error(y[test_index], predict_y, squared=False))
             MAE.append(mean_absolute_error(y[test_index], predict_y))
             PR.append(pearsonr(y[test_index], predict_y))
 
-        print(
-            f"\n\nCross-Validation MSE, MAE: {np.mean(MSE):0.3f} {np.mean(MAE):0.3f}"
-        )
+        print(f"\n\nCross-Validation MSE, MAE: {np.mean(MSE):0.3f} {np.mean(MAE):0.3f}")
 
         return y[test_index], predict_y, np.mean(MSE), np.mean(MAE), np.mean(PR)
 
@@ -113,4 +109,5 @@ class Crossvalidation:
             predict_y,
             np.mean(MSE),
             np.mean(MAE),
-            np.mean(PR,axis=0))
+            np.mean(PR, axis=0),
+        )

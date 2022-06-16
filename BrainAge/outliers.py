@@ -1,4 +1,7 @@
-# pylint: disable=invalid-name, redefined-outer-name
+# pylint: disable=invalid-name, redefined-outer-name, import-error
+"""
+Cosa fa questo modulo
+"""
 from scipy.optimize import curve_fit
 from keras.layers import Dense
 from keras.layers import Input
