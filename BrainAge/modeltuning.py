@@ -23,10 +23,7 @@ from crossvalidation import Crossvalidation
 from preprocessing import Preprocessing
 from deepregression import DeepRegression
 
-
-# FUNCTIONS
-
-
+############################################################# FUNCTIONS
 def tune_model(dataframe, model, hyparams, harmonize_option):
     """
     Run run a grid-search for  hyperparameters tuning,
@@ -152,11 +149,7 @@ def tune_model(dataframe, model, hyparams, harmonize_option):
         format="png",
     )
 
-########################################################PREPROCESSING
-prep = Preprocessing()
-df = prep.read_file("data/FS_features_ABIDE_males.csv")
-crossvalidation = Crossvalidation()
-
+########################################################OPTIONS
 models = [
     DeepRegression(),
     LinearRegression(),
@@ -165,7 +158,6 @@ models = [
     Lasso(),
     SVR(),
 ]
-
 
 hyperparams = [
     {
@@ -206,8 +198,14 @@ hyperparams = [
         "Model__random_state": [18],
     },
 ]
-###############################################################################
+
 harmonize_list = ["normalized", "combat_harmonized", "neuro_harmonized"]
+
+#########################################################################MAIN
+prep = Preprocessing()
+df = prep.read_file("data/FS_features_ABIDE_males.csv")
+crossvalidation = Crossvalidation()
+
 for harmonize_option in harmonize_list:
     #"""
     #Compare different harmonization techniques
@@ -215,6 +213,8 @@ for harmonize_option in harmonize_list:
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
     df_AS, df_TD = prep.split_file(dataframe)
+    out = Outliers(df_TD)
+    df_TD = clean_dataframe = out(epochs=100, nbins=500, plot=False)
     for i, model in enumerate(models):
         #"""
         #Tuning different regression model on healthy subjects

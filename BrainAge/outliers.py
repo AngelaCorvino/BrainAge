@@ -294,4 +294,4 @@ if __name__ == "__main__":
     df = prep(df, "normalized", False)
     df_AS, df_TD = prep.split_file(df)
     out = Outliers(df_TD)
-    clean_dataframe = out(epochs=100, nbins=500, plot=True)
+    df_TD = clean_dataframe = out(epochs=100, nbins=500, plot=True)

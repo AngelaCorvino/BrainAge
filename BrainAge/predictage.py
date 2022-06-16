@@ -21,9 +21,7 @@ from preprocessing import Preprocessing
 from deepregression import DeepRegression
 
 
-# FUNCTIONS
-
-
+################################################# FUNCTIONS
 def run_model(dataframe, model, harmonize_option):
     """
 
@@ -103,12 +101,7 @@ def run_model(dataframe, model, harmonize_option):
     )
 
 
-########################################################PREPROCESSING
-prep = Preprocessing()
-df = prep.read_file("data/FS_features_ABIDE_males.csv")
-regression = Regression()
-
-
+########################################################OPTIONS
 models = [
     DeepRegression(),
     LinearRegression(),
@@ -118,10 +111,12 @@ models = [
     SVR(),
 ]
 
-##########################################################
-
-###############################################################################
 harmonize_list = ["normalized", "combat", "neuro"]
+
+##################################################MAIN
+prep = Preprocessing()
+df = prep.read_file("data/FS_features_ABIDE_males.csv")
+regression = Regression()
 
 for harmonize_option in harmonize_list:
     #"""
@@ -130,6 +125,10 @@ for harmonize_option in harmonize_list:
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
     df_AS, df_TD = prep.split_file(dataframe)
+    out_td = Outliers(df_TD)
+    df_TD = clean_dataframe = out_td(epochs=200, nbins=500, plot=False)
+    out_as = Outliers(df_AS)
+    df_AS = clean_dataframe = out_as(epochs=200, nbins=500, plot=False)
     for i, model in enumerate(models):
         #"""
         #Predicting age of autistic subjects
