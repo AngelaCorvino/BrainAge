@@ -137,6 +137,6 @@ if __name__ == "__main__":
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
     df = prep(df, "normalized", False)
     df = prep.remove_strings(df)
-    df_AS, df_TD = prep.split_file(df.drop(["AGE_CLASS"], axis = 1))
+    df_AS, df_TD = prep.split_file(df)
     autoencoder = RNN(df_TD)
     df_TD = autoencoder(epochs=2000)

@@ -217,4 +217,4 @@ if __name__ == "__main__":
     df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
     out = Outliers(df_TD)
-    df_TD = clean_dataframe = out(nbins=500, plot=True)
+    df_TD = out(nbins=500, plot=True)
