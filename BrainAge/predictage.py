@@ -13,7 +13,6 @@ from sklearn.linear_model import Lasso
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.ensemble import RandomForestRegressor
 
-
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
@@ -109,10 +108,11 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
         ]
     )
 
-
-    x_train=dataframe_train.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP", "AGE_CLASS"], axis=1)
-    y_train=dataframe_train["AGE_AT_SCAN"]
-    y_train_class=dataframe_train["AGE_CLASS"]
+    x_train = dataframe_train.drop(
+        ["AGE_AT_SCAN", "SEX", "DX_GROUP", "AGE_CLASS"], axis=1
+    )
+    y_train = dataframe_train["AGE_AT_SCAN"]
+    y_train_class = dataframe_train["AGE_CLASS"]
 
     if model == DeepRegression():
         # if model.__class__.__name__== DeepRegression:
@@ -180,14 +180,15 @@ def predict_model(dataframe, model, harmonize_option):
     ) as f:
         model_fit = pickle.load(f)
 
-    x_test=dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP", "AGE_CLASS"], axis=1)
-    y_test=dataframe["AGE_AT_SCAN"]
+    x_test = dataframe.drop(["AGE_AT_SCAN", "SEX", "DX_GROUP", "AGE_CLASS"], axis=1)
+    y_test = dataframe["AGE_AT_SCAN"]
 
-    predict_y = model_fit.predict(x_test)  # similar
-    delta=predict_y-y_test
+    predict_y = model_fit.predict(x_test)
+    predict_y = np.squeeze(predict_y)
+    delta = predict_y - y_test
     MSE = mean_squared_error(y_test, predict_y)
     MAE = mean_absolute_error(y_test, predict_y)
-    # PR=pearsonr(y_test,predict_y)[0]
+    PR = pearsonr(y_test, predict_y)[0]
 
     plt.figure(figsize=(8, 8))
     plt.scatter(y_test, predict_y, c="y")
@@ -197,27 +198,27 @@ def predict_model(dataframe, model, harmonize_option):
         np.linspace(y_test.min(), predict_y.max(), 100),
         np.linspace(y_test.min(), predict_y.max(), 100),
         c="r",
-        label="Expected prediction line",
+        label="Expected prediction line"
     )
     plt.text(
         y_test.max() - 18,
-        predict_y.max() - 18,
+        predict_y.max() - 16,
         f"MSE= {round(MSE,3)}",
-        fontsize=14,
+        fontsize=14
     )
-    # plt.text(
-    #     y_test.max() - 18,
-    #     predict_y.max() - 16,
-    #     f"PR= {round(PR,3)}",
-    #     fontsize=14,
-    # )
     plt.text(
-        y_test.max() - 18, predict_y.max() - 20, f"MAE= {round(MAE,3)}", fontsize=14
+        y_test.max() - 18,
+        predict_y.max() - 14,
+        f"PR= {round(PR,3)}",
+        fontsize=14
+    )
+    plt.text(
+        y_test.max() - 18, predict_y.max() - 18, f"MAE= {round(MAE,3)}", fontsize=14
     )
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
             {}  with {} {} data".format(
-            model.__class__.__name__, harmonize_option,prep.retrieve_name(dataframe)
+            model.__class__.__name__, harmonize_option, prep.retrieve_name(dataframe)
         ),
         fontsize=20,
     )
@@ -225,13 +226,15 @@ def predict_model(dataframe, model, harmonize_option):
     plt.tick_params(axis="y", which="major", labelsize=18)
     plt.legend()
     plt.savefig(
-        "images/%s%s_%s.png" % (prep.retrieve_name(dataframe),model.__class__.__name__, harmonize_option),
+        "images/%s%s_%s.png"
+        % (prep.retrieve_name(dataframe), model.__class__.__name__, harmonize_option),
         dpi=200,
         format="png",
     )
-    return y_test,delta
+    return y_test, delta
 
-def compare_prediction(y_test1,delta1,y_test2,delta2,model,harmonize_option):
+
+def compare_prediction(y_test1, delta1, y_test2, delta2, model, harmonize_option):
     plt.figure(figsize=(8, 8))
     plt.scatter(y_test1, delta1, c="1")
     plt.scatter(y_test2, delta2, c="2")
@@ -253,15 +256,16 @@ def compare_prediction(y_test1,delta1,y_test2,delta2,model,harmonize_option):
         format="png",
     )
 
+
 ##################################################MAIN
 prep = Preprocessing()
 df = prep.read_file("data/FS_features_ABIDE_males.csv")
 tune = input("Do you want to tune the models (yes/no): ")
 
 for harmonize_option in harmonize_list:
-    #"""
-    #Compare different harmonization techniques
-    #"""
+    # """
+    # Compare different harmonization techniques
+    # """
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
     dataframe = prep.remove_strings(dataframe)
@@ -271,18 +275,19 @@ for harmonize_option in harmonize_list:
     out_as = Outliers(df_AS)
     df_AS = out_as(nbins=500, plot=False)
     (df_TD_train, df_TD_test) = train_test_split(
-                df_TD,
-                test_size=0.25,
-                random_state=18,
-            )
+        df_TD,
+        test_size=0.25,
+        random_state=18,
+    )
     for i, model in enumerate(models):
-        if tune== 'yes':
+        if tune == "yes":
             """
             Tuning different regression model on healthy subjects
             """
             tune_model(df_TD_train, model, hyperparams[i], harmonize_option)
 
-
-        age_truth_TD,delta_TD=predict_model(df_TD_test, model, harmonize_option)
-        age_truth_AS,delta_AS=predict_model(df_AS, model, harmonize_option)
-        compare_prediction(age_truth_TD,delta_TD,age_truth_AS,delta_AS,model,harmonize_option)
+        age_truth_TD, delta_TD = predict_model(df_TD_test, model, harmonize_option)
+        age_truth_AS, delta_AS = predict_model(df_AS, model, harmonize_option)
+        compare_prediction(
+            age_truth_TD, delta_TD, age_truth_AS, delta_AS, model, harmonize_option
+        )
