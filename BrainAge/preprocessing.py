@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from neuroHarmonize import harmonizationLearn
 from neuroCombat import neuroCombat
 
-#pd.set_option("display.max_rows", None)
+
 
 class Preprocessing:
     """
@@ -143,14 +143,14 @@ class Preprocessing:
         dataframe["TotalWhiteVol"] = (
             dataframe.lhCerebralWhiteMatterVol + dataframe.rhCerebralWhiteMatterVol
         )
-        
+
     def remove_FIQ(self, dataframe):
         """
-        
+
         """
         dataframe = dataframe.drop(["FIQ"], axis = 1)
         return dataframe
-        
+
     def add_site(self, dataframe):
         """
         Adds column with Site description.
@@ -218,16 +218,6 @@ class Preprocessing:
         """
         dataframe[dataframe.loc[:, feature] > 0].hist([feature])
         plt.show()
-<<<<<<< HEAD
-
-    def aux_retrieve_name(var):
-        callers_local_vars = inspect.currentframe().f_back.f_back.f_locals.items()
-        name = [var_name for var_name, var_val in callers_local_vars if var_val is var]
-        print('Dataframe name: "{}"'.format(name))
-        return name
-
-=======
->>>>>>> d6a25145570972cc4746b13af777a112adb84dad
 
     def plot_boxplot(self, dataframe, featurex, featurey):
         """
