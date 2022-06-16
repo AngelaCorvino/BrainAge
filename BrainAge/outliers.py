@@ -1,7 +1,8 @@
-# pylint: disable=invalid-name, redefined-outer-name, import-error
 """
-Module implements RNN which tries to replicate given data, selects samples with reconstruction error larger than 3 sigmas and removes outlier samples from final dataframe.
+Module  selects samples with reconstruction error larger than 3 sigmas and removes outlier samples from final dataframe.
 """
+import pickle
+
 from scipy.optimize import curve_fit
 from keras.layers import Dense
 from keras.layers import Input
@@ -16,28 +17,6 @@ import numpy as np
 # Custom activation function
 from preprocessing import Preprocessing
 
-
-def step_wise(x, N=4, a=100):
-    """Custom step-wise function to use as activation for RNN.
-
-    Parameters
-    ----------
-    x : array-like
-        Description of parameter `x`.
-    N : integer
-        Number of steps. Default is  4.
-    a : integer
-        Tuning parameter. Default is 100.
-    Returns
-    -------
-    y : array-like
-        Return function.
-
-    """
-    y = 1 / 2
-    for j in range(1, N):
-        y += (1 / (2 * (N - 1))) * (K.tanh(a * (x - (j / N))))
-    return y
 
 
 def gaussian(x, x0, sigma, a):
@@ -55,7 +34,6 @@ def sumgaussian(x, x0, x1, sigma0, sigma1, a, b):
     """
     return gaussian(x, x0, sigma0, a) + gaussian(x, x1, sigma1, b)
 
-
 class Outliers:
     """Class identifying outliers.
 
@@ -64,20 +42,19 @@ class Outliers:
 
     """
 
-    def __init__(self, X_train):
+    def __init__(self,dataframe):
         """
         Constructur
         """
-        self.X_train = X_train
-        self.model = self.make_autoencoder()
+        self.dataframe=dataframe
+        self.model=self.model_upload()
 
-    def __call__(self, epochs, nbins, plot=True):
+    def __call__(self, nbins, plot=True):
         """Short summary.
 
         Parameters
         ----------
-        epochs : type
-            Description of parameter `epochs`.
+
         nbins : type
             Description of parameter `nbins`.
         plot : type
@@ -90,65 +67,21 @@ class Outliers:
 
         """
 
-        self.fit_autoencoder(epochs)
+
         indexes = self.outliers(nbins)
         if plot is True:
-            self.plot_distribution(self.X_train, indexes, "AGE_AT_SCAN")
-        clean = self.clean_dataframe(self.X_train, indexes)
+            self.plot_distribution(indexes, "AGE_AT_SCAN")
+        clean = self.clean_dataframe(indexes)
         return clean
 
-    def make_autoencoder(self):
-        """Autoencoder trained comparing the output vector with the input features,
-        using the Mean Squared Error (MSE) as loss function..
 
-        Parameters
-        ----------
-
-        Returns
-        -------
-        model : type
-            The trained model.
-
-        history : type
-            summary of how the model trained (training error, validation error).
-
-        """
-        get_custom_objects().update({"step_wise": Activation(step_wise)})
-
-        inputs = Input(shape=self.X_train.shape[1])
-        hidden = Dense(30, activation="tanh")(inputs)
-        hidden = Dense(2, activation="step_wise")(hidden)
-        hidden = Dense(30, activation="tanh")(hidden)
-        outputs = Dense(self.X_train.shape[1], activation="linear")(hidden)
-
-        model = Model(inputs=inputs, outputs=outputs)
-        model.compile(loss="mean_absolute_error", optimizer="adam", metrics=["MAE"])
-        model.summary()
+    def model_upload(self):
+        with open(
+            "models/autoencoder_pkl" , "rb"
+        ) as f:
+            model = pickle.load(f)
         return model
 
-    def fit_autoencoder(self, epochs):
-        """Short summary.
-
-        Parameters
-        ----------
-        epochs : type
-            Description of parameter `epochs`.
-
-        Returns
-        -------
-        type
-            Description of returned object.
-
-        """
-        history = self.model.fit(
-            self.X_train,
-            self.X_train,
-            validation_split=0.4,
-            epochs=epochs,
-            batch_size=50,
-            verbose=1,
-        )
-        return history
 
     def outliers(self, nbins):
         """Identifies ouliers using autoencoder.
@@ -164,10 +97,10 @@ class Outliers:
             Description of returned object.
 
         """
-        x_pred = self.model.predict(self.X_train)
+        x_pred = self.model.predict(self.dataframe)
 
         test_mae_loss = np.mean(
-            np.abs(x_pred - np.array(self.X_train)), axis=1
+            np.abs(x_pred - np.array(self.dataframe)), axis=1
         ).reshape((-1))
 
         # Plot_test_variables
@@ -200,15 +133,7 @@ class Outliers:
             linewidth=1,
             label="fit",
         )
-        # fit a sum of gaussians
-        # p1 = [0.4, 24, 0.5, 0.1, 20, 5]
-        # fit, fitCov_1 = scipy.optimize.curve_fit(sumgaussian, xdiscrete_1, n_1, p0=p1)
-        # fit_err = np.sqrt(abs(np.diag(fitCov_1)))
-        # print(
-        #    f" First fit parameters: \n x_0 = {fit[0] : .3f} +-{fit_err[0] : .3f}\n x_1 = {fit[1] : .3f} +-{fit_err[1] : .3f}\n sigma_0 = {fit[2] : .3f} +-{fit_err[2] : .3f}\n sigma_1 = {fit[3] : .3f} +-{fit_err[3] : .3f}\n A = {fit[4] : .3f} +-{fit_err[4] : .3f}\n B = {fit[5] : .3f} +-{fit_err[5] : .3f}\n"
-        # )
-        # Plot_fit_test
-        # plt.plot(xcont_1, sumgaussian(xcont_1, *fit), color = 'red', linewidth=1, label='fit')
+
         plt.show()
 
         def condition(x, fit):
@@ -227,13 +152,13 @@ class Outliers:
         print("Number of final outlier samples: ", np.sum(final_outliers))
         print(
             "Percentage of outliers: ",
-            np.sum(final_outliers) / len(self.X_train) * 100,
+            np.sum(final_outliers) / len(self.dataframe) * 100,
             "%",
         )
         print("Reconstruction MAE error threshold: {} ".format(np.max(test_mae_loss)))
         return indexes
 
-    def plot_distribution(self, dataframe, indexes, feature):
+    def plot_distribution(self, indexes, feature):
         """Short summary.
 
         Parameters
@@ -251,7 +176,7 @@ class Outliers:
             Description of returned object.
 
         """
-        y = dataframe.iloc[indexes]
+        y = self.dataframe.iloc[indexes]
         bins = int(max(y[feature]) - min(y[feature]))
         plt.figure(2)
         n_1, _, _ = plt.hist(
@@ -267,7 +192,7 @@ class Outliers:
         plt.ylabel("Number of Samples", fontsize=18)
         return plt.show()
 
-    def clean_dataframe(self, dataframe, indexes):
+    def clean_dataframe(self, indexes):
         """Short summary.
 
         Parameters
@@ -283,8 +208,8 @@ class Outliers:
             Description of returned object.
 
         """
-        y = dataframe.iloc[indexes]
-        clean = dataframe.drop(index=y.index)
+        y = self.dataframe.iloc[indexes]
+        clean = self.dataframe.drop(index=y.index)
         return clean
 
 
@@ -292,6 +217,7 @@ if __name__ == "__main__":
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
     df = prep(df, "normalized", False)
+    df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
     out = Outliers(df_TD)
-    df_TD = clean_dataframe = out(epochs=100, nbins=500, plot=True)
+    df_TD = clean_dataframe = out( nbins=500, plot=True)
