@@ -22,6 +22,7 @@ from sklearn.model_selection import GridSearchCV
 from crossvalidation import Crossvalidation
 from preprocessing import Preprocessing
 from deepregression import DeepRegression
+from outliers import Outliers
 
 ############################################################# FUNCTIONS
 def tune_model(dataframe, model, hyparams, harmonize_option):
@@ -207,16 +208,16 @@ df = prep.read_file("data/FS_features_ABIDE_males.csv")
 crossvalidation = Crossvalidation()
 
 for harmonize_option in harmonize_list:
-    #"""
-    #Compare different harmonization techniques
-    #"""
+    """
+    Compare different harmonization techniques
+    """
     print("Harmonization model:", harmonize_option)
     dataframe = prep(df, harmonize_option, False)
     df_AS, df_TD = prep.split_file(dataframe)
     out = Outliers(df_TD)
-    df_TD = clean_dataframe = out(epochs=100, nbins=500, plot=False)
+    df_TD = clean_dataframe = out(nbins=500, plot=False)
     for i, model in enumerate(models):
-        #"""
-        #Tuning different regression model on healthy subjects
-        #"""
+        """
+        Tuning different regression model on healthy subjects
+        """
         tune_model(df_TD, model, hyperparams[i], harmonize_option)

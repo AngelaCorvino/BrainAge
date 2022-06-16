@@ -111,8 +111,6 @@ def run_model(dataframe, model, harmonize_option):
     )
 
 
-
-
 ##################################################MAIN
 prep = Preprocessing()
 df = prep.read_file("data/FS_features_ABIDE_males.csv")
