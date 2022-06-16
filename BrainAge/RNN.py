@@ -139,4 +139,4 @@ if __name__ == "__main__":
     df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
     out = RNN(df_TD)
-    df_TD = clean_dataframe = out(epochs=200)
+    df_TD = out(epochs=1000)
