@@ -5,10 +5,8 @@ neuroHarmonize
 nibabel
 numpy
 pandas
-pickle
 scikit-learn
 scipy
 seaborn
 sphinx
 tensorflow
-warnings
