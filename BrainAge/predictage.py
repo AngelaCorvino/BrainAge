@@ -67,7 +67,10 @@ hyperparams = [
         "Feature__score_func": [f_regression],
         "Model__kernel": ["linear", "rbf", "poly"],
         "Model__degree": [3, 4],
+<<<<<<< HEAD
         # "Model__random_state": [18], Dà un errore Invalid Parameter for estimator SVR(kernel='linear'). Valid parameters are: ['C', 'cache_size', 'coef0', 'degree', 'epsilon', 'gamma', 'kernel', 'max_iter', 'shrinking', 'tol', 'verbose'].
+=======
+>>>>>>> 228230d29231231ac7e50447a12781b1d6d0f60d
     },
 ]
 
@@ -84,8 +87,8 @@ models = [
 ################################################# FUNCTIONS
 def tune_model(dataframe_train, model, hyparams, harmonize_option):
     """
-    Run run a grid-search for  hyperparameters tuning,
-    then fit the model with the best performing model.
+    Run a grid-search for  hyperparameters tuning,
+    then fit the best performing model on the training set in cross validation .
 
     Parameters
     ----------
@@ -154,6 +157,9 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
     model_fit, MSE, MAE, PR = crossvalidation.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
+
+
+
     #
     # Save the best performing model fitted in stratifiedkfold cross validation
     # """
