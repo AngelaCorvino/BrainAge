@@ -7,9 +7,9 @@ nibabel
 numpy
 pandas
 pickle
-scikit-learn
+sklearn
 scipy
 seaborn
 sphinx
-statsmodels
 tensorflow
+warnings
