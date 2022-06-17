@@ -154,15 +154,21 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
 
-    #
     # Save the best performing model fitted in stratifiedkfold cross validation
-    # """
     with open(
         "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "wb"
     ) as files:
         pickle.dump(model_fit, files)
+<<<<<<< HEAD
 
 
+=======
+    # Save the metrics in txt_file
+    header ='MSE\t'+'MAE\t'+'PR\t'
+    metrics = [MSE, MAE, PR]
+    metrics = np.array(metrics).T.tolist()
+    np.savetxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), metrics, header=header)
+>>>>>>> 7b4e5b76928b46f844f59e4d1e7d72a4b22dab8b
 
 
 def predict_model(dataframe, model, harmonize_option):
@@ -183,6 +189,7 @@ def predict_model(dataframe, model, harmonize_option):
 
 
     """
+    metric = np.genfromtxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), metrics, header=header)
 
     with open(
         "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "rb"
