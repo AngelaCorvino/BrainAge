@@ -3,11 +3,14 @@
 Public interfaces
 =================
 
-.. automodule:: features
+.. automodule:: preprocessing
    :members:
 
-.. automodule:: regression
+.. automodule:: crossvalidation
    :members:
 
-.. automodule:: deeplearning
+.. automodule:: deepregression
+   :members:
+
+.. automodule:: predictage
    :members:
