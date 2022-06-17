@@ -153,23 +153,22 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
     model_fit, MSE, MAE, PR = crossvalidation.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
+    # Save the metrics in txt_file
+    header ='MSE\t'+'MAE\t'+'PR\t'
+    metrics = np.array([MSE, MAE, PR])
+    metrics = np.array(metrics).T
+    np.savetxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), metrics, header=header)
+
+
 
     # Save the best performing model fitted in stratifiedkfold cross validation
     with open(
         "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "wb"
     ) as files:
         pickle.dump(model_fit, files)
-<<<<<<< HEAD
 
 
-=======
-    # Save the metrics in txt_file
-    header ='MSE\t'+'MAE\t'+'PR\t'
-    metrics = [MSE, MAE, PR]
-    metrics = np.array(metrics).T.tolist()
-    np.savetxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), metrics, header=header)
->>>>>>> 7b4e5b76928b46f844f59e4d1e7d72a4b22dab8b
-
+    return
 
 def predict_model(dataframe, model, harmonize_option):
     """
@@ -189,8 +188,6 @@ def predict_model(dataframe, model, harmonize_option):
 
 
     """
-    metric = np.genfromtxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), metrics, header=header)
-
     with open(
         "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "rb"
     ) as f:
@@ -201,69 +198,81 @@ def predict_model(dataframe, model, harmonize_option):
 
     predict_y = model_fit.predict(x_test)
     predict_y = np.squeeze(predict_y)
-    delta = predict_y - y_test
-    MSE = mean_squared_error(y_test, predict_y)
-    MAE = mean_absolute_error(y_test, predict_y)
-    PR = pearsonr(y_test, predict_y)[0]
+    metric_test=np.array([mean_squared_error(y_test, predict_y),mean_absolute_error(y_test, predict_y),pearsonr(y_test, predict_y)[0]])
+    return predict_y, y_test, metric_test
+
+def plot_model(predict_y,y_test, model_name, dataframe_name, harmonize_option,metric):
+
+    if metric.ndim == 1:
+        MSE,MAE,PR=metric[0], metric[1], metric[2]
+        text = AnchoredText(
+        f" Test Dataset \n MAE= {round(MAE,3)} (years)\n MSE= {round(MSE,3)} (years)\n PR= {round(PR,3)}", prop=dict(size=14), frameon=True, loc='lower right')
+    elif metric.ndim ==2:
+        MSE,MAE,PR=np.mean(metric,axis=0)
+        std_MSE,std_MAE,std_PR=np.std(metric,axis=0)
+        text = AnchoredText(
+        f" Train Dataset \n MAE = {round(np.mean(MAE),3)} +- {round(std_MAE,3)} [years] \n MSE = {round(MSE,3)} +- {round(std_MSE,3)} [years] \n PR = {round(PR,3)} +- {round(std_PR,3)}",
+        prop=dict(size=14), frameon=True, loc='lower right'
+        )
+
 
     fig, ax = plt.subplots(figsize=(8, 8))
     ax.scatter(
-        y_test, predict_y, alpha=0.5, c="y"
-    )  # , c = MSE.map(colors), cmap = 'viridis'
-    # plt.colorbar()
+        y_test, predict_y, alpha=0.5, c="y",label=f"{dataframe_name}",
+    )
     plt.xlabel("Ground truth Age (years)", fontsize=18)
     plt.ylabel("Predicted Age (years)", fontsize=18)
     plt.plot(
         np.linspace(y_test.min(), predict_y.max(), 100),
         np.linspace(y_test.min(), predict_y.max(), 100),
         c="r",
-        label="Expected prediction line",
+        label="Expected prediction",
     )
-    text = AnchoredText(
-    f" MAE= {round(MAE,3)} (years)\n MSE= {round(MSE,3)} (years)\n PR= {round(PR,3)}", prop=dict(size=14), frameon=True, loc='lower right')
+
     text.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
     ax.add_artist(text)
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
-            {}  with {} {} data".format(
-            model.__class__.__name__, harmonize_option, prep.retrieve_name(dataframe)
+            {}  with {} data".format(
+            model_name, harmonize_option
         ),
         fontsize=20,
     )
     plt.tick_params(axis="x", which="major", labelsize=18)
     plt.tick_params(axis="y", which="major", labelsize=18)
-    plt.legend()
+    plt.legend(loc='upper right', fontsize=14)
+
     plt.savefig(
-        "images/%s%s_%s.png"
-        % (prep.retrieve_name(dataframe), model.__class__.__name__, harmonize_option),
+        "images/%s_%s_%s.png"
+        % (dataframe_name, model.__class__.__name__, harmonize_option),
         dpi=200,
-        format="png",
+        format="png", bbox_inches='tight'
     )
-    return y_test, delta
 
 
-def compare_prediction(y_test1, delta1, y_test2, delta2, model, harmonize_option):
+def compare_prediction(y_test1, predict_y1, y_test2, predict_y2, model_name, harmonize_option):
     plt.figure(figsize=(8, 8))
-    plt.scatter(y_test1, delta1, alpha=0.5, c="b")
-    plt.scatter(y_test2, delta2, alpha=0.5, c="g")
+    plt.scatter(y_test1,predict_y1 - y_test1, alpha=0.5, c="b",label='')
+    plt.scatter(y_test2, predict_y2 - y_test2, alpha=0.5, c="g")
     plt.xlabel("Ground truth Age (years)", fontsize=18)
     plt.ylabel("Delta Age (years)", fontsize=18)
     plt.title(
         "Delta Age versus Ground-truth  Age using \n \
             {}  with {} ".format(
-            model.__class__.__name__, harmonize_option
+            model_name, harmonize_option,
         ),
         fontsize=20,
     )
     plt.tick_params(axis="x", which="major", labelsize=18)
     plt.tick_params(axis="y", which="major", labelsize=18)
-    plt.legend()
+    plt.legend(loc='upper right',fontsize=14)
     plt.savefig(
-        "images/TDvsAS%s_%s.png" % (model.__class__.__name__, harmonize_option),
+        "images/TDvsAS_%s_%s.png" % (model_name, harmonize_option),
         dpi=200,
         format="png",
     )
-
+def get_name(dataframe):
+    return prep.retrieve_name(dataframe)
 
 ##################################################MAIN
 prep = Preprocessing()
@@ -287,6 +296,7 @@ for harmonize_option in harmonize_list:
         test_size=0.25,
         random_state=18,
     )
+
     for i, model in enumerate(models):
         if tune == "yes":
             #"""
@@ -294,10 +304,16 @@ for harmonize_option in harmonize_list:
             #"""
             tune_model(df_TD_train, model, hyperparams[i], harmonize_option)
 
+
     for i, model in enumerate(models):
-        age_truth_TD, delta_TD = predict_model(df_TD_test, model, harmonize_option)
-        age_truth_AS, delta_AS = predict_model(df_AS, model, harmonize_option)
+        # metric_train = np.genfromtxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), skip_header=1)
+        # plot_model(df_TD_train, model.__class__.__name__, prep.get_name(df_TD_train), harmonize_option, metric_train)
+
+        predict_age_TD, age_truth_TD, metric_test_TD= predict_model(df_TD_test, model, harmonize_option)
+        plot_model(predict_age_TD, age_truth_TD,  model.__class__.__name__, get_name(df_TD_test), harmonize_option, metric_test_TD)
+        predict_age_AS,age_truth_AS, metric_AS = predict_model(df_AS, model, harmonize_option)
+        plot_model(predict_age_AS,age_truth_AS, model.__class__.__name__, get_name(df_AS), harmonize_option, metric_AS)
         compare_prediction(
-            age_truth_TD, delta_TD, age_truth_AS, delta_AS, model, harmonize_option
+            age_truth_TD, predict_age_TD, age_truth_AS, predict_age_AS, model.__class__.__name__, harmonize_option
         )
     print("You will find the saved images in Brainage/images")
