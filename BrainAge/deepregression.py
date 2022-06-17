@@ -2,7 +2,9 @@
 """
 Module implements a MLP and fits it on given dataframe.
 """
-from keras.layers import Dense, Dropout, Input
+from keras.layers import Dense
+from keras.layers import Dropout
+from keras.layers import Input
 from keras.models import Model
 
 from sklearn.base import BaseEstimator
@@ -106,29 +108,3 @@ class DeepRegression(BaseEstimator):
         Describe predict function
         """
         return self.model.predict(X)
-
-        #     def reconstruction_error(self,model):
-        # """
-        # This function calculates the reconstruction error and displays a histogram of
-        # the training mean absolute error.
-        # Arguments:
-        # model: the trained  model
-        #   x_train: 3D data to be used in model training (dataframe).
-        #   Returns:
-        #   fig: a visual representation of the training MAE distribution.
-        # """
-        #
-        # x_train_pred = model.predict(self.X_train)
-        # train_mae_loss = np.mean(np.abs(x_train_pred - np.array(self.X_train)), axis = 1)
-        # histogram = train_mae_loss.flatten()
-        # plt.hist(histogram,
-        #                               label = 'MAE Loss')
-        #
-        # plt.title('Mean Absolute Error Loss')
-        # plt.xlabel("Training MAE Loss (%)")
-        # plt.ylabel("Number of Samples")
-        #
-        #
-        # print("Reconstruction error threshold: {} ".format(np.max(train_mae_loss)))
-        #
-        # return plt.show()
