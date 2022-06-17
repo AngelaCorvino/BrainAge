@@ -310,10 +310,10 @@ for harmonize_option in harmonize_list:
 
 
     for i, model in enumerate(models):
-        metric_train = np.genfromtxt('models/metrics/metrics_%s_%s.txt' %(model.__class__.__name__, harmonize_option), skip_header=1)
-        
-        predict_age_TD_train, age_truth_TD_train, _= predict_model(df_TD_train, model, harmonize_option)
-        
+        # metric_train_cv = np.genfromtxt('models/metrics/metrics_%s_%s.txt' %(model.__class__.__name__, harmonize_option), skip_header=1)
+
+        predict_age_TD_train, age_truth_TD_train,metric_train= predict_model(df_TD_train, model, harmonize_option)
+
         plot_model(predict_age_TD_train, age_truth_TD_train, model.__class__.__name__, get_name(df_TD_train), harmonize_option, metric_train)
 
         predict_age_TD, age_truth_TD, metric_test_TD= predict_model(df_TD_test, model, harmonize_option)

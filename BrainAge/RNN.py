@@ -3,7 +3,7 @@
 Module implements RNN which tries to replicate given data
 """
 import pickle
-import warnings 
+import warnings
 
 from scipy.optimize import curve_fit
 from keras.layers import Dense
@@ -135,4 +135,4 @@ if __name__ == "__main__":
     df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
     autoencoder = RNN(df_TD)
-    autoencoder(epochs=1000)
+    autoencoder(epochs=5000)

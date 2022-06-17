@@ -115,28 +115,36 @@ class Outliers:
         # Plot_test
         plt.figure(1)
         n_1, _, _ = plt.hist(
-            x=test_mae_loss, bins=nbins, color="lightskyblue", label="Sample counts"
+            x=test_mae_loss, bins=nbins, color="lightskyblue", label="Subjects"
         )
-        plt.title("Mean Absolute Error Loss", fontsize=24)
-        plt.xlabel("Test MAE Loss", fontsize=20)
-        plt.ylabel("Number of Samples", fontsize=20)
+        plt.title("RNN Mean Absolute Error ", fontsize=24)
+        plt.grid(True, linestyle="-", which="major", color="lightgrey", alpha=0.5)
+        plt.yticks(fontsize=20)
+        plt.xticks(fontsize=20)
+        plt.xlabel("MAE[years]", fontsize=24)
+        plt.ylabel("N Subjects", fontsize=24)
+
 
         # Fit as a gaussian
         p0 = [0.2, 0.05, 1]
-        # p0 = [8000, 1000, 10]
+
         fit, fitCov = curve_fit(gaussian, xdiscrete_1, n_1, p0=p0)
         fit_err = np.sqrt(abs(np.diag(fitCov)))
         print(
-            f" Test fit parameters: \n x_0 = {fit[0] : .3f} +-{fit_err[0] : .3f}\n sigma_0 = {fit[1] : .3f} +-{fit_err[1] : .3f}\n A = {fit[2] : .3f} +-{fit_err[2] : .3f}\n"
+            f" Test fit parameters: \n x_0 = {fit[0] : .3f} +-{fit_err[0] : .3f}\n sigma = {fit[1] : .3f} +-{fit_err[1] : .3f}\n A = {fit[2] : .3f} +-{fit_err[2] : .3f}\n"
         )
         # Plot fit
         plt.plot(
             np.linspace(test_mae_loss.min(), test_mae_loss.max(), 1000),
             gaussian(np.linspace(test_mae_loss.min(), test_mae_loss.max(), 1000), *fit),
-            color="red",
-            linewidth=1,
+            color="green",
+            linewidth=2,
             label="fit",
         )
+        plt.axvspan(fit[0] - 3 * fit[1], fit[0] + 3 * fit[1],
+        facecolor="green",
+        alpha=0.1,label=r'$ x_0 \pm 3\sigma$')
+        plt.legend(fontsize=20)
         if plot_fit is True:
             plt.show()
 
@@ -182,11 +190,14 @@ class Outliers:
             facecolor="lightskyblue",
             edgecolor="blue",
             linewidth=0.5,
-            label="Sample counts",
+            label="Subjects",
         )
         plt.title("Age Distribution of Outliers", fontsize=24)
-        plt.xlabel("Age(years)", fontsize=20)
-        plt.ylabel("Number of Samples", fontsize=20)
+        plt.grid(True, linestyle="-", which="major", color="lightgrey", alpha=0.5)
+        plt.yticks(fontsize=20)
+        plt.xticks(fontsize=20)
+        plt.xlabel("Age[years]", fontsize=22)
+        plt.ylabel("N Subjects", fontsize=22)
         return plt.show()
 
     def clean_dataframe(self, indexes):
@@ -213,5 +224,5 @@ if __name__ == "__main__":
     df = prep(df, "normalized", False)
     df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
-    out = Outliers(df_TD)
-    df_TD = out(nbins=500, plot_fit=True, plot_distribution=True)
+    out = Outliers(df_AS)
+    df_AS= out(nbins=500, plot_fit=True, plot_distribution=True)

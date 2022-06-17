@@ -12,6 +12,7 @@ from sklearn.base import BaseEstimator
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 class DeepRegression(BaseEstimator):
     """
     Class describing deep regression model.
@@ -74,11 +75,11 @@ class DeepRegression(BaseEstimator):
         )
 
         if self.plot_loss is True:
-            #"""
-            #This parameter allows to plot the training and validation loss
-            #curves of the trained model, enabling visual diagnosis of
-            #underfitting (bias) or overfitting (variance).
-            #"""
+            # """
+            # This parameter allows to plot the training and validation loss
+            # curves of the trained model, enabling visual diagnosis of
+            # underfitting (bias) or overfitting (variance).
+            # """
 
             training_validation_loss = pd.DataFrame.from_dict(
                 history.history, orient="columns"
@@ -105,7 +106,18 @@ class DeepRegression(BaseEstimator):
             plt.show()
 
     def predict(self, X):
-        """
-        Describe predict function
+        """implement predict method
+
+        Parameters
+        ----------
+
+        X : array-like of shape (n_samples, n_features)
+            The input samples. Internally, its dtype will be converted to dtype=np.float32.
+
+        Returns
+        -------
+        self.model.predict :ndarray of shape (n_samples,) or (n_samples, n_outputs)
+            The predicted classes..
+
         """
         return self.model.predict(X)

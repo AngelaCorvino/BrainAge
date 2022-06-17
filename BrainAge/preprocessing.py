@@ -240,7 +240,7 @@ class Preprocessing:
         dataframe[dataframe.loc[:, feature] > 0].hist(
             [feature], figsize=(8, 8), bins=100
         )
-        plt.ylabel("Occurencies", fontsize=14)
+        plt.ylabel("N Subjects", fontsize=14)
         plt.grid(True, linestyle="-", which="major", color="lightgrey", alpha=0.5)
         plt.yticks(fontsize=14)
         plt.xticks(fontsize=14)
@@ -263,9 +263,9 @@ class Preprocessing:
         name = self.retrieve_name(dataframe)
         sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=dataframe)
         sns_boxplot.set_xticklabels(
-            labels=sns_boxplot.get_xticklabels(), rotation=50, fontsize=20
+            labels=sns_boxplot.get_xticklabels(), rotation=40, fontsize=18
         )
-        plt.yticks(fontsize=20)
+        plt.yticks(fontsize=18)
         sns_boxplot.set_axisbelow(True)
         sns_boxplot.grid(
             True, linestyle="-", which="major", color="lightgrey", alpha=0.5
@@ -278,10 +278,10 @@ class Preprocessing:
             + " in "
             + name
             + " dataframe",
-            fontsize=24,
+            fontsize=22,
         )
-        sns_boxplot.set_ylabel(featurey, fontsize=20)
-
+        sns_boxplot.set_ylabel(featurey, fontsize=18)
+        plt.autoscale()
         plt.show()
 
     def self_normalize(self, dataframe):
@@ -513,6 +513,6 @@ if __name__ == "__main__":
     Combat_Harmonized = prep(df, "combat_harmonized", plot_option=False)
 
 
-    prep.plot_boxplot(Normalized, "SITE", "lhCortexVol")
-    prep.plot_boxplot(Neuro_Harmonized, "SITE", "lhCortexVol")
-    prep.plot_boxplot(Combat_Harmonized, "SITE", "lhCortexVol")
+    prep.plot_boxplot(Normalized, "SITE", "TotalGrayVol")
+    prep.plot_boxplot(Neuro_Harmonized, "SITE", "TotalGrayVol")
+    prep.plot_boxplot(Combat_Harmonized, "SITE", "TotalGrayVol")
