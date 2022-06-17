@@ -1,6 +1,8 @@
 # pylint: disable=invalid-name, redefined-outer-name
 """
-Module contains a class Preprocessing, with methods allowing to upload dataframe from file, add derived features, preprocess with some normalization options and harmonization options.
+Module contains a class Preprocessing, with methods allowing
+to upload dataframe from file, add derived features, preprocess with
+some normalization options and harmonization options.
 """
 import inspect
 import pandas as pd
@@ -10,7 +12,6 @@ import matplotlib.pyplot as plt
 
 from neuroHarmonize import harmonizationLearn
 from neuroCombat import neuroCombat
-
 
 
 class Preprocessing:
@@ -26,9 +27,11 @@ class Preprocessing:
         ----------
 
         dataframe : dataframe-like
-                    The dataframe of raw data  to be passed to the preprocessing class.
+                    The dataframe of raw data  to be passed to the
+                    preprocessing class.
         prep_option : string-like
-                           String containing one of the options: 'not_normalized', 'normalized', 'combat', 'neuro'.
+                           String containing one of the options:
+                           'not_normalized', 'normalized', 'combat', 'neuro'.
         plot_option : boolean
                       If True shows some plots of data. Default is True
 
@@ -44,7 +47,6 @@ class Preprocessing:
         dataframe = self.remove_FIQ(dataframe)
         # PLOTTING DATA
         if plot_option is True:
-            self.plot_boxplot(dataframe, "SITE", "AGE_AT_SCAN")
             self.plot_histogram(dataframe, "AGE_AT_SCAN")
         # PROCESSING DATA
         if prep_option == "not_normalized":
@@ -75,16 +77,13 @@ class Preprocessing:
             dataframe_neuro = self.neuro_harmonize(
                 dataframe,
                 confounder="SITE",
-                covariate1="AGE_AT_SCAN",
+                covariate="AGE_AT_SCAN",
             )
             dataframe = dataframe_neuro
             print("Dataframe is normalized and harmonized with NeuroHarmonize")
 
         dataframe.drop(["FILE_ID"], axis=1, inplace=True)
         return dataframe
-
-    # def __str__(self):
-    #    return "The dataset has {} size\n{} shape \nand these are the first 5 rows\n{}\n".format(df.size, df.shape, df.head(5))
 
     def read_file(self, file_url):
         """
@@ -94,14 +93,14 @@ class Preprocessing:
         ----------
 
         file_url : string-like
-                   The string containing data adress to be passed to
+                   String containing data adress to be passed to
                    Preprocessing.
 
         Returns
         -------
 
         dataframe : dataframe-like
-                    The dataframe of raw data.
+                    Dataframe of raw data.
         """
         dataframe = pd.read_csv(file_url, sep=";")
         return dataframe
@@ -145,46 +144,67 @@ class Preprocessing:
         )
 
     def remove_FIQ(self, dataframe):
-        """
+        """Remove FIQ feauture.
+
+        Parameters
+        ----------
+        dataframe : dataframe-like
+            Dataframe to be passed to the function.
+
+        Returns
+        -------
+        dataframe : dataframe-like
+            Dataframe without FIQ column.
 
         """
-        dataframe = dataframe.drop(["FIQ"], axis = 1)
+        dataframe = dataframe.drop(["FIQ"], axis=1)
         return dataframe
 
     def add_site(self, dataframe):
-        """
-        Adds column with Site description.
+        """Adds column with Site description.
+
+        Parameters
+        ----------
+        dataframe : dataframe-like
+            Dataframe to be passed to the function.
         """
         dataframe["SITE"] = dataframe.FILE_ID.apply(lambda x: x.split("_")[0])
 
-    def add_age_binning(self, dataframe):
+    def add_age_binning(self, dataframe, bins=6):
         """
-        Creates a column called AGE_CLASS with AGE_AT_SCAN binning and attaches it to dataframe.
+        Creates a column called AGE_CLASS with AGE_AT_SCAN
+        binning and attaches it to dataframe.
 
         Parameters
         ----------
 
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
+        bins : integer-like, default is 6
+                    Number of classes.
         """
-        bins = 6
+
         dataframe["AGE_CLASS"] = pd.qcut(
-            dataframe.AGE_AT_SCAN, bins, labels=[x for x in range(1, bins + 1)]
+            dataframe.AGE_AT_SCAN, bins, labels=list(range(1, bins + 1))
         )
 
-    def add_site_binning(
-        self, dataframe
-    ):  # capire se si può fare senza return come add_age_binning
+    def add_site_binning(self, dataframe):
         """
         Creates a map  where SITE  is binned in the column SITE_CLASS,
         then merges it with the dataframe.
 
         Parameters
         ----------
-
         dataframe : dataframe-like
-                    The dataframe of data to be passed to the function.
+                    Dataframe to be passed to the function.
+
+        Returns
+        -------
+        dataframe : dataframe-like
+            Dataframe with SITE_CLASS column.
+
         """
+
         try:
             sites = (
                 dataframe["SITE"]
@@ -194,7 +214,7 @@ class Preprocessing:
             )
             maps = (
                 pd.DataFrame(
-                    {"SITE_CLASS": [x for x in range(1, len(sites) + 1)], "SITE": sites}
+                    {"SITE_CLASS": list(range(1, len(sites) + 1)), "SITE": sites}
                 )
                 .explode("SITE")
                 .reset_index(drop=True)
@@ -206,17 +226,24 @@ class Preprocessing:
 
     def plot_histogram(self, dataframe, feature):
         """
-        Plots histogram of a given feature on the indicated dataframe, masking values <0.
+        Plots histogram of a given feature on the indicated dataframe,
+        masking values <0.
 
         Parameters
         ----------
 
         dataframe : dataframe-like
-                    The dataframe of data to be passed to the function.
+                 Dataframe to be passed to the function.
         feature : string-like
-                  The feature to plot the histogram of.
+                  Feature to plot the histogram of.
         """
-        dataframe[dataframe.loc[:, feature] > 0].hist([feature])
+        dataframe[dataframe.loc[:, feature] > 0].hist(
+            [feature], figsize=(8, 8), bins=100
+        )
+        plt.ylabel("Occurencies", fontsize=14)
+        plt.grid(True, linestyle="-", which="major", color="lightgrey", alpha=0.5)
+        plt.yticks(fontsize=14)
+        plt.xticks(fontsize=14)
         plt.show()
 
     def plot_boxplot(self, dataframe, featurex, featurey):
@@ -227,20 +254,32 @@ class Preprocessing:
         ----------
 
         dataframe : dataframe-like
-                    The dataframe of data to be passed to the function.
+                    Dataframe to be passed to the function.
         featurex : string-like
-                   The feature in the x-axis of the boxplot.
+                   Feature in the x-axis of the boxplot.
         featurey : string-like
-                   The feature in the y-axis of the boxplot.
+                   Feature in the y-axis of the boxplot.
         """
         name = self.retrieve_name(dataframe)
         sns_boxplot = sns.boxplot(x=featurex, y=featurey, data=dataframe)
-        sns_boxplot.set_xticklabels(labels=sns_boxplot.get_xticklabels(), rotation=50, fontsize = 20)
-        plt.yticks(fontsize = 20)
+        sns_boxplot.set_xticklabels(
+            labels=sns_boxplot.get_xticklabels(), rotation=50, fontsize=20
+        )
+        plt.yticks(fontsize=20)
         sns_boxplot.set_axisbelow(True)
-        sns_boxplot.grid(True, linestyle='-', which='major', color='lightgrey',
-               alpha=0.5)
-        sns_boxplot.set_title("Box plot of "+ featurey+ " by "+featurex+" in "+ name+" dataframe", fontsize=24)
+        sns_boxplot.grid(
+            True, linestyle="-", which="major", color="lightgrey", alpha=0.5
+        )
+        sns_boxplot.set_title(
+            "Box plot of "
+            + featurey
+            + " by "
+            + featurex
+            + " in "
+            + name
+            + " dataframe",
+            fontsize=24,
+        )
         sns_boxplot.set_ylabel(featurey, fontsize=20)
 
         plt.show()
@@ -253,7 +292,7 @@ class Preprocessing:
         ----------
 
         dataframe : dataframe-like
-                    The dataframe of data to be passed to the function.
+                    Dataframe to be passed to the function.
 
         """
         # Surface
@@ -270,40 +309,40 @@ class Preprocessing:
         ].divide(
             (dataframe["lh_MeanThickness"] + dataframe["rh_MeanThickness"]), axis=0
         )
-        # print(dataframe.iloc[:,:20])
 
         # Volume
         dataframe.loc[:, ["Vol" in i for i in dataframe.columns]] = dataframe.loc[
             :, ["Vol" in i for i in dataframe.columns]
         ].divide((dataframe["TotalGrayVol"] + dataframe["TotalWhiteVol"]), axis=0)
 
-    def neuro_harmonize(self, dataframe, confounder="SITE", covariate1="AGE_AT_SCAN"):
+    def neuro_harmonize(self, dataframe, confounder="SITE", covariate="AGE_AT_SCAN"):
         """
         Harmonize dataset with neuroHarmonize model:
-        1-Load your data and all numeric covariates
+        1-Load your data and all numeric covariates;
         2-Run harmonization and store the adjusted data.
 
         Parameters
         ----------
 
         dataframe : dataframe-like
-                    The dataframe of data to be passed to the function.
-        confounder : string-like
+                    Dataframe to be passed to the function.
+        confounder : string-like, default is 'SITE'
                      Feature to be accounted as confounder. Default is 'SITE'
-        covariate1 : string-like
+        covariate : string-like, default is 'AGE_AT_SCAN'
+                    Contains the batch/scanner covariate as well as additional covariates (optional)
+                    that should be preserved during harmonization.
 
         Returns
         -------
 
         dataframe_harmonized: dataframe-like
-                              The dataframe containing harmonized data
+                    Dataframe containing harmonized data
         """
         try:
-            covars = dataframe[[confounder, covariate1]]
-            my_model, array_neuro_harmonized, s_data = harmonizationLearn(
+            covars = dataframe[[confounder, covariate]]
+            my_model, array_neuro_harmonized, = harmonizationLearn(
                 np.array(dataframe.drop(["FILE_ID", "SITE"], axis=1)),
                 covars,
-                return_s_data=True,
             )
             df_neuro_harmonized = pd.DataFrame(array_neuro_harmonized)
             df_neuro_harmonized.columns = dataframe.drop(
@@ -342,20 +381,22 @@ class Preprocessing:
         ----------
 
         dataframe : dataframe-like
-                    Dataframe containing neuroimaging data to correct with shape = (samples, features)
+                    Dataframe containing neuroimaging data to correct
+                    with shape = (samples, features).
                     e.g. cortical thickness measurements, image voxels, etc
-        confounder : string-like
-                     Categorical feature to be accounted as confounder, which indicates batch (scanner) column name in covars
-                     (e.g. "scanner") Default 'SITE_CLASS'.
-        covariate : string-like
+        confounder : string-like, default is SITE_CLASS'
+                     Categorical feature to be accounted as confounder,
+                     which indicates batch (scanner) column name in covars.
+
+        covariate : string-like, default is 'AGE_AT_SCAN'
                     Contains the batch/scanner covariate as well as additional covariates (optional)
-                    that should be preserved during harmonization. Default is 'AGE_AT_SCAN'.
+                    that should be preserved during harmonization.
 
         Returns
         -------
 
         dataframe_harmonized: dataframe-like
-                              The dataframe containing harmonized data
+                    Dataframe containing harmonized data
         """
         array_combat_harmonized = neuroCombat(
             dat=dataframe.drop(["FILE_ID", "SITE"], axis=1).transpose(),
@@ -375,25 +416,29 @@ class Preprocessing:
 
     def feature_selection(self, dataframe, feature="AGE_AT_SCAN", plot_heatmap=False):
         """
-        Gives a list of the feature whose correlation with the given feature is higher than 0.5.
+        Select the feature whose correlation with the given feature is
+        higher than 0.5.
 
         Parameters
         ----------
 
         dataframe : dataframe-like
-                    The dataframe of data to be passed to the function.
-        feature : string-like
+                    Dataframe to be passed to the function.
+        feature : string-like, default is "AGE_AT_SCAN"
                   Target feature on which to compute correlation.
-        plot_heatmap : boolean
-                       If True, show heatmap of data correlation with feature. Default is False.
-
+        plot_heatmap : boolean, default is False
+                       If True, show heatmap of data correlation with feature.
         Returns
         -------
 
-        listoffeatures : list
-                         List of selected features.
+        listoffeatures : list-like
+                        List of selected features.
         X : dataframe-like
-        y : series-like?
+            Dataframe contraining only the columns relative to the
+            selcted feature.
+        y : series-like
+            Series containg the target feauture on which correlation
+            has been computed.
         """
         agecorr = dataframe.corr()[feature]
         listoffeatures = agecorr[np.abs(agecorr) > 0.5].keys()
@@ -407,9 +452,19 @@ class Preprocessing:
         return listoffeatures, X, y
 
     def remove_strings(self, dataframe):
+        """Remove columns containing strings from given dataframe
+
+        Parameters
+        ----------
+        dataframe : dataframe-like
+                  Dataframe to be passed to the function.
+        Returns
+        -------
+        dataframe : dataframe-like
+                  Dataframe withouth columns which contains strings.
+
         """
-        Returns initial dataframe without columns containing strings.
-        """
+
         name = self.retrieve_name(dataframe)
         if "FILE_ID" in dataframe.keys():
             dataframe = dataframe.drop(["FILE_ID"], axis=1)
@@ -427,14 +482,23 @@ class Preprocessing:
         return dataframe
 
     def retrieve_name(self, var):
-        """
-        Retrieves name of variable.
+        """Retrieves name of variable.
+
+        Parameters
+        ----------
+        var : type
+            Variable of which we want the name.
+
+        Returns
+        -------
+        name : string-like
+            Name of the variable.
+
         """
         callers_local_vars = inspect.currentframe().f_back.f_back.f_locals.items()
         name = [var_name for var_name, var_val in callers_local_vars if var_val is var]
         name = str(name)
-        name = name.replace('[','').replace(']','').replace('\'','')
-        #print('Dataframe name: "{}"'.format(name))
+        name = name.replace("[", "").replace("]", "").replace("'", "")
         return name
 
 
@@ -442,16 +506,13 @@ if __name__ == "__main__":
 
     prep = Preprocessing()
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
-    Not_Normalized = prep(df, "not_normalized", plot_option=False)
-    print(Not_Normalized.shape)
+    Not_Normalized = prep(df, "not_normalized", plot_option=True)
+
     Normalized = prep(df, "normalized", plot_option=False)
-    print(Normalized.shape)
     Neuro_Harmonized = prep(df, "neuro_harmonized", plot_option=False)
-    print(Neuro_Harmonized.shape)
     Combat_Harmonized = prep(df, "combat_harmonized", plot_option=False)
-    print(Combat_Harmonized.shape)
-    prep.plot_boxplot(Not_Normalized, "SITE", "TotalGrayVol")
-    prep.plot_boxplot(Normalized, "SITE", "TotalGrayVol")
-    prep.plot_boxplot(Neuro_Harmonized, "SITE", "TotalGrayVol")
-    prep.plot_boxplot(Combat_Harmonized, "SITE", "TotalGrayVol")
-    prep.remove_strings(Normalized)
+
+
+    prep.plot_boxplot(Normalized, "SITE", "lhCortexVol")
+    prep.plot_boxplot(Neuro_Harmonized, "SITE", "lhCortexVol")
+    prep.plot_boxplot(Combat_Harmonized, "SITE", "lhCortexVol")
