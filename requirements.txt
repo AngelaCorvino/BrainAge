@@ -1,4 +1,3 @@
-inspect
 keras
 matplotlib
 neuroCombat
@@ -6,10 +5,9 @@ neuroHarmonize
 nibabel
 numpy
 pandas
-pickle
 scikit-learn
 scipy
 seaborn
 sphinx
+statsmodels
 tensorflow
-warnings
