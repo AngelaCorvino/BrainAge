@@ -33,8 +33,14 @@ class Crossvalidation:
 
         Returns
         -------
-        type
-            Description of returned object.
+        MAE: array
+            Mean absolute error obtained in cross validation.
+
+        MSE: array
+            Mean square error obtained in cross validation.
+
+        PR: array
+            Pearson coefficient obtained in cross validation.
 
         """
         try:
@@ -58,7 +64,7 @@ class Crossvalidation:
 
         print(f"\n\nCross-Validation MSE, MAE: {np.mean(MSE):0.3f} {np.mean(MAE):0.3f}")
 
-        return model, np.mean(MSE), np.mean(MAE), np.mean(PR)
+        return model, MSE, MAE, PR
 
     def stratified_k_fold(self, X, y, y_bins, n_splits, model):
         """Fit and predict using stratified cross validation
