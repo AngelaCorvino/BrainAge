@@ -7,7 +7,7 @@ nibabel
 numpy
 pandas
 pickle
-sklearn
+scikit-learn
 scipy
 seaborn
 sphinx
