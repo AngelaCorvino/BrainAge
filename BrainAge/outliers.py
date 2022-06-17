@@ -2,6 +2,8 @@
 Module  selects samples with reconstruction error larger than 3 sigmas and removes outlier samples from final dataframe.
 """
 import pickle
+import matplotlib.pyplot as plt
+import numpy as np
 
 from scipy.optimize import curve_fit
 from keras.layers import Dense
@@ -11,10 +13,6 @@ from keras.models import Model
 from keras import backend as K
 from keras.utils.generic_utils import get_custom_objects
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-# Custom activation function
 from preprocessing import Preprocessing
 
 
