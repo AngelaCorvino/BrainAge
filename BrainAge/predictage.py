@@ -154,52 +154,16 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
 
-    #
     # Save the best performing model fitted in stratifiedkfold cross validation
-    # """
     with open(
         "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "wb"
     ) as files:
         pickle.dump(model_fit, files)
-
-
-
-
-    fig, ax = plt.subplots(figsize=(8, 8))
-    ax.scatter(
-        y_test, predict_y, alpha=0.5, c="y"
-    )
-    plt.xlabel("Ground truth Age (years)", fontsize=18)
-    plt.ylabel("Predicted Age (years)", fontsize=18)
-    plt.plot(
-        np.linspace(y_test.min(), predict_y.max(), 100),
-        np.linspace(y_test.min(), predict_y.max(), 100),
-        c="r",
-        label="Expected prediction line",
-    )
-    text = AnchoredText(
-    f" MAE= {round(np.mean(MAE),3)}\U+00B1{round(np.std(MAE),3)} [years]\n MSE= {round(MSE,3)}
-    \U+00B1{round(np.std(MSE),3)} [years]\n PR= {round(PR,3)}\U+00B1{round(np.std(PR),3)}", prop=dict(size=14), frameon=True, loc='lower right')
-    text.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
-    ax.add_artist(text)
-    plt.title(
-        "Ground-truth Age versus Predict Age using \n \
-            {}  with {} {} data".format(
-            model.__class__.__name__, harmonize_option, prep.retrieve_name(dataframe)
-        ),
-        fontsize=20,
-    )
-    plt.tick_params(axis="x", which="major", labelsize=18)
-    plt.tick_params(axis="y", which="major", labelsize=18)
-    plt.legend()
-    plt.savefig(
-        "images/%s%s_%s.png"
-        % (prep.retrieve_name(dataframe), model.__class__.__name__, harmonize_option),
-        dpi=200,
-        format="png",
-    )
-
-
+    # Save the metrics in txt_file
+    header ='MSE\t'+'MAE\t'+'PR\t'
+    metrics = [MSE, MAE, PR]
+    metrics = np.array(metrics).T.tolist()
+    np.savetxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), metrics, header=header)
 
 
 def predict_model(dataframe, model, harmonize_option):
@@ -220,6 +184,7 @@ def predict_model(dataframe, model, harmonize_option):
 
 
     """
+    metric = np.genfromtxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), metrics, header=header)
 
     with open(
         "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "rb"
