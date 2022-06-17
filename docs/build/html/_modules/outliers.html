@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+
+<html lang="english">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>outliers &#8212; BrainAge 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for outliers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=invalid-name, redefined-outer-name</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module  selects samples with reconstruction error larger than 3 sigmas and removes outlier samples from final dataframe.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+
+<span class="kn">from</span> <span class="nn">preprocessing</span> <span class="kn">import</span> <span class="n">Preprocessing</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="gaussian"><a class="viewcode-back" href="../api.html#outliers.gaussian">[docs]</a><span class="k">def</span> <span class="nf">gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gaussian function to use in fit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sumgaussian"><a class="viewcode-back" href="../api.html#outliers.sumgaussian">[docs]</a><span class="k">def</span> <span class="nf">sumgaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">sigma0</span><span class="p">,</span> <span class="n">sigma1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sum of two gaussian function to possibly use in fit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sigma0</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">sigma1</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Outliers"><a class="viewcode-back" href="../api.html#outliers.Outliers">[docs]</a><span class="k">class</span> <span class="nc">Outliers</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class identifying outliers.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    dataframe : dataframe-like</span>
+<span class="sd">        Dataframe to remove outliers on.</span>
+<span class="sd">    model : object</span>
+<span class="sd">        Trained RNN model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_upload</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">plot_fit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_distribution</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        nbins : integer-like</span>
+<span class="sd">            Number of bins for loss histogram.</span>
+<span class="sd">        plot_fit : boolean-like, default is False.</span>
+<span class="sd">            If True shows histogram of loss of replicated data and gaussian fit for outlier detection.</span>
+<span class="sd">        plot_distribution : boolean, default is False</span>
+<span class="sd">            If True it shows the age distribution of removed samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dataframe : dataframe-like</span>
+<span class="sd">            Dataframe without outliers.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outliers</span><span class="p">(</span><span class="n">nbins</span><span class="p">,</span> <span class="n">plot_fit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plot_distribution</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_distribution</span><span class="p">(</span><span class="n">indexes</span><span class="p">,</span> <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">)</span>
+        <span class="n">clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean_dataframe</span><span class="p">(</span><span class="n">indexes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">clean</span>
+
+<div class="viewcode-block" id="Outliers.model_upload"><a class="viewcode-back" href="../api.html#outliers.Outliers.model_upload">[docs]</a>    <span class="k">def</span> <span class="nf">model_upload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Uploads trained autoencoder model from file to run on dataframe.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        model : object</span>
+<span class="sd">            Trained RNN model</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;models/autoencoder_pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span></div>
+
+<div class="viewcode-block" id="Outliers.outliers"><a class="viewcode-back" href="../api.html#outliers.Outliers.outliers">[docs]</a>    <span class="k">def</span> <span class="nf">outliers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">plot_fit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Identifies ouliers using autoencoder.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nbins : integer-like</span>
+<span class="sd">            Number of bins for loss histogram.</span>
+<span class="sd">        plot_fit : boolean-like, default is False.</span>
+<span class="sd">            If True shows histogram of loss of replicated data and gaussian fit for outlier detection.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        indexes : list-like</span>
+<span class="sd">            List of indexes of samples to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">)</span>
+        <span class="n">test_mae_loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x_pred</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Plot_test_variables</span>
+        <span class="n">d_1</span> <span class="o">=</span> <span class="p">(</span><span class="n">test_mae_loss</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">test_mae_loss</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="n">nbins</span>
+        <span class="n">xdiscrete_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+            <span class="n">test_mae_loss</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="n">d_1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">test_mae_loss</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">d_1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nbins</span>
+        <span class="p">)</span>
+        <span class="c1"># Plot_test</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">n_1</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">test_mae_loss</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">nbins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightskyblue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Sample counts&quot;</span>
+        <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Mean Absolute Error Loss&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Test MAE Loss&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Number of Samples&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+        <span class="c1"># Fit as a gaussian</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># p0 = [8000, 1000, 10]</span>
+        <span class="n">fit</span><span class="p">,</span> <span class="n">fitCov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">gaussian</span><span class="p">,</span> <span class="n">xdiscrete_1</span><span class="p">,</span> <span class="n">n_1</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+        <span class="n">fit_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">fitCov</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot; Test fit parameters: </span><span class="se">\n</span><span class="s2"> x_0 = </span><span class="si">{</span><span class="n">fit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="si">:</span><span class="s2"> .3f</span><span class="si">}</span><span class="s2"> +-</span><span class="si">{</span><span class="n">fit_err</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="si">:</span><span class="s2"> .3f</span><span class="si">}</span><span class="se">\n</span><span class="s2"> sigma_0 = </span><span class="si">{</span><span class="n">fit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="si">:</span><span class="s2"> .3f</span><span class="si">}</span><span class="s2"> +-</span><span class="si">{</span><span class="n">fit_err</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="si">:</span><span class="s2"> .3f</span><span class="si">}</span><span class="se">\n</span><span class="s2"> A = </span><span class="si">{</span><span class="n">fit</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="si">:</span><span class="s2"> .3f</span><span class="si">}</span><span class="s2"> +-</span><span class="si">{</span><span class="n">fit_err</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="si">:</span><span class="s2"> .3f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># Plot fit</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">test_mae_loss</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">test_mae_loss</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">1000</span><span class="p">),</span>
+            <span class="n">gaussian</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">test_mae_loss</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">test_mae_loss</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">1000</span><span class="p">),</span> <span class="o">*</span><span class="n">fit</span><span class="p">),</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;fit&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">plot_fit</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">condition</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fit</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">fit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">fit</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="c1"># return bool(x &gt;= (fit[0] + 3 * fit[1]))</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">fit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">fit</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="c1"># return bool(x &lt;= (fit[0] - 3 * fit[1]))</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">final_outliers</span> <span class="o">=</span> <span class="p">[</span><span class="n">condition</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fit</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">test_mae_loss</span><span class="p">]</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">final_outliers</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of final outlier samples: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">final_outliers</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Percentage of outliers: &quot;</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">final_outliers</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;%&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reconstruction MAE error threshold: </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">test_mae_loss</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">indexes</span></div>
+
+<div class="viewcode-block" id="Outliers.plot_distribution"><a class="viewcode-back" href="../api.html#outliers.Outliers.plot_distribution">[docs]</a>    <span class="k">def</span> <span class="nf">plot_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indexes</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots feature distribution of removed samples from dataframe.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        indexes : list-like</span>
+<span class="sd">            List of indexes of samples to remove as outliers.</span>
+<span class="sd">        feature : string-like</span>
+<span class="sd">            Feature to show in histogram</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indexes</span><span class="p">]</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">feature</span><span class="p">])</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">feature</span><span class="p">]))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">y</span><span class="p">[</span><span class="n">feature</span><span class="p">],</span>
+            <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;lightskyblue&quot;</span><span class="p">,</span>
+            <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Sample counts&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Age Distribution of Outliers&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Age(years)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Number of Samples&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Outliers.clean_dataframe"><a class="viewcode-back" href="../api.html#outliers.Outliers.clean_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">clean_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indexes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes sample of given indexes from dataframe.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        indexes : list-like</span>
+<span class="sd">            List of indexes of samples to remove.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dataframe</span>
+<span class="sd">            Dataframe without outliers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indexes</span><span class="p">]</span>
+        <span class="n">clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">clean</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">prep</span> <span class="o">=</span> <span class="n">Preprocessing</span><span class="p">()</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;data/FS_features_ABIDE_males.csv&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;normalized&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">remove_strings</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">df_AS</span><span class="p">,</span> <span class="n">df_TD</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">split_file</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">Outliers</span><span class="p">(</span><span class="n">df_TD</span><span class="p">)</span>
+    <span class="n">df_TD</span> <span class="o">=</span> <span class="n">out</span><span class="p">(</span><span class="n">nbins</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">plot_fit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_distribution</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">BrainAge</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">Public interfaces</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Angela Corvino & Agata Minnocci.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
