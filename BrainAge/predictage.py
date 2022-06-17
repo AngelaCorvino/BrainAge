@@ -62,7 +62,6 @@ hyperparams = [
         "Feature__score_func": [f_regression],
         "Model__kernel": ["linear", "rbf", "poly"],
         "Model__degree": [3, 4],
-        "Model__random_state": [18],
     },
 ]
 
@@ -79,8 +78,8 @@ models = [
 ################################################# FUNCTIONS
 def tune_model(dataframe_train, model, hyparams, harmonize_option):
     """
-    Run run a grid-search for  hyperparameters tuning,
-    then fit the model with the best performing model.
+    Run a grid-search for  hyperparameters tuning,
+    then fit the best performing model on the training set in cross validation .
 
     Parameters
     ----------
@@ -149,6 +148,9 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
     model_fit, MSE, MAE, PR = crossvalidation.stratified_k_fold(
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
+
+
+
     #
     # Save the best performing model fitted in stratifiedkfold cross validation
     # """
@@ -289,7 +291,7 @@ for harmonize_option in harmonize_list:
             Tuning different regression model on healthy subjects
             """
             tune_model(df_TD_train, model, hyperparams[i], harmonize_option)
-            
+
     for i, model in enumerate(models):
         age_truth_TD, delta_TD = predict_model(df_TD_test, model, harmonize_option)
         age_truth_AS, delta_AS = predict_model(df_AS, model, harmonize_option)
