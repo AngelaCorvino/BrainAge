@@ -71,15 +71,19 @@ class DeepRegression(BaseEstimator):
         )
         self.model.summary()
         history = self.model.fit(
-            X, y, validation_split=0.3, epochs=self.epochs, batch_size=32, verbose=1
+            X,
+            y,
+            validation_split=0.3,
+            epochs=self.epochs,
+            batch_size=32,
+            verbose=0,
         )
 
         if self.plot_loss is True:
-            # """
+
             # This parameter allows to plot the training and validation loss
             # curves of the trained model, enabling visual diagnosis of
             # underfitting (bias) or overfitting (variance).
-            # """
 
             training_validation_loss = pd.DataFrame.from_dict(
                 history.history, orient="columns"
