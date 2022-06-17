@@ -340,7 +340,7 @@ class Preprocessing:
         """
         try:
             covars = dataframe[[confounder, covariate]]
-            my_model, array_neuro_harmonized, = harmonizationLearn(
+            my_model, array_neuro_harmonized,_ = harmonizationLearn(
                 np.array(dataframe.drop(["FILE_ID", "SITE"], axis=1)),
                 covars,
             )
@@ -367,8 +367,8 @@ class Preprocessing:
                     "SITE",
                 ]
             ]
-        except RuntimeWarning:
-            print("How can we solve this?")
+        except RuntimeWarning as msg:
+            print("We have a warning:",msg)
         return df_neuro_harmonized
 
     def com_harmonize(
@@ -512,7 +512,7 @@ if __name__ == "__main__":
     Neuro_Harmonized = prep(df, "neuro_harmonized", plot_option=False)
     Combat_Harmonized = prep(df, "combat_harmonized", plot_option=False)
 
-
+    prep.plot_boxplot(Not_Normalized, "SITE", "AGE_AT_SCAN")
     prep.plot_boxplot(Normalized, "SITE", "TotalGrayVol")
     prep.plot_boxplot(Neuro_Harmonized, "SITE", "TotalGrayVol")
     prep.plot_boxplot(Combat_Harmonized, "SITE", "TotalGrayVol")
