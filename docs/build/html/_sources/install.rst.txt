@@ -2,4 +2,4 @@
 
 Installation
 ============
-Installation instructions go here
+Clone directory https://github.com/AngelaCorvino/BrainAge, the main is BrainAge/predictage.py
