@@ -67,10 +67,6 @@ hyperparams = [
         "Feature__score_func": [f_regression],
         "Model__kernel": ["linear", "rbf", "poly"],
         "Model__degree": [3, 4],
-<<<<<<< HEAD
-        # "Model__random_state": [18], Dà un errore Invalid Parameter for estimator SVR(kernel='linear'). Valid parameters are: ['C', 'cache_size', 'coef0', 'degree', 'epsilon', 'gamma', 'kernel', 'max_iter', 'shrinking', 'tol', 'verbose'].
-=======
->>>>>>> 228230d29231231ac7e50447a12781b1d6d0f60d
     },
 ]
 
@@ -158,8 +154,6 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
         x_train, y_train, y_train_class, 10, model_cv.best_estimator_
     )
 
-
-
     #
     # Save the best performing model fitted in stratifiedkfold cross validation
     # """
@@ -167,6 +161,45 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
         "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "wb"
     ) as files:
         pickle.dump(model_fit, files)
+
+
+
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.scatter(
+        y_test, predict_y, alpha=0.5, c="y"
+    )
+    plt.xlabel("Ground truth Age (years)", fontsize=18)
+    plt.ylabel("Predicted Age (years)", fontsize=18)
+    plt.plot(
+        np.linspace(y_test.min(), predict_y.max(), 100),
+        np.linspace(y_test.min(), predict_y.max(), 100),
+        c="r",
+        label="Expected prediction line",
+    )
+    text = AnchoredText(
+    f" MAE= {round(np.mean(MAE),3)}\U+00B1{round(np.std(MAE),3)} [years]\n MSE= {round(MSE,3)}
+    \U+00B1{round(np.std(MSE),3)} [years]\n PR= {round(PR,3)}\U+00B1{round(np.std(PR),3)}", prop=dict(size=14), frameon=True, loc='lower right')
+    text.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+    ax.add_artist(text)
+    plt.title(
+        "Ground-truth Age versus Predict Age using \n \
+            {}  with {} {} data".format(
+            model.__class__.__name__, harmonize_option, prep.retrieve_name(dataframe)
+        ),
+        fontsize=20,
+    )
+    plt.tick_params(axis="x", which="major", labelsize=18)
+    plt.tick_params(axis="y", which="major", labelsize=18)
+    plt.legend()
+    plt.savefig(
+        "images/%s%s_%s.png"
+        % (prep.retrieve_name(dataframe), model.__class__.__name__, harmonize_option),
+        dpi=200,
+        format="png",
+    )
+
+
 
 
 def predict_model(dataframe, model, harmonize_option):

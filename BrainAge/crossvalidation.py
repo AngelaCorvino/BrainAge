@@ -111,7 +111,7 @@ class Crossvalidation:
             PR.append(pearsonr(y[validation_index], predict_y)[0])
         return (
             model,
-            np.mean(MSE),
-            np.mean(MAE),
-            np.mean(PR, axis=0),
+            MSE,
+            MAE,
+            PR,
         )
