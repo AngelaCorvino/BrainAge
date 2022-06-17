@@ -24,12 +24,13 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from scipy.stats import pearsonr
 
+from matplotlib.offsetbox import AnchoredText
+
 from outliers import Outliers
 from preprocessing import Preprocessing
 from deepregression import DeepRegression
 from crossvalidation import Crossvalidation
 
-from matplotlib.offsetbox import AnchoredText
 ###############################################################OPTIONS
 hyperparams = [
     {
