@@ -3,6 +3,9 @@
 Public interfaces
 =================
 
+.. automodule:: outliers
+   :members:
+   
 .. automodule:: preprocessing
    :members:
 
@@ -10,6 +13,9 @@ Public interfaces
    :members:
 
 .. automodule:: deepregression
+   :members:
+
+.. automodule:: RNN
    :members:
 
 .. automodule:: predictage
