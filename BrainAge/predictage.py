@@ -13,12 +13,12 @@ from sklearn.linear_model import Lasso
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.ensemble import RandomForestRegressor
 
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
 from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import train_test_split
 
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
@@ -29,6 +29,7 @@ from preprocessing import Preprocessing
 from deepregression import DeepRegression
 from crossvalidation import Crossvalidation
 
+from matplotlib.offsetbox import AnchoredText
 ###############################################################OPTIONS
 hyperparams = [
     {
@@ -66,7 +67,7 @@ hyperparams = [
         "Feature__score_func": [f_regression],
         "Model__kernel": ["linear", "rbf", "poly"],
         "Model__degree": [3, 4],
-        #"Model__random_state": [18], Dà un errore Invalid Parameter for estimator SVR(kernel='linear'). Valid parameters are: ['C', 'cache_size', 'coef0', 'degree', 'epsilon', 'gamma', 'kernel', 'max_iter', 'shrinking', 'tol', 'verbose'].
+        # "Model__random_state": [18], Dà un errore Invalid Parameter for estimator SVR(kernel='linear'). Valid parameters are: ['C', 'cache_size', 'coef0', 'degree', 'epsilon', 'gamma', 'kernel', 'max_iter', 'shrinking', 'tol', 'verbose'].
     },
 ]
 
@@ -196,32 +197,23 @@ def predict_model(dataframe, model, harmonize_option):
     MAE = mean_absolute_error(y_test, predict_y)
     PR = pearsonr(y_test, predict_y)[0]
 
-    plt.figure(figsize=(8, 8))
-    plt.scatter(y_test, predict_y, alpha = 0.5, c='y') #, c = MSE.map(colors), cmap = 'viridis'
-    #plt.colorbar()
-    plt.xlabel("Ground truth Age(years)", fontsize=18)
-    plt.ylabel("Predicted Age(years)", fontsize=18)
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.scatter(
+        y_test, predict_y, alpha=0.5, c="y"
+    )  # , c = MSE.map(colors), cmap = 'viridis'
+    # plt.colorbar()
+    plt.xlabel("Ground truth Age (years)", fontsize=18)
+    plt.ylabel("Predicted Age (years)", fontsize=18)
     plt.plot(
         np.linspace(y_test.min(), predict_y.max(), 100),
         np.linspace(y_test.min(), predict_y.max(), 100),
         c="r",
-        label="Expected prediction line"
+        label="Expected prediction line",
     )
-    plt.text(
-        y_test.max() - 18,
-        predict_y.max() - 16,
-        f"MSE= {round(MSE,3)} (years)",
-        fontsize=14
-    )
-    plt.text(
-        y_test.max() - 18,
-        predict_y.max() - 14,
-        f"PR= {round(PR,3)}",
-        fontsize=14
-    )
-    plt.text(
-        y_test.max() - 18, predict_y.max() - 18, f"MAE= {round(MAE,3)} (years)", fontsize=14
-    )
+    text = AnchoredText(
+    f" MAE= {round(MAE,3)} (years)\n MSE= {round(MSE,3)} (years)\n PR= {round(PR,3)}", prop=dict(size=14), frameon=True, loc='lower right')
+    text.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+    ax.add_artist(text)
     plt.title(
         "Ground-truth Age versus Predict Age using \n \
             {}  with {} {} data".format(
@@ -243,10 +235,10 @@ def predict_model(dataframe, model, harmonize_option):
 
 def compare_prediction(y_test1, delta1, y_test2, delta2, model, harmonize_option):
     plt.figure(figsize=(8, 8))
-    plt.scatter(y_test1, delta1, c="b")
-    plt.scatter(y_test2, delta2, c="g")
-    plt.xlabel("Ground truth Age(years)", fontsize=18)
-    plt.ylabel("Delta Age(years)", fontsize=18)
+    plt.scatter(y_test1, delta1, alpha=0.5, c="b")
+    plt.scatter(y_test2, delta2, alpha=0.5, c="g")
+    plt.xlabel("Ground truth Age (years)", fontsize=18)
+    plt.ylabel("Delta Age (years)", fontsize=18)
     plt.title(
         "Delta Age versus Ground-truth  Age using \n \
             {}  with {} ".format(
@@ -278,9 +270,9 @@ for harmonize_option in harmonize_list:
     dataframe = prep.remove_strings(dataframe)
     df_AS, df_TD = prep.split_file(dataframe)
     out_td = Outliers(df_TD)
-    df_TD = out_td(nbins=500, plot=False)
+    df_TD = out_td(nbins=500, plot_fit=False, plot_distribution=False)
     out_as = Outliers(df_AS)
-    df_AS = out_as(nbins=500, plot=False)
+    df_AS = out_as(nbins=500, plot_fit=False, plot_distribution=False)
     (df_TD_train, df_TD_test) = train_test_split(
         df_TD,
         test_size=0.25,
@@ -288,14 +280,15 @@ for harmonize_option in harmonize_list:
     )
     for i, model in enumerate(models):
         if tune == "yes":
-            """
-            Tuning different regression model on healthy subjects
-            """
+            #"""
+            #Tuning different regression model on healthy subjects
+            #"""
             tune_model(df_TD_train, model, hyperparams[i], harmonize_option)
-            
+
     for i, model in enumerate(models):
         age_truth_TD, delta_TD = predict_model(df_TD_test, model, harmonize_option)
         age_truth_AS, delta_AS = predict_model(df_AS, model, harmonize_option)
         compare_prediction(
             age_truth_TD, delta_TD, age_truth_AS, delta_AS, model, harmonize_option
         )
+    print("You will find the saved images in Brainage/images")

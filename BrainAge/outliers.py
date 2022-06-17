@@ -49,7 +49,7 @@ class Outliers:
         self.dataframe = dataframe
         self.model = self.model_upload()
 
-    def __call__(self, nbins, plot=True):
+    def __call__(self, nbins, plot_fit = True, plot_distribution=True):
         """Short summary.
 
         Parameters
@@ -66,8 +66,8 @@ class Outliers:
             Description of returned object.
 
         """
-        indexes = self.outliers(nbins)
-        if plot is True:
+        indexes = self.outliers(nbins, plot_fit)
+        if plot_distribution is True:
             self.plot_distribution(indexes, "AGE_AT_SCAN")
         clean = self.clean_dataframe(indexes)
         return clean
@@ -81,7 +81,7 @@ class Outliers:
         return model
 
 
-    def outliers(self, nbins):
+    def outliers(self, nbins, plot_fit=True):
         """Identifies ouliers using autoencoder.
 
         Parameters
@@ -130,8 +130,8 @@ class Outliers:
             linewidth=1,
             label="fit",
         )
-
-        plt.show()
+        if plot_fit is True:
+            plt.show()
 
         def condition(x, fit):
             if x >= (fit[0] + 3 * fit[1]):
@@ -217,4 +217,4 @@ if __name__ == "__main__":
     df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
     out = Outliers(df_TD)
-    df_TD = out(nbins = 500, plot=True)
+    df_TD = out(nbins = 500, plot_fit=False, plot_distribution = False)
