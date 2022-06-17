@@ -8,6 +8,7 @@ from keras.layers import Input
 from keras.models import Model
 
 from sklearn.base import BaseEstimator
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -26,7 +27,7 @@ class DeepRegression(BaseEstimator):
 
     Attributes
     ----------
-    model
+    model : object
     """
 
     def __init__(

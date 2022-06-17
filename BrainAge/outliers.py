@@ -1,20 +1,17 @@
+# pylint: disable=invalid-name, redefined-outer-name
 """
 Module  selects samples with reconstruction error larger than 3 sigmas and removes outlier samples from final dataframe.
 """
 import pickle
+import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 
 from scipy.optimize import curve_fit
-from keras.layers import Dense
-from keras.layers import Input
-from keras.layers import Activation
-from keras.models import Model
-from keras import backend as K
-from keras.utils.generic_utils import get_custom_objects
 
 from preprocessing import Preprocessing
 
+warnings.filterwarnings("ignore")
 
 
 def gaussian(x, x0, sigma, a):
@@ -32,36 +29,43 @@ def sumgaussian(x, x0, x1, sigma0, sigma1, a, b):
     """
     return gaussian(x, x0, sigma0, a) + gaussian(x, x1, sigma1, b)
 
+
 class Outliers:
     """Class identifying outliers.
 
-    Parameters
+    Attributes
     ----------
 
+    dataframe : dataframe-like
+        Dataframe to remove outliers on.
+    model : object
+        Trained RNN model.
     """
 
-    def __init__(self,dataframe):
+    def __init__(self, dataframe):
         """
-        Constructur
+        Constructor
         """
         self.dataframe = dataframe
         self.model = self.model_upload()
 
-    def __call__(self, nbins, plot_fit = True, plot_distribution=True):
-        """Short summary.
+    def __call__(self, nbins, plot_fit=False, plot_distribution=False):
+        """
 
         Parameters
         ----------
 
-        nbins : type
-            Description of parameter `nbins`.
-        plot : type
-            Description of parameter `plot`.
+        nbins : integer-like
+            Number of bins for loss histogram.
+        plot_fit : boolean-like, default is False.
+            If True shows histogram of loss of replicated data and gaussian fit for outlier detection.
+        plot_distribution : boolean, default is False
+            If True it shows the age distribution of removed samples.
 
         Returns
         -------
-        type
-            Description of returned object.
+        dataframe : dataframe-like
+            Dataframe without outliers.
 
         """
         indexes = self.outliers(nbins, plot_fit)
@@ -70,28 +74,33 @@ class Outliers:
         clean = self.clean_dataframe(indexes)
         return clean
 
-
     def model_upload(self):
-        with open(
-            "models/autoencoder_pkl" , "rb"
-        ) as f:
+        """Uploads trained autoencoder model from file to run on dataframe.
+
+        Returns
+        -------
+        model : object
+            Trained RNN model
+
+        """
+        with open("models/autoencoder_pkl", "rb") as f:
             model = pickle.load(f)
         return model
 
-
-    def outliers(self, nbins, plot_fit=True):
+    def outliers(self, nbins, plot_fit=False):
         """Identifies ouliers using autoencoder.
 
         Parameters
         ----------
-        nbins : type
-            Description of parameter `nbins`.
+        nbins : integer-like
+            Number of bins for loss histogram.
+        plot_fit : boolean-like, default is False.
+            If True shows histogram of loss of replicated data and gaussian fit for outlier detection.
 
         Returns
         -------
-        type
-            Description of returned object.
-
+        indexes : list-like
+            List of indexes of samples to remove.
         """
         x_pred = self.model.predict(self.dataframe)
         test_mae_loss = np.mean(
@@ -154,27 +163,20 @@ class Outliers:
         return indexes
 
     def plot_distribution(self, indexes, feature):
-        """Short summary.
+        """Plots feature distribution of removed samples from dataframe.
 
         Parameters
         ----------
-        dataframe : type
-            Description of parameter `dataframe`.
-        indexes : type
-            Description of parameter `indexes`.
-        feature : type
-            Description of parameter `feature`.
-
-        Returns
-        -------
-        type
-            Description of returned object.
+        indexes : list-like
+            List of indexes of samples to remove as outliers.
+        feature : string-like
+            Feature to show in histogram
 
         """
         y = self.dataframe.iloc[indexes]
         bins = int(max(y[feature]) - min(y[feature]))
         plt.figure(2)
-        n_1, _, _ = plt.hist(
+        plt.hist(
             x=y[feature],
             bins=bins,
             facecolor="lightskyblue",
@@ -188,20 +190,17 @@ class Outliers:
         return plt.show()
 
     def clean_dataframe(self, indexes):
-        """Short summary.
+        """Removes sample of given indexes from dataframe.
 
         Parameters
         ----------
-        dataframe : type
-            Description of parameter `dataframe`.
-        indexes : type
-            Description of parameter `indexes`.
+        indexes : list-like
+            List of indexes of samples to remove.
 
         Returns
         -------
-        type
-            Description of returned object.
-
+        dataframe
+            Dataframe without outliers.
         """
         y = self.dataframe.iloc[indexes]
         clean = self.dataframe.drop(index=y.index)
@@ -215,4 +214,4 @@ if __name__ == "__main__":
     df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
     out = Outliers(df_TD)
-    df_TD = out(nbins = 500, plot_fit=False, plot_distribution = False)
+    df_TD = out(nbins=500, plot_fit=True, plot_distribution=True)

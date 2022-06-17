@@ -3,6 +3,7 @@
 Module implements RNN which tries to replicate given data
 """
 import pickle
+import warnings 
 
 from scipy.optimize import curve_fit
 from keras.layers import Dense
@@ -18,6 +19,7 @@ import numpy as np
 # Custom activation function
 from preprocessing import Preprocessing
 
+warnings.filterwarnings("ignore")
 
 def step_wise(x, N=4, a=100):
     """Custom step-wise function to use as activation for RNN.

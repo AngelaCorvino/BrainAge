@@ -4,6 +4,7 @@ Main which finds optimum hyperparameters for a given model using grid-search. Co
 Main which loads previously trained model and uses it to find the predicted age of a given dataframe.
 """
 import pickle
+import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -30,6 +31,8 @@ from outliers import Outliers
 from preprocessing import Preprocessing
 from deepregression import DeepRegression
 from crossvalidation import Crossvalidation
+
+warnings.filterwarnings("ignore")
 
 ###############################################################OPTIONS
 hyperparams = [
@@ -158,7 +161,7 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
     header ='MSE\t'+'MAE\t'+'PR\t'
     metrics = np.array([MSE, MAE, PR])
     metrics = np.array(metrics).T
-    np.savetxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), metrics, header=header)
+    np.savetxt('models/metrics/metrics_%s_%s.txt' %(model.__class__.__name__, harmonize_option), metrics, header=header)
 
 
 
@@ -307,7 +310,7 @@ for harmonize_option in harmonize_list:
 
 
     for i, model in enumerate(models):
-        # metric_train = np.genfromtxt('models/metrics/metrics_%s_%s_.txt' %(model.__class__.__name__, harmonize_option), skip_header=1)
+        # metric_train = np.genfromtxt('models/metrics/metrics_%s_%s.txt' %(model.__class__.__name__, harmonize_option), skip_header=1)
         # plot_model(df_TD_train, model.__class__.__name__, prep.get_name(df_TD_train), harmonize_option, metric_train)
 
         predict_age_TD, age_truth_TD, metric_test_TD= predict_model(df_TD_test, model, harmonize_option)
