@@ -5,7 +5,7 @@ Module implements RNN which tries to replicate given data
 import pickle
 import warnings
 
-from scipy.optimize import curve_fit
+
 from keras.layers import Dense
 from keras.layers import Input
 from keras.layers import Activation
@@ -13,8 +13,7 @@ from keras.models import Model
 from keras import backend as K
 from keras.utils.generic_utils import get_custom_objects
 
-import matplotlib.pyplot as plt
-import numpy as np
+
 
 # Custom activation function
 from preprocessing import Preprocessing
