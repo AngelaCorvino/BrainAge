@@ -22,7 +22,7 @@ The features were computed by means of the FreeSurfer segmentation software. A s
 ## Outliers
 Various statistical criteria exist for the classification of multivariate outliers, but the majority of them requires the knowledge of the feature distributions (e.g. Mahalanobis’ distance, Cook’s distance), while the distributions of the anatomical brain feature values are not a priori known and are not easily understandable from the data (Ferrari et al.).
 
-For our application, we adapted the autoencoder described by S. Hawkins et alt. (https://link.springer.com/content/pdf/10.1007/3-540-46145-0_17.pdf) to our data, building a symmetric, four-linear-layer network with N = 425 (the number of features under examination). The three inner layers have 30, 2 and 30 neurons respectively, their activation functions are a hyperbolic tangent, a step-wise function and a second hyperbolic tangent. The fourth layer generates an output with the same dimensions as the input. We trained the autoencoder comparing the output vector with the input features using the Mean Absolute Error (MAE) as the loss function.
+For our application, we adapted the autoencoder described by [S. Hawkins et alt.](https://link.springer.com/content/pdf/10.1007/3-540-46145-0_17.pdf) to our data, building a symmetric, four-linear-layer network with N = 425 (the number of features under examination). The three inner layers have 30, 2 and 30 neurons respectively, their activation functions are a hyperbolic tangent, a step-wise function and a second hyperbolic tangent. The fourth layer generates an output with the same dimensions as the input. We trained the autoencoder comparing the output vector with the input features using the Mean Absolute Error (MAE) as the loss function.
 
 Once the outliers are identified, they can be removed from the data set.
 
@@ -30,7 +30,7 @@ Once the outliers are identified, they can be removed from the data set.
 
 To mitigate the effect of the different acquisition sites on the features, we have to harmonize data across sites. 
 
-We define harmonization as the explicit removal of site-related effects in multi-site data (cit [Pomponio](https://www.sciencedirect.com/science/article/pii/S1053811919310419?via%3Dihub#!))
+We define harmonization as the explicit removal of site-related effects in multi-site data.
 
 For the removal of site effects, different harmonization procedures were compared:
 (i) absence of harmonization
