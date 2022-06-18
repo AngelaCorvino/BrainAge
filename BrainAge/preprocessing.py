@@ -19,7 +19,7 @@ class Preprocessing:
     Class containing functions for data
     """
 
-    def __call__(self, dataframe, prep_option, plot_option=True):
+    def __call__(self, dataframe, prep_option, plot_option=True, site_dfs=False):
         """
         Allows to you call an istance as a function.
 
@@ -44,6 +44,7 @@ class Preprocessing:
         self.add_TotalWhiteVol(dataframe)
         self.add_age_binning(dataframe)
         self.add_site(dataframe)
+        dataframe, s = self.add_site_binning(dataframe)
         dataframe = self.remove_FIQ(dataframe)
         # PLOTTING DATA
         if plot_option is True:
@@ -56,7 +57,7 @@ class Preprocessing:
             print("Dataframe is only normalized")
         elif prep_option == "combat_harmonized":
             self.self_normalize(dataframe)
-            dataframe = self.add_site_binning(dataframe)
+            dataframe, _ = self.add_site_binning(dataframe)
             try:
                 assert (
                     np.sum(np.sum(dataframe.isna())) == 0
@@ -83,6 +84,8 @@ class Preprocessing:
             print("Dataframe is normalized and harmonized with NeuroHarmonize")
 
         dataframe.drop(["FILE_ID"], axis=1, inplace=True)
+        if site_dfs is True:
+            return dataframe, s
         return dataframe
 
     def read_file(self, file_url):
@@ -157,7 +160,7 @@ class Preprocessing:
             Dataframe without FIQ column.
 
         """
-        dataframe = dataframe.drop(["FIQ"], axis=1)
+        dataframe = dataframe.drop(["FIQ", "SITE_CLASS"], axis=1)
         return dataframe
 
     def add_site(self, dataframe):
@@ -188,7 +191,7 @@ class Preprocessing:
             dataframe.AGE_AT_SCAN, bins, labels=list(range(1, bins + 1))
         )
 
-    def add_site_binning(self, dataframe):
+    def add_site_binning(self, dataframe, s = []):
         """
         Creates a map  where SITE  is binned in the column SITE_CLASS,
         then merges it with the dataframe.
@@ -220,9 +223,12 @@ class Preprocessing:
                 .reset_index(drop=True)
             )
             dataframe = dataframe.join(maps.set_index("SITE"), on="SITE")
+            for i, _ in enumerate(sites):
+                s.append(dataframe.loc[dataframe.SITE_CLASS == i].drop(["SITE", "FILE_ID"], axis = 1))
+
         except KeyError:
             print("Column SITE does not exist")
-        return dataframe
+        return dataframe, s
 
     def plot_histogram(self, dataframe, feature):
         """
@@ -315,7 +321,7 @@ class Preprocessing:
             :, ["Vol" in i for i in dataframe.columns]
         ].divide((dataframe["TotalGrayVol"] + dataframe["TotalWhiteVol"]), axis=0)
 
-    def neuro_harmonize(self, dataframe, confounder="SITE", covariate="AGE_AT_SCAN"):
+    def neuro_harmonize(self, dataframe, confounder="SITE",covariate="AGE_AT_SCAN"):
         """
         Harmonize dataset with neuroHarmonize model:
         1-Load your data and all numeric covariates;
@@ -340,7 +346,7 @@ class Preprocessing:
         """
         try:
             covars = dataframe[[confounder, covariate]]
-            my_model, array_neuro_harmonized,_ = harmonizationLearn(
+            my_model, array_neuro_harmonized = harmonizationLearn(
                 np.array(dataframe.drop(["FILE_ID", "SITE"], axis=1)),
                 covars,
             )
