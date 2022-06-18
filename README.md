@@ -73,6 +73,7 @@ if you choose to tune and train the models (option yes on std-input) expect to:
 - find the best estimator (combination of model and hyperparametrs ) 
 - predict the age of healthy subjects comparing different regression models and a deep model.
 - save the best performing model 
+
 if you choose to use saved trained models (option no on std-input):
 - use the best performing model (best estimator) to predict the age test set and ASD subjects
 - get graphs and results
