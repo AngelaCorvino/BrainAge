@@ -17,6 +17,3 @@ Public interfaces
 
 .. automodule:: RNN
    :members:
-
-.. automodule:: predictage
-   :members:
