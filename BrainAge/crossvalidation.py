@@ -22,24 +22,28 @@ class Crossvalidation:
 
         Parameters
         ----------
-        X : type
-            Description of parameter `X`.
+        X : array-like
+            Training data.
         y : type
-            Description of parameter `y`.
+            The target variable for supervised learning problems.
+            
         n_splits : type
-            Description of parameter `n_splits`.
-        model : type
-            Description of parameter `model`.
+            Number of folds.
+        model : object-like
+            Model to be trained.
 
         Returns
         -------
-        MAE: array
+        model: object-like
+               Model fitted in cross validation.
+
+        MAE: array-like
             Mean absolute error obtained in cross validation.
 
-        MSE: array
+        MSE: array-like
             Mean square error obtained in cross validation.
 
-        PR: array
+        PR: array-like
             Pearson coefficient obtained in cross validation.
 
         """
@@ -72,21 +76,30 @@ class Crossvalidation:
 
         Parameters
         ----------
-        X : type
-            Description of parameter `X`.
+        X : array-like
+            Training data.
         y : type
-            Description of parameter `y`.
+            The target variable for supervised learning problems.
         y_bins : type
-            Description of parameter `y_bins`.
+            Stratification is done based on the this variable. It must be a muslticlass variable.
         n_splits : type
-            Description of parameter `n_splits`.
-        model : type
-            Description of parameter `model`.
+            Number of folds.
+        model : object-like
+            Model to be trained.
 
         Returns
         -------
-        type
-            Description of returned object.
+        model: object-like
+            Model fitted in cross validation.
+
+        MAE: array-like
+            Mean absolute error obtained in cross validation.
+
+        MSE: array-like
+            Mean square error obtained in cross validation.
+
+        PR: array-like
+            Pearson coefficient obtained in cross validation.
 
         """
 
