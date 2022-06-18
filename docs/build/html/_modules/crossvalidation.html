@@ -55,24 +55,28 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : type</span>
-<span class="sd">            Description of parameter `X`.</span>
+<span class="sd">        X : array-like</span>
+<span class="sd">            Training data.</span>
 <span class="sd">        y : type</span>
-<span class="sd">            Description of parameter `y`.</span>
+<span class="sd">            The target variable for supervised learning problems.</span>
+<span class="sd">            </span>
 <span class="sd">        n_splits : type</span>
-<span class="sd">            Description of parameter `n_splits`.</span>
-<span class="sd">        model : type</span>
-<span class="sd">            Description of parameter `model`.</span>
+<span class="sd">            Number of folds.</span>
+<span class="sd">        model : object-like</span>
+<span class="sd">            Model to be trained.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        MAE: array</span>
+<span class="sd">        model: object-like</span>
+<span class="sd">               Model fitted in cross validation.</span>
+
+<span class="sd">        MAE: array-like</span>
 <span class="sd">            Mean absolute error obtained in cross validation.</span>
 
-<span class="sd">        MSE: array</span>
+<span class="sd">        MSE: array-like</span>
 <span class="sd">            Mean square error obtained in cross validation.</span>
 
-<span class="sd">        PR: array</span>
+<span class="sd">        PR: array-like</span>
 <span class="sd">            Pearson coefficient obtained in cross validation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -105,21 +109,30 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        X : type</span>
-<span class="sd">            Description of parameter `X`.</span>
+<span class="sd">        X : array-like</span>
+<span class="sd">            Training data.</span>
 <span class="sd">        y : type</span>
-<span class="sd">            Description of parameter `y`.</span>
+<span class="sd">            The target variable for supervised learning problems.</span>
 <span class="sd">        y_bins : type</span>
-<span class="sd">            Description of parameter `y_bins`.</span>
+<span class="sd">            Stratification is done based on the this variable. It must be a muslticlass variable.</span>
 <span class="sd">        n_splits : type</span>
-<span class="sd">            Description of parameter `n_splits`.</span>
-<span class="sd">        model : type</span>
-<span class="sd">            Description of parameter `model`.</span>
+<span class="sd">            Number of folds.</span>
+<span class="sd">        model : object-like</span>
+<span class="sd">            Model to be trained.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        type</span>
-<span class="sd">            Description of returned object.</span>
+<span class="sd">        model: object-like</span>
+<span class="sd">            Model fitted in cross validation.</span>
+
+<span class="sd">        MAE: array-like</span>
+<span class="sd">            Mean absolute error obtained in cross validation.</span>
+
+<span class="sd">        MSE: array-like</span>
+<span class="sd">            Mean square error obtained in cross validation.</span>
+
+<span class="sd">        PR: array-like</span>
+<span class="sd">            Pearson coefficient obtained in cross validation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 

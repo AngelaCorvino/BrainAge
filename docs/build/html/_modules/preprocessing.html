@@ -77,6 +77,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_TotalWhiteVol</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_age_binning</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_site</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+        <span class="n">dataframe</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_site_binning</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="n">dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_FIQ</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="c1"># PLOTTING DATA</span>
         <span class="k">if</span> <span class="n">plot_option</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
@@ -89,7 +90,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataframe is only normalized&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">prep_option</span> <span class="o">==</span> <span class="s2">&quot;combat_harmonized&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">self_normalize</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
-            <span class="n">dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_site_binning</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+            <span class="n">dataframe</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_site_binning</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="p">(</span>
                     <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">isna</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">0</span>
@@ -190,7 +191,7 @@
 <span class="sd">            Dataframe without FIQ column.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;FIQ&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;FIQ&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dataframe</span></div>
 
 <div class="viewcode-block" id="Preprocessing.add_site"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.add_site">[docs]</a>    <span class="k">def</span> <span class="nf">add_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">):</span>
@@ -221,7 +222,7 @@
             <span class="n">dataframe</span><span class="o">.</span><span class="n">AGE_AT_SCAN</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Preprocessing.add_site_binning"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.add_site_binning">[docs]</a>    <span class="k">def</span> <span class="nf">add_site_binning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">):</span>
+<div class="viewcode-block" id="Preprocessing.add_site_binning"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.add_site_binning">[docs]</a>    <span class="k">def</span> <span class="nf">add_site_binning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a map  where SITE  is binned in the column SITE_CLASS,</span>
 <span class="sd">        then merges it with the dataframe.</span>
@@ -253,9 +254,12 @@
                 <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">maps</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;SITE&quot;</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;SITE&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sites</span><span class="p">):</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dataframe</span><span class="o">.</span><span class="n">SITE_CLASS</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;FILE_ID&quot;</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">))</span>
+
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Column SITE does not exist&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dataframe</span></div>
+        <span class="k">return</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">s</span></div>
 
 <div class="viewcode-block" id="Preprocessing.plot_histogram"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.plot_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">plot_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -273,7 +277,7 @@
         <span class="n">dataframe</span><span class="p">[</span><span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">feature</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
             <span class="p">[</span><span class="n">feature</span><span class="p">],</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span>
         <span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Occurencies&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;N Subjects&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
@@ -296,9 +300,9 @@
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_name</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="n">sns_boxplot</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">featurex</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">featurey</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="n">sns_boxplot</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span>
-            <span class="n">labels</span><span class="o">=</span><span class="n">sns_boxplot</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span>
+            <span class="n">labels</span><span class="o">=</span><span class="n">sns_boxplot</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span>
         <span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
         <span class="n">sns_boxplot</span><span class="o">.</span><span class="n">set_axisbelow</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">sns_boxplot</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span>
             <span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>
@@ -311,10 +315,10 @@
             <span class="o">+</span> <span class="s2">&quot; in &quot;</span>
             <span class="o">+</span> <span class="n">name</span>
             <span class="o">+</span> <span class="s2">&quot; dataframe&quot;</span><span class="p">,</span>
-            <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+            <span class="n">fontsize</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">sns_boxplot</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">featurey</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-
+        <span class="n">sns_boxplot</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">featurey</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">autoscale</span><span class="p">()</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Preprocessing.self_normalize"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.self_normalize">[docs]</a>    <span class="k">def</span> <span class="nf">self_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">):</span>
@@ -348,7 +352,7 @@
             <span class="p">:,</span> <span class="p">[</span><span class="s2">&quot;Vol&quot;</span> <span class="ow">in</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
         <span class="p">]</span><span class="o">.</span><span class="n">divide</span><span class="p">((</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;TotalGrayVol&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;TotalWhiteVol&quot;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Preprocessing.neuro_harmonize"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.neuro_harmonize">[docs]</a>    <span class="k">def</span> <span class="nf">neuro_harmonize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">confounder</span><span class="o">=</span><span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="n">covariate</span><span class="o">=</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Preprocessing.neuro_harmonize"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.neuro_harmonize">[docs]</a>    <span class="k">def</span> <span class="nf">neuro_harmonize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">confounder</span><span class="o">=</span><span class="s2">&quot;SITE&quot;</span><span class="p">,</span><span class="n">covariate</span><span class="o">=</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Harmonize dataset with neuroHarmonize model:</span>
 <span class="sd">        1-Load your data and all numeric covariates;</span>
@@ -373,7 +377,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">covars</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[[</span><span class="n">confounder</span><span class="p">,</span> <span class="n">covariate</span><span class="p">]]</span>
-            <span class="n">my_model</span><span class="p">,</span> <span class="n">array_neuro_harmonized</span><span class="p">,</span> <span class="o">=</span> <span class="n">harmonizationLearn</span><span class="p">(</span>
+            <span class="n">my_model</span><span class="p">,</span> <span class="n">array_neuro_harmonized</span> <span class="o">=</span> <span class="n">harmonizationLearn</span><span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
                 <span class="n">covars</span><span class="p">,</span>
             <span class="p">)</span>
@@ -400,8 +404,8 @@
                     <span class="s2">&quot;SITE&quot;</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">]</span>
-        <span class="k">except</span> <span class="ne">RuntimeWarning</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;How can we solve this?&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeWarning</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;We have a warning:&quot;</span><span class="p">,</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df_neuro_harmonized</span></div>
 
 <div class="viewcode-block" id="Preprocessing.com_harmonize"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.com_harmonize">[docs]</a>    <span class="k">def</span> <span class="nf">com_harmonize</span><span class="p">(</span>
@@ -545,10 +549,10 @@
     <span class="n">Neuro_Harmonized</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;neuro_harmonized&quot;</span><span class="p">,</span> <span class="n">plot_option</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">Combat_Harmonized</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;combat_harmonized&quot;</span><span class="p">,</span> <span class="n">plot_option</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-
-    <span class="n">prep</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span><span class="n">Normalized</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;lhCortexVol&quot;</span><span class="p">)</span>
-    <span class="n">prep</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span><span class="n">Neuro_Harmonized</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;lhCortexVol&quot;</span><span class="p">)</span>
-    <span class="n">prep</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span><span class="n">Combat_Harmonized</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;lhCortexVol&quot;</span><span class="p">)</span>
+    <span class="n">prep</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span><span class="n">Not_Normalized</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">)</span>
+    <span class="n">prep</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span><span class="n">Normalized</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;TotalGrayVol&quot;</span><span class="p">)</span>
+    <span class="n">prep</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span><span class="n">Neuro_Harmonized</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;TotalGrayVol&quot;</span><span class="p">)</span>
+    <span class="n">prep</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span><span class="n">Combat_Harmonized</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;TotalGrayVol&quot;</span><span class="p">)</span>
 </pre></div>
 
           </div>
