@@ -64,9 +64,9 @@ To use our Python codes the following packages are needed: keras, matplotlib, ne
 
 #Step1 : Clone the repository
 
-#Step 2: To train RNN autoencoder run RNN.py. The saved models will be used to identify ouliers.
+#Step 2: Train RNN autoencoder run RNN.py. The saved models will be used to identify ouliers. The folder BrainAge/model contains a pretrained model that you can use to avoid this step.
 
-#Step3 : Run predictage.py to train regression models and/or plot graphs with prediction.
+#Step3 : Run predictage.py to compare regression models and/or plot graphs with prediction.
 
 if you choose to tune and train the models (option yes on std-input) expect to:
 - perform data preprocessing ( self normalization and data harmonization ) 
