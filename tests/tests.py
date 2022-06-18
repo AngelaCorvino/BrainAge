@@ -33,11 +33,11 @@ class TestBrainAge(unittest.TestCase):
         self.assertIn('TotalWhiteVol', dataframe.keys(), 'TotalWhiteVol was not added')
         self.assertEqual(dataframe.shape, (915, 425), 'Features were not added')
         
-    def test_remove_FIQ(self):
-        prep = Preprocessing()
-        dataframe = prep.read_file(self.data)
-        dataframe = prep.remove_FIQ(dataframe)
-        self.assertNotIn('FIQ', dataframe.keys(), 'FIQ was not removed')
+    #def test_remove_FIQ(self):
+    #    prep = Preprocessing()
+    #    dataframe = prep.read_file(self.data)
+    #    dataframe = prep.remove_FIQ(dataframe)
+    #    self.assertNotIn('FIQ', dataframe.keys(), 'FIQ was not removed')
 
         
     def test_add_site(self):
@@ -58,7 +58,7 @@ class TestBrainAge(unittest.TestCase):
         prep = Preprocessing()
         dataframe = prep.read_file(self.data)
         prep.add_site(dataframe)
-        dataframe = prep.add_site_binning(dataframe)
+        dataframe, _ = prep.add_site_binning(dataframe)
         self.assertIn('SITE_CLASS', dataframe.keys(), 'SITE_CLASS was not added')
         self.assertEqual(dataframe.shape, (915, 426), 'SITE_CLASS was not added')
 
