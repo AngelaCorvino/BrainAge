@@ -150,7 +150,7 @@ def tune_model(
 
     # Save the best performing model fitted in cross validation
     with open(
-        "models/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "wb"
+        "models/cv/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "wb"
     ) as files:
         pickle.dump(model_cv, files)
 
