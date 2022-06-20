@@ -126,9 +126,9 @@ class Outliers:
         plt.ylabel("N Subjects", fontsize=24)
 
         # Fit as a gaussian
-        p0 = [0.2, 0.05, 1]
+        #p0 = [0.2, 0.05, 1]
 
-        fit, fitCov = curve_fit(gaussian, xdiscrete_1, n_1, p0=p0)
+        fit, fitCov = curve_fit(gaussian, xdiscrete_1, n_1)
         fit_err = np.sqrt(abs(np.diag(fitCov)))
         print(
             f" Test fit parameters: \n x_0 = {fit[0] : .3f} +-{fit_err[0] : .3f}\n sigma = {fit[1] : .3f} +-{fit_err[1] : .3f}\n A = {fit[2] : .3f} +-{fit_err[2] : .3f}\n"
@@ -202,7 +202,7 @@ class Outliers:
         plt.xticks(fontsize=20)
         plt.xlabel("Age[years]", fontsize=22)
         plt.ylabel("N Subjects", fontsize=22)
-        return plt.show()
+        plt.show()
 
     def clean_dataframe(self, indexes):
         """Removes sample of given indexes from dataframe.
