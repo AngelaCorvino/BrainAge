@@ -30,10 +30,12 @@ class Preprocessing:
                     The dataframe of raw data  to be passed to the
                     preprocessing class.
         prep_option : string-like
-                           String containing one of the options:
-                           'not_normalized', 'normalized', 'combat', 'neuro'.
+                      String containing one of the options:
+                           'not_normalized', 'normalized', 'combat_harmonized', 'neuro_harmonized'.
         plot_option : boolean
                       If True shows some plots of data. Default is True
+        site_dfs : boolean
+                   If True returns not only the dataframe but also a list of dataframes of the data divided by site, preprocessed according to prep_option. Defaulti is False.
 
         Returns
         -------
@@ -163,12 +165,12 @@ class Preprocessing:
         Parameters
         ----------
         dataframe : dataframe-like
-            Dataframe to be passed to the function.
+                    Dataframe to be passed to the function.
 
         Returns
         -------
         dataframe : dataframe-like
-            Dataframe without FIQ column.
+                    Dataframe without FIQ column.
 
         """
         dataframe = dataframe.drop(["FIQ"], axis=1)
@@ -180,7 +182,7 @@ class Preprocessing:
         Parameters
         ----------
         dataframe : dataframe-like
-            Dataframe to be passed to the function.
+                    Dataframe to be passed to the function.
         """
         dataframe["SITE"] = dataframe.FILE_ID.apply(lambda x: x.split("_")[0])
 
@@ -195,7 +197,7 @@ class Preprocessing:
         dataframe : dataframe-like
                     The dataframe of data to be passed to the function.
         bins : integer-like, default is 6
-                    Number of classes.
+               Number of classes.
         """
 
         dataframe["AGE_CLASS"] = pd.qcut(
@@ -215,7 +217,7 @@ class Preprocessing:
         Returns
         -------
         dataframe : dataframe-like
-            Dataframe with SITE_CLASS column.
+                    Dataframe with SITE_CLASS column.
 
         """
 
@@ -247,7 +249,7 @@ class Preprocessing:
         ----------
 
         dataframe : dataframe-like
-                 Dataframe to be passed to thpyle function.
+                    Dataframe to be passed to thpyle function.
         feature : string-like
                   Feature to plot the histogram of.
         """
@@ -350,7 +352,7 @@ class Preprocessing:
         -------
 
         dataframe_harmonized: dataframe-like
-                    Dataframe containing harmonized data
+                              Dataframe containing harmonized data
         """
         try:
             covars = dataframe[[confounder, covariate]]
@@ -421,7 +423,7 @@ class Preprocessing:
         -------
 
         dataframe_harmonized: dataframe-like
-                    Dataframe containing harmonized data
+                              Dataframe containing harmonized data
         """
         array_combat_harmonized = neuroCombat(
             dat=dataframe.drop(
@@ -505,11 +507,11 @@ class Preprocessing:
         Parameters
         ----------
         dataframe : dataframe-like
-                  Dataframe to be passed to the function.
+                    Dataframe to be passed to the function.
         Returns
         -------
         dataframe : dataframe-like
-                  Dataframe withouth columns which contains strings.
+                    Dataframe withouth columns which contains strings.
 
         """
 
@@ -535,12 +537,12 @@ class Preprocessing:
         Parameters
         ----------
         var : type
-            Variable of which we want the name.
+              Variable of which we want the name.
 
         Returns
         -------
         name : string-like
-            Name of the variable.
+               Name of the variable.
 
         """
         callers_local_vars = inspect.currentframe().f_back.f_back.f_locals.items()
