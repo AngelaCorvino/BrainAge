@@ -35,13 +35,41 @@ warnings.filterwarnings("ignore")
 ###############################################################OPTIONS
 hyperparams = [
     {
+        "Feature__k": [50, 100, 200, "all"],
+        "Feature__score_func": [f_regression],
+        "Model__epochs": [200, 300],
+        "Model__drop_rate": [0.2, 0.4, 0.6],
+    },
+    {
+        "Feature__k": [10, 20, 30],
+        "Feature__score_func": [f_regression],
+    },
+    {
+        "Feature__k": [10, 20, 30],
+        "Feature__score_func": [f_regression],
+        "Model__n_restarts_optimizer": [0, 1, 2],
+        "Model__random_state": [18],
+    },
+    {
         "Feature__k": [10, 20, 30],
         "Feature__score_func": [f_regression],
         "Model__n_estimators": [10, 200, 300],
         "Model__max_features": ["sqrt", "log2"],
         "Model__max_depth": [4, 5, 6, 7, 8],
         "Model__random_state": [18],
-    }
+    },
+    {
+        "Feature__k": [10, 20, 30],
+        "Feature__score_func": [f_regression],
+        "Model__alpha": [0.1, 0.3, 0.6, 1],
+        "Model__random_state": [18],
+    },
+    {
+        "Feature__k": [10, 20, 30],
+        "Feature__score_func": [f_regression],
+        "Model__kernel": ["rbf", "poly"],
+        "Model__degree": [3, 4],
+    },
 ]
 
 harmonize_list = ["normalized", "combat_harmonized", "neuro_harmonized"]
@@ -284,18 +312,6 @@ def get_name(dataframe):
 
 
 ##################################################MAIN
-
-harmonize_list = ["normalized", "combat_harmonized", "neuro_harmonized"]
-
-models = [
-    DeepRegression(plot_loss=False),
-    LinearRegression(),
-    GaussianProcessRegressor(),
-    RandomForestRegressor(),
-    Lasso(),
-    SVR(),
-]
-
 sites = [
     "Caltech",
     "CMU",
@@ -347,10 +363,10 @@ for harmonize_option in harmonize_list:
     df = prep.read_file("data/FS_features_ABIDE_males.csv")
     s = []
     df, s = prep(df, harmonize_option, False, site_dfs=True)
-    # df = prep.remove_strings(df)
+    #df = prep.remove_strings(df)
     for model in models:
-        # _, df_TD=prep.split_file(df)
-        # tune_model(df_TD, model, hyperparams, harmonize_option)
+        #_, df_TD=prep.split_file(df)
+        #tune_model(df_TD, model, hyperparams, harmonize_option)
         s_TD = [0]
         s_AS = [0]
         MAE = [0]
