@@ -2,7 +2,6 @@
 """
 Main which test the reproducibility of our prediction models over different sites.
 You can use models previously tuned and trained in Stratified K-fold cross validation . 
-You can also choose to tune again the models and train them in simple k-fold cross validation.
 """
 import pickle
 import warnings
@@ -84,76 +83,6 @@ models = [
     SVR(),
 ]
 #######################################################FUNCTIONS
-def tune_model(
-    dataframe_train, model, hyparams, harmonize_option
-):  # Questo tune è diverso da quello in predictage, è sperimentale e senza cross-validation
-    """
-    Run a grid-search for  hyperparameters tuning,
-    then fit the best performing model on the training set in cross validation.
-
-    Parameters
-    ----------
-
-    dataframe : dataframe-like
-                The dataframe of data to be passed to the function.
-
-    model:      function-like
-                The regression model to be passed to the function.
-
-
-    hyparams:   dictionary-like
-                A list of hyperparameters to be passed to the Grid search.
-
-    harmonize_option: string-like
-
-
-    """
-
-    pipe = Pipeline(
-        steps=[
-            ("Feature", SelectKBest()),
-            ("Scaler", RobustScaler()),
-            ("Model", model),
-        ]
-    )
-
-    x_train = dataframe_train.drop(
-        ["AGE_AT_SCAN", "SEX", "DX_GROUP", "AGE_CLASS"], axis=1
-    )
-    y_train = dataframe_train["AGE_AT_SCAN"]
-    y_train_class = dataframe_train["AGE_CLASS"]
-
-    if model == DeepRegression():
-        print("No cross validation for deep model")
-        model_cv = GridSearchCV(
-            pipe,
-            cv=None,
-            n_jobs=-1,
-            param_grid=hyparams,
-            scoring="neg_mean_absolute_error",
-            verbose=True,
-        )
-    else:
-        print("Cross validation for regression model")
-        model_cv = GridSearchCV(
-            pipe,
-            cv=10,
-            n_jobs=-1,
-            param_grid=hyparams,
-            scoring="neg_mean_absolute_error",
-            verbose=True,
-        )
-
-    model_cv.fit(x_train, y_train)
-
-    print("Best combination of hyperparameters:", model_cv.best_params_)
-
-    # Save the best performing model fitted in cross validation
-    with open(
-        "models/cv/%s_%s_pkl" % (model.__class__.__name__, harmonize_option), "wb"
-    ) as files:
-        pickle.dump(model_cv, files)
-
 
 def predict_model(dataframe, model, harmonize_option):
     """
@@ -247,8 +176,7 @@ for harmonize_option in harmonize_list:
     df, s = prep(df, harmonize_option, False, site_dfs=True)
     #df = prep.remove_strings(df)
     for model in models:
-        #_, df_TD=prep.split_file(df)
-        #tune_model(df_TD, model, hyperparams, harmonize_option)
+
         s_TD = [0]
         s_AS = [0]
         MAE = [0]
