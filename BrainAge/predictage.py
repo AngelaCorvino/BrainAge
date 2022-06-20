@@ -379,14 +379,6 @@ for harmonize_option in harmonize_list:
         predict_age_AS, age_truth_AS, metric_AS = predict_model(
             df_AS, model, harmonize_option
         )
-        compare_prediction(
-            age_truth_TD,
-            predict_age_TD,
-            age_truth_AS,
-            predict_age_AS,
-            model.__class__.__name__,
-            harmonize_option,
-        )
 
         plot_model(
             predict_age_TD,
