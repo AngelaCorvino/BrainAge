@@ -122,29 +122,17 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
     y_train = dataframe_train["AGE_AT_SCAN"]
     y_train_class = dataframe_train["AGE_CLASS"]
 
-    if model.__class__.__name__ == 'DeepRegression':
-        print("No cross validation for deep model")
-        model_cv = GridSearchCV(
-            pipe,
-            cv=None,
-            n_jobs=-1,
-            param_grid=hyparams,
-            scoring="neg_mean_absolute_error",
-            verbose=True,
-        )
-    else:
-        print("Cross validation for regression model")
-        model_cv = GridSearchCV(
-            pipe,
-            cv=10,
-            n_jobs=-1,
-            param_grid=hyparams,
-            scoring="neg_mean_absolute_error",
-            verbose=True,
-        )
+    print("Cross validation for regression model")
+    model_cv = GridSearchCV(
+        pipe,
+        cv=10,
+        n_jobs=-1,
+        param_grid=hyparams,
+        scoring="neg_mean_absolute_error",
+        verbose=True,
+    )
 
     model_cv.fit(x_train, y_train)
-
     print("Best combination of hyperparameters:", model_cv.best_params_)
     # """
     #    We have our optimal list of parameters,
