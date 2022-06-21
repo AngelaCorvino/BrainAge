@@ -26,7 +26,9 @@ For our application, we adapted the autoencoder described by [S. Hawkins et alt.
 
 Once the outliers are identified, they can be removed from the data set.
 The following figure shows: on the left the performace of the RNN in terms of MAE for both controls and autistic subjects; on the right, the age distribution of the outliers. We identifiy as outliers the points whose distance from the mean value is bigger than 3 sigma. 
-  <img src="BrainAge/images/Outliers.png" width="400"/>
+
+
+<img src="BrainAge/images/Outliers.png" width="400"/>
 
 
 ## Data Harmonization 
