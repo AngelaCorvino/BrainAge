@@ -141,4 +141,4 @@ if __name__ == "__main__":
     df = prep.remove_strings(df)
     df_AS, df_TD = prep.split_file(df)
     autoencoder = RNN(df_TD)
-    autoencoder(epochs=5000)
+    autoencoder(epochs=500)
