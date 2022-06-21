@@ -40,7 +40,7 @@ hyperparams = [
         "Feature__k": [50, 100, 200, "all"],
         "Feature__score_func": [f_regression],
         "Model__epochs": [200, 300],
-        "Model__drop_rate": [0.2, 0.4, 0.6],
+        "Model__drop_rate": [0.2, 0.4],
     },
     {
         "Feature__k": [10, 20, 30],
@@ -122,7 +122,7 @@ def tune_model(dataframe_train, model, hyparams, harmonize_option):
     y_train = dataframe_train["AGE_AT_SCAN"]
     y_train_class = dataframe_train["AGE_CLASS"]
 
-    if model == DeepRegression():
+    if model.__class__.__name__ == 'DeepRegression':
         print("No cross validation for deep model")
         model_cv = GridSearchCV(
             pipe,
