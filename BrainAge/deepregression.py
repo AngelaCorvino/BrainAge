@@ -40,6 +40,7 @@ class DeepRegression(BaseEstimator):
         self.epochs = epochs
         self.drop_rate = drop_rate
         self.plot_loss = plot_loss
+        super().__init__()
 
     def fit(self, X, y):
         """
@@ -104,9 +105,12 @@ class DeepRegression(BaseEstimator):
             )
 
             plt.title("Training and Validation Loss")
-            plt.xlabel("Epoch")
-            plt.ylabel("Loss")
-            plt.legend()
+            plt.xlabel("Epoch",fontsize=20)
+            plt.ylabel("Loss",fontsize=20)
+            plt.tick_params(axis="x", which="major", labelsize=18)
+            plt.tick_params(axis="y", which="major", labelsize=18)
+            plt.legend(loc="upper right", fontsize=14)    
+            plt.legend(title='{}'.format(super().get_params(self.model)),loc="upper right", fontsize=14)
             plt.show()
 
     def predict(self, X):
