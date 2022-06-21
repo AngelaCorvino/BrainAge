@@ -25,8 +25,8 @@ Various statistical criteria exist for the classification of multivariate outlie
 For our application, we adapted the autoencoder described by [S. Hawkins et alt.](https://link.springer.com/content/pdf/10.1007/3-540-46145-0_17.pdf) to our data, building a symmetric, four-linear-layer network with N = 425 (the number of features under examination). The three inner layers have 30, 2 and 30 neurons respectively, their activation functions are a hyperbolic tangent, a step-wise function and a second hyperbolic tangent. The fourth layer generates an output with the same dimensions as the input. We trained the autoencoder comparing the output vector with the input features using the Mean Absolute Error (MAE) as the loss function.
 
 Once the outliers are identified, they can be removed from the data set.
-The following plots shows the performace of the RNN in terms of MAE for both controls and autistic subjects. We identifiy as outliers the points whose distance from the mean value is bigger than 3 sigma.
-  <img src="BrainAge/images/Outliers.png" width="350"/>
+The following figure shows: on the left the performace of the RNN in terms of MAE for both controls and autistic subjects; on the right, the age distribution of the outliers. We identifiy as outliers the points whose distance from the mean value is bigger than 3 sigma. 
+  <img src="BrainAge/images/Outliers.png" width="400"/>
 
 
 ## Data Harmonization 
