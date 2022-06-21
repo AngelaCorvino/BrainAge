@@ -4,6 +4,7 @@ Module implements RNN which tries to replicate given data
 """
 import pickle
 import warnings
+import tensorflow as tf
 
 
 from keras.layers import Dense
@@ -113,12 +114,18 @@ class RNN:
             summary of how the model trained (training error, validation error).
 
         """
+        # Define callbacks
+        early_stopping = tf.keras.callbacks.EarlyStopping(
+            monitor="val_loss", patience=10, verbose=1
+        )
+
         history = model.fit(
             self.X_train,
             self.X_train,
             validation_split=0.4,
             epochs=epochs,
             batch_size=50,
+            callbacks=[early_stopping],
             verbose=1,
         )
         with open(
