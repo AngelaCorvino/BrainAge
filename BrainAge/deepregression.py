@@ -2,15 +2,15 @@
 """
 Module implements a MLP and fits it on given dataframe.
 """
+import matplotlib.pyplot as plt
+import pandas as pd
+import tensorflow as tf
+
 from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import Input
 from keras.models import Model
-
 from sklearn.base import BaseEstimator
-
-import matplotlib.pyplot as plt
-import pandas as pd
 
 
 class DeepRegression(BaseEstimator):
@@ -74,11 +74,16 @@ class DeepRegression(BaseEstimator):
             loss="mean_absolute_error", optimizer="adam", metrics=["MAE"]
         )
         self.model.summary()
+        # Define callbacks
+        early_stopping = tf.keras.callbacks.EarlyStopping(
+            monitor="val_loss", patience=10, verbose=1
+        )
         history = self.model.fit(
             X,
             y,
             validation_split=0.3,
             epochs=self.epochs,
+            callbacks=[early_stopping],
             batch_size=32,
             verbose=0,
         )
