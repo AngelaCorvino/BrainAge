@@ -63,7 +63,7 @@ class DeepRegression(BaseEstimator):
         """
         inputs = Input(shape=X.shape[1])
         hidden = Dense(128, activation="relu")(inputs)
-        hidden = Dense(12, activation="relu")(hidden)
+        hidden = Dense(64, activation="relu")(hidden)
         hidden = Dense(12, activation="relu")(hidden)
         hidden = Dropout(self.drop_rate)(hidden)
         hidden = Dense(12, activation="relu")(hidden)
