@@ -101,7 +101,7 @@ class RNN:
         return model
 
     def fit_autoencoder(self, model, epochs):
-        """Short summary.
+        """Fit the autoencoder and save the model.
 
         Parameters
         ----------
