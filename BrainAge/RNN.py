@@ -76,7 +76,7 @@ class RNN:
         self.fit_autoencoder(model, epochs)
 
     def make_autoencoder(self):
-        """Autoencoder trained comparing the output vector with the input features,
+        """ Train autoencoder comparing the output vector with the input features,
         using the Mean Squared Error (MSE) as loss function..
 
         Parameters
@@ -101,7 +101,7 @@ class RNN:
         return model
 
     def fit_autoencoder(self, model, epochs):
-        """Fit the autoencoder and save the model.
+        """Fit the autoencoder and save fitted the model.
 
         Parameters
         ----------
