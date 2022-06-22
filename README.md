@@ -3,6 +3,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/brainage/badge/?version=latest)](https://brainage.readthedocs.io/en/latest/?badge=latest)
 
+![Lines of code](https://img.shields.io/tokei/lines/github/AngelaCorvino/BrainAge?logo=github)
 
 # BrainAge
 
