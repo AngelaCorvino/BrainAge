@@ -68,7 +68,7 @@ class RNN:
 
         Parameters
         ----------
-        epochs : integer
+        epochs : integer-like
             Epochs needed to train the RNN .
 
         """
@@ -84,7 +84,7 @@ class RNN:
 
         Returns
         -------
-        model : type
+        model : object
             The trained model.
         """
         get_custom_objects().update({"step_wise": Activation(step_wise)})
@@ -105,12 +105,12 @@ class RNN:
 
         Parameters
         ----------
-        epochs : type
+        epochs : integer-like
             Description of parameter `epochs`.
 
         Returns
         -------
-        history : type
+        history : object
             summary of how the model trained (training error, validation error).
 
         """
