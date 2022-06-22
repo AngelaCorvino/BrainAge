@@ -10,10 +10,10 @@ This repository belongs to Angela Corvino and Agata Minnocci. It contains our ex
 
 The aim of our project is to implement an algorithm that has the ability to predict brain age analysing features extracted from brain MRIs of a cohort of subjects with Autism Spectrum Disorder and controls. 
 The algorithm will:
--look for and remove possible outliers 
--implement a data harmonization system
--train different regression models 
--evaluate and compare their performances.
+- look for and remove possible outliers 
+- implement a data harmonization system
+- train different regression models 
+- evaluate and compare their performances.
 
 ## Data
 
