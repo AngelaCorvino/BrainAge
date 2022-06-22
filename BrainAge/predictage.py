@@ -37,7 +37,7 @@ warnings.filterwarnings("ignore")
 ###############################################################OPTIONS
 hyperparams = [
     {
-        "Feature__k": [50, 100, 200, "all"],
+        "Feature__k": [ 128, 256, "all"],
         "Feature__score_func": [f_regression],
         "Model__epochs": [200, 300],
         "Model__drop_rate": [0.2, 0.4],
