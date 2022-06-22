@@ -21,9 +21,10 @@ class DeepRegression(BaseEstimator):
     LinearRegression fits a linear model with coefficients w = (w1, ..., wp)
     to minimize the residual sum of squares between the observed targets in
     the dataset, and the targets predicted by the linear approximation.
+    
     Parameters
     ----------
-     plot_loss : bool, default=False
+    plot_loss : bool, default=False
         When set to ``True``, plots the training and validation loss curves of the trained model
 
     Attributes
@@ -45,10 +46,12 @@ class DeepRegression(BaseEstimator):
     def fit(self, X, y):
         """
         Fit linear model.
+        
         Parameters
         ----------
-        X : {array-like} of shape (n_samples, n_features)
+        X : array-like of shape (n_samples, n_features)
             Training data.
+            
         y : array-like of shape (n_samples,) or (n_samples, n_targets)
             Target values. Will be cast to X's dtype if necessary.
 
