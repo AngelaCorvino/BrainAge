@@ -11,6 +11,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -37,6 +38,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 
 <span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
@@ -100,7 +102,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        epochs : integer</span>
+<span class="sd">        epochs : integer-like</span>
 <span class="sd">            Epochs needed to train the RNN .</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -108,7 +110,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_autoencoder</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">epochs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RNN.make_autoencoder"><a class="viewcode-back" href="../api.html#RNN.RNN.make_autoencoder">[docs]</a>    <span class="k">def</span> <span class="nf">make_autoencoder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Autoencoder trained comparing the output vector with the input features,</span>
+        <span class="sd">&quot;&quot;&quot; Train autoencoder comparing the output vector with the input features,</span>
 <span class="sd">        using the Mean Squared Error (MSE) as loss function..</span>
 
 <span class="sd">        Parameters</span>
@@ -116,7 +118,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        model : type</span>
+<span class="sd">        model : object</span>
 <span class="sd">            The trained model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">get_custom_objects</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;step_wise&quot;</span><span class="p">:</span> <span class="n">Activation</span><span class="p">(</span><span class="n">step_wise</span><span class="p">)})</span>
@@ -133,25 +135,31 @@
         <span class="k">return</span> <span class="n">model</span></div>
 
 <div class="viewcode-block" id="RNN.fit_autoencoder"><a class="viewcode-back" href="../api.html#RNN.RNN.fit_autoencoder">[docs]</a>    <span class="k">def</span> <span class="nf">fit_autoencoder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">epochs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Short summary.</span>
+        <span class="sd">&quot;&quot;&quot;Fit the autoencoder and save fitted the model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        epochs : type</span>
+<span class="sd">        epochs : integer-like</span>
 <span class="sd">            Description of parameter `epochs`.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        history : type</span>
+<span class="sd">        history : object</span>
 <span class="sd">            summary of how the model trained (training error, validation error).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Define callbacks</span>
+        <span class="n">early_stopping</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">EarlyStopping</span><span class="p">(</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+
         <span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span>
             <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
             <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
             <span class="n">batch_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+            <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">early_stopping</span><span class="p">],</span>
             <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
@@ -167,7 +175,7 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">remove_strings</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
     <span class="n">df_AS</span><span class="p">,</span> <span class="n">df_TD</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">split_file</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
     <span class="n">autoencoder</span> <span class="o">=</span> <span class="n">RNN</span><span class="p">(</span><span class="n">df_TD</span><span class="p">)</span>
-    <span class="n">autoencoder</span><span class="p">(</span><span class="n">epochs</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+    <span class="n">autoencoder</span><span class="p">(</span><span class="n">epochs</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 </pre></div>
 
           </div>
@@ -210,7 +218,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -227,7 +235,7 @@
       &copy;2022, Angela Corvino & Agata Minnocci.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

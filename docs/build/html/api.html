@@ -4,7 +4,7 @@
 <html lang="english">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Public interfaces &#8212; BrainAge 0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -33,7 +34,7 @@
           <div class="body" role="main">
             
   <section id="module-outliers">
-<span id="public-interfaces"></span><span id="api"></span><h1>Public interfaces<a class="headerlink" href="#module-outliers" title="Permalink to this headline">¶</a></h1>
+<span id="public-interfaces"></span><span id="api"></span><h1>Public interfaces<a class="headerlink" href="#module-outliers" title="Permalink to this heading">¶</a></h1>
 <p>Module  selects samples with reconstruction error larger than 3 sigmas and removes outlier samples from final dataframe.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="outliers.Outliers">
@@ -44,7 +45,7 @@
 <span class="sig-name descname"><span class="pre">dataframe</span></span><a class="headerlink" href="#outliers.Outliers.dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dataframe to remove outliers on.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dataframe-like</p>
 </dd>
 </dl>
@@ -55,7 +56,7 @@
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#outliers.Outliers.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trained RNN model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>object</p>
 </dd>
 </dl>
@@ -66,13 +67,13 @@
 <span class="sig-name descname"><span class="pre">clean_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indexes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/outliers.html#Outliers.clean_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#outliers.Outliers.clean_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes sample of given indexes from dataframe.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>indexes</strong> (<em>list-like</em>) -- List of indexes of samples to remove.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dataframe without outliers.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dataframe</p>
 </dd>
 </dl>
@@ -83,10 +84,10 @@
 <span class="sig-name descname"><span class="pre">model_upload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/outliers.html#Outliers.model_upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#outliers.Outliers.model_upload" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uploads trained autoencoder model from file to run on dataframe.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> -- Trained RNN model</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>object</p>
 </dd>
 </dl>
@@ -97,17 +98,17 @@
 <span class="sig-name descname"><span class="pre">outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/outliers.html#Outliers.outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#outliers.Outliers.outliers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identifies ouliers using autoencoder.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nbins</strong> (<em>integer-like</em>) -- Number of bins for loss histogram.</p></li>
 <li><p><strong>plot_fit</strong> (<em>boolean-like</em><em>, </em><em>default is False.</em>) -- If True shows histogram of loss of replicated data and gaussian fit
 for outlier detection.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>indexes</strong> -- List of indexes of samples to remove.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list-like</p>
 </dd>
 </dl>
@@ -118,7 +119,7 @@ for outlier detection.</p></li>
 <span class="sig-name descname"><span class="pre">plot_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indexes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/outliers.html#Outliers.plot_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#outliers.Outliers.plot_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots feature distribution of removed samples from dataframe.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>indexes</strong> (<em>list-like</em>) -- List of indexes of samples to remove as outliers.</p></li>
 <li><p><strong>feature</strong> (<em>string-like</em>) -- Feature to show in histogram</p></li>
@@ -153,7 +154,7 @@ some normalization options and harmonization options.</p>
 <span class="sig-name descname"><span class="pre">add_TotalWhiteVol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.add_TotalWhiteVol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.add_TotalWhiteVol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds columns with derived features to dataframe.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- The dataframe of raw data  to be passed to the function.</p>
 </dd>
 </dl>
@@ -165,7 +166,7 @@ some normalization options and harmonization options.</p>
 <dd><p>Creates a column called AGE_CLASS with AGE_AT_SCAN
 binning and attaches it to dataframe.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- The dataframe of data to be passed to the function.</p></li>
 <li><p><strong>bins</strong> (<em>integer-like</em><em>, </em><em>default is 6</em>) -- Number of classes.</p></li>
@@ -179,7 +180,7 @@ binning and attaches it to dataframe.</p>
 <span class="sig-name descname"><span class="pre">add_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.add_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.add_site" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds column with Site description.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to the function.</p>
 </dd>
 </dl>
@@ -187,17 +188,17 @@ binning and attaches it to dataframe.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="preprocessing.Preprocessing.add_site_binning">
-<span class="sig-name descname"><span class="pre">add_site_binning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.add_site_binning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.add_site_binning" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_site_binning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.add_site_binning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.add_site_binning" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a map  where SITE  is binned in the column SITE_CLASS,
 then merges it with the dataframe.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to the function.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>dataframe</strong> -- Dataframe with SITE_CLASS column.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dataframe-like</p>
 </dd>
 </dl>
@@ -208,7 +209,7 @@ then merges it with the dataframe.</p>
 <span class="sig-name descname"><span class="pre">com_harmonize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confounder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SITE_CLASS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covariate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AGE_AT_SCAN'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.com_harmonize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.com_harmonize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Harmonize dataset with ComBat model</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe containing neuroimaging data to correct
 with shape = (samples, features).
@@ -219,10 +220,10 @@ which indicates batch (scanner) column name in covars.</p></li>
 that should be preserved during harmonization.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>dataframe_harmonized</strong> -- Dataframe containing harmonized data</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dataframe-like</p>
 </dd>
 </dl>
@@ -234,14 +235,14 @@ that should be preserved during harmonization.</p></li>
 <dd><p>Select the feature whose correlation with the given feature is
 higher than 0.5.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to the function.</p></li>
 <li><p><strong>feature</strong> (<em>string-like</em><em>, </em><em>default is &quot;AGE_AT_SCAN&quot;</em>) -- Target feature on which to compute correlation.</p></li>
 <li><p><strong>plot_heatmap</strong> (<em>boolean</em><em>, </em><em>default is False</em>) -- If True, show heatmap of data correlation with feature.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>listoffeatures</strong> (<em>list-like</em>) -- List of selected features.</p></li>
 <li><p><strong>X</strong> (<em>dataframe-like</em>) -- Dataframe contraining only the columns relative to the
@@ -261,7 +262,7 @@ has been computed.</p></li>
 1-Load your data and all numeric covariates;
 2-Run harmonization and store the adjusted data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to the function.</p></li>
 <li><p><strong>confounder</strong> (<em>string-like</em><em>, </em><em>default is 'SITE'</em>) -- Feature to be accounted as confounder. Default is 'SITE'</p></li>
@@ -269,10 +270,10 @@ has been computed.</p></li>
 that should be preserved during harmonization.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>dataframe_harmonized</strong> -- Dataframe containing harmonized data</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dataframe-like</p>
 </dd>
 </dl>
@@ -283,7 +284,7 @@ that should be preserved during harmonization.</p></li>
 <span class="sig-name descname"><span class="pre">plot_boxplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurey</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.plot_boxplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.plot_boxplot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots boxplot of featurey by featurex.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to the function.</p></li>
 <li><p><strong>featurex</strong> (<em>string-like</em>) -- Feature in the x-axis of the boxplot.</p></li>
@@ -299,9 +300,9 @@ that should be preserved during harmonization.</p></li>
 <dd><p>Plots histogram of a given feature on the indicated dataframe,
 masking values &lt;0.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to the function.</p></li>
+<li><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to thpyle function.</p></li>
 <li><p><strong>feature</strong> (<em>string-like</em>) -- Feature to plot the histogram of.</p></li>
 </ul>
 </dd>
@@ -313,14 +314,14 @@ masking values &lt;0.</p>
 <span class="sig-name descname"><span class="pre">read_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.read_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.read_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads data in .csv file from url and returns them in a dataframe.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>file_url</strong> (<em>string-like</em>) -- String containing data adress to be passed to
 Preprocessing.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>dataframe</strong> -- Dataframe of raw data.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dataframe-like</p>
 </dd>
 </dl>
@@ -331,13 +332,13 @@ Preprocessing.</p>
 <span class="sig-name descname"><span class="pre">remove_FIQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.remove_FIQ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.remove_FIQ" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove FIQ feauture.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to the function.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>dataframe</strong> -- Dataframe without FIQ column.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dataframe-like</p>
 </dd>
 </dl>
@@ -348,13 +349,13 @@ Preprocessing.</p>
 <span class="sig-name descname"><span class="pre">remove_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.remove_strings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.remove_strings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove columns containing strings from given dataframe</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to the function.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>dataframe</strong> -- Dataframe withouth columns which contains strings.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dataframe-like</p>
 </dd>
 </dl>
@@ -365,13 +366,13 @@ Preprocessing.</p>
 <span class="sig-name descname"><span class="pre">retrieve_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.retrieve_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.retrieve_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves name of variable.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>var</strong> (<em>type</em>) -- Variable of which we want the name.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>name</strong> -- Name of the variable.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>string-like</p>
 </dd>
 </dl>
@@ -382,7 +383,7 @@ Preprocessing.</p>
 <span class="sig-name descname"><span class="pre">self_normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.self_normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.self_normalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes self normalization on data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- Dataframe to be passed to the function.</p>
 </dd>
 </dl>
@@ -393,10 +394,10 @@ Preprocessing.</p>
 <span class="sig-name descname"><span class="pre">split_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/preprocessing.html#Preprocessing.split_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#preprocessing.Preprocessing.split_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Splits dataframe in ASD cases and controls.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dataframe</strong> (<em>dataframe-like</em>) -- The dataframe of data to be split.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>df_AS</strong> (<em>dataframe-like</em>) -- The dataframe containing ASD cases.</p></li>
 <li><p><strong>df_TD</strong> (<em>dataframe-like</em>) -- The dataframe containing controls.</p></li>
@@ -419,7 +420,7 @@ Preprocessing.</p>
 <dd><p>Fit and predict using cross validation
 with a model (or pipeline) supplied by the user.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em>) -- Training data.</p></li>
 <li><p><strong>y</strong> (<em>type</em>) -- The target variable for supervised learning problems.</p></li>
@@ -427,7 +428,7 @@ with a model (or pipeline) supplied by the user.</p>
 <li><p><strong>model</strong> (<em>object-like</em>) -- Model to be trained.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>model</strong> (<em>object-like</em>) -- Model fitted in cross validation.</p></li>
 <li><p><strong>MAE</strong> (<em>array-like</em>) -- Mean absolute error obtained in cross validation.</p></li>
@@ -445,7 +446,7 @@ with a model (or pipeline) supplied by the user.</p>
 <dd><p>Fit and predict using stratified cross validation
 with a model (or pipeline) supplied by the user.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>array-like</em>) -- Training data.</p></li>
 <li><p><strong>y</strong> (<em>type</em>) -- The target variable for supervised learning problems.</p></li>
@@ -454,7 +455,7 @@ with a model (or pipeline) supplied by the user.</p>
 <li><p><strong>model</strong> (<em>object-like</em>) -- Model to be trained.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>model</strong> (<em>object-like</em>) -- Model fitted in cross validation.</p></li>
 <li><p><strong>MAE</strong> (<em>array-like</em>) -- Mean absolute error obtained in cross validation.</p></li>
@@ -476,14 +477,17 @@ with a model (or pipeline) supplied by the user.</p>
 <p>Ordinary least squares Linear Regression.
 LinearRegression fits a linear model with coefficients w = (w1, ..., wp)
 to minimize the residual sum of squares between the observed targets in
-the dataset, and the targets predicted by the linear approximation.
-:param plot_loss: When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, plots the training and validation loss curves of the trained model
-:type plot_loss: bool, default=False</p>
+the dataset, and the targets predicted by the linear approximation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>plot_loss</strong> (<em>bool</em><em>, </em><em>default=False</em>) -- When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, plots the training and validation loss curves of the trained model</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="deepregression.DeepRegression.model">
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#deepregression.DeepRegression.model" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>object</p>
 </dd>
 </dl>
@@ -492,17 +496,19 @@ the dataset, and the targets predicted by the linear approximation.
 <dl class="py method">
 <dt class="sig sig-object py" id="deepregression.DeepRegression.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deepregression.html#DeepRegression.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deepregression.DeepRegression.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fit linear model.
-:param X: Training data.
-:type X: {array-like} of shape (n_samples, n_features)
-:param y: Target values. Will be cast to X's dtype if necessary.
-:type y: array-like of shape (n_samples,) or (n_samples, n_targets)</p>
+<dd><p>Fit linear model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>self</strong> -- Fitted Estimator.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) -- Training data.</p></li>
+<li><p><strong>y</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>,</em><em>) or </em><em>(</em><em>n_samples</em><em>, </em><em>n_targets</em><em>)</em>) -- Target values. Will be cast to X's dtype if necessary.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>object</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> -- Fitted Estimator.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -512,13 +518,13 @@ the dataset, and the targets predicted by the linear approximation.
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deepregression.html#DeepRegression.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deepregression.DeepRegression.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>implement predict method</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>X</strong> (<em>array-like of shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) -- The input samples. Internally, its dtype will be converted to dtype=np.float32.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self.model.predict</strong> -- The predicted classes..</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray of shape (n_samples,) or (n_samples, n_outputs)</p>
 </dd>
 </dl>
@@ -534,16 +540,16 @@ the dataset, and the targets predicted by the linear approximation.
 <dl class="py method">
 <dt class="sig sig-object py" id="RNN.RNN.fit_autoencoder">
 <span class="sig-name descname"><span class="pre">fit_autoencoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RNN.html#RNN.fit_autoencoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RNN.RNN.fit_autoencoder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Short summary.</p>
+<dd><p>Fit the autoencoder and save fitted the model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>epochs</strong> (<em>type</em>) -- Description of parameter <cite>epochs</cite>.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epochs</strong> (<em>integer-like</em>) -- Description of parameter <cite>epochs</cite>.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>history</strong> -- summary of how the model trained (training error, validation error).</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>type</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -551,14 +557,14 @@ the dataset, and the targets predicted by the linear approximation.
 <dl class="py method">
 <dt class="sig sig-object py" id="RNN.RNN.make_autoencoder">
 <span class="sig-name descname"><span class="pre">make_autoencoder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/RNN.html#RNN.make_autoencoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RNN.RNN.make_autoencoder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Autoencoder trained comparing the output vector with the input features,
+<dd><p>Train autoencoder comparing the output vector with the input features,
 using the Mean Squared Error (MSE) as loss function..</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> -- The trained model.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>type</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -570,17 +576,17 @@ using the Mean Squared Error (MSE) as loss function..</p>
 <span class="sig-prename descclassname"><span class="pre">RNN.</span></span><span class="sig-name descname"><span class="pre">step_wise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RNN.html#step_wise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RNN.step_wise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Custom step-wise function to use as activation for RNN.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>array-like</em>) -- Description of parameter <cite>x</cite>.</p></li>
 <li><p><strong>N</strong> (<em>integer</em>) -- Number of steps. Default is  4.</p></li>
 <li><p><strong>a</strong> (<em>integer</em>) -- Tuning parameter. Default is 100.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>y</strong> -- Return function.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>array-like</p>
 </dd>
 </dl>
@@ -628,7 +634,7 @@ using the Mean Squared Error (MSE) as loss function..</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -645,7 +651,7 @@ using the Mean Squared Error (MSE) as loss function..</p>
       &copy;2022, Angela Corvino & Agata Minnocci.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

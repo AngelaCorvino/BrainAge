@@ -11,6 +11,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -63,10 +64,12 @@
 <span class="sd">                    The dataframe of raw data  to be passed to the</span>
 <span class="sd">                    preprocessing class.</span>
 <span class="sd">        prep_option : string-like</span>
-<span class="sd">                           String containing one of the options:</span>
-<span class="sd">                           &#39;not_normalized&#39;, &#39;normalized&#39;, &#39;combat&#39;, &#39;neuro&#39;.</span>
+<span class="sd">                      String containing one of the options:</span>
+<span class="sd">                           &#39;not_normalized&#39;, &#39;normalized&#39;, &#39;combat_harmonized&#39;, &#39;neuro_harmonized&#39;.</span>
 <span class="sd">        plot_option : boolean</span>
 <span class="sd">                      If True shows some plots of data. Default is True</span>
+<span class="sd">        site_dfs : boolean</span>
+<span class="sd">                   If True returns not only the dataframe but also a list of dataframes of the data divided by site, preprocessed according to prep_option. Defaulti is False.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -77,24 +80,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_TotalWhiteVol</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_age_binning</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_site</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
-        <span class="n">dataframe</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_site_binning</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+        <span class="n">dataframe</span><span class="p">,</span> <span class="n">sites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_site_binning</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="n">dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_FIQ</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># PLOTTING DATA</span>
         <span class="k">if</span> <span class="n">plot_option</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plot_histogram</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">)</span>
         <span class="c1"># PROCESSING DATA</span>
         <span class="k">if</span> <span class="n">prep_option</span> <span class="o">==</span> <span class="s2">&quot;not_normalized&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sites</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dataframe</span><span class="o">.</span><span class="n">SITE_CLASS</span> <span class="o">==</span> <span class="n">i</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataframe is not normalised&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">prep_option</span> <span class="o">==</span> <span class="s2">&quot;normalized&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">self_normalize</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sites</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dataframe</span><span class="o">.</span><span class="n">SITE_CLASS</span> <span class="o">==</span> <span class="n">i</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataframe is only normalized&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">prep_option</span> <span class="o">==</span> <span class="s2">&quot;combat_harmonized&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">self_normalize</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
-            <span class="n">dataframe</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_site_binning</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">assert</span> <span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">isna</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">0</span>
-                <span class="p">),</span> <span class="s2">&quot;There are NaN values in the dataframe!&quot;</span>
+                <span class="k">assert</span> <span class="s2">&quot;SITE_CLASS&quot;</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="s2">&quot;There is no site class&quot;</span>
             <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">dataframe_combat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">com_harmonize</span><span class="p">(</span>
@@ -102,8 +107,15 @@
                 <span class="n">confounder</span><span class="o">=</span><span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">,</span>
                 <span class="n">covariate</span><span class="o">=</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">dataframe_combat</span> <span class="o">=</span> <span class="n">dataframe_combat</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">isna</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="p">),</span> <span class="s2">&quot;There are NaN values in the dataframe!&quot;</span>
+            <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe_combat</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sites</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dataframe</span><span class="o">.</span><span class="n">SITE_CLASS</span> <span class="o">==</span> <span class="n">i</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataframe is normalized and harmonized with NeuroCombat&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">prep_option</span> <span class="o">==</span> <span class="s2">&quot;neuro_harmonized&quot;</span><span class="p">:</span>
@@ -114,9 +126,11 @@
                 <span class="n">covariate</span><span class="o">=</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe_neuro</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sites</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dataframe</span><span class="o">.</span><span class="n">SITE_CLASS</span> <span class="o">==</span> <span class="n">i</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataframe is normalized and harmonized with NeuroHarmonize&quot;</span><span class="p">)</span>
 
-        <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;FILE_ID&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">site_dfs</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">s</span>
         <span class="k">return</span> <span class="n">dataframe</span>
@@ -185,15 +199,15 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataframe : dataframe-like</span>
-<span class="sd">            Dataframe to be passed to the function.</span>
+<span class="sd">                    Dataframe to be passed to the function.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dataframe : dataframe-like</span>
-<span class="sd">            Dataframe without FIQ column.</span>
+<span class="sd">                    Dataframe without FIQ column.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;FIQ&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;FIQ&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dataframe</span></div>
 
 <div class="viewcode-block" id="Preprocessing.add_site"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.add_site">[docs]</a>    <span class="k">def</span> <span class="nf">add_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">):</span>
@@ -202,7 +216,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataframe : dataframe-like</span>
-<span class="sd">            Dataframe to be passed to the function.</span>
+<span class="sd">                    Dataframe to be passed to the function.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;SITE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">FILE_ID</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span></div>
 
@@ -217,14 +231,14 @@
 <span class="sd">        dataframe : dataframe-like</span>
 <span class="sd">                    The dataframe of data to be passed to the function.</span>
 <span class="sd">        bins : integer-like, default is 6</span>
-<span class="sd">                    Number of classes.</span>
+<span class="sd">               Number of classes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">qcut</span><span class="p">(</span>
             <span class="n">dataframe</span><span class="o">.</span><span class="n">AGE_AT_SCAN</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Preprocessing.add_site_binning"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.add_site_binning">[docs]</a>    <span class="k">def</span> <span class="nf">add_site_binning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="p">[]):</span>
+<div class="viewcode-block" id="Preprocessing.add_site_binning"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.add_site_binning">[docs]</a>    <span class="k">def</span> <span class="nf">add_site_binning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a map  where SITE  is binned in the column SITE_CLASS,</span>
 <span class="sd">        then merges it with the dataframe.</span>
@@ -237,7 +251,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dataframe : dataframe-like</span>
-<span class="sd">            Dataframe with SITE_CLASS column.</span>
+<span class="sd">                    Dataframe with SITE_CLASS column.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -256,12 +270,9 @@
                 <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">maps</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;SITE&quot;</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;SITE&quot;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sites</span><span class="p">):</span>
-                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dataframe</span><span class="o">.</span><span class="n">SITE_CLASS</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;FILE_ID&quot;</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">))</span>
-
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Column SITE does not exist&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">s</span></div>
+        <span class="k">return</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">sites</span></div>
 
 <div class="viewcode-block" id="Preprocessing.plot_histogram"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.plot_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">plot_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -272,7 +283,7 @@
 <span class="sd">        ----------</span>
 
 <span class="sd">        dataframe : dataframe-like</span>
-<span class="sd">                 Dataframe to be passed to the function.</span>
+<span class="sd">                    Dataframe to be passed to thpyle function.</span>
 <span class="sd">        feature : string-like</span>
 <span class="sd">                  Feature to plot the histogram of.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -354,7 +365,7 @@
             <span class="p">:,</span> <span class="p">[</span><span class="s2">&quot;Vol&quot;</span> <span class="ow">in</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
         <span class="p">]</span><span class="o">.</span><span class="n">divide</span><span class="p">((</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;TotalGrayVol&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;TotalWhiteVol&quot;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Preprocessing.neuro_harmonize"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.neuro_harmonize">[docs]</a>    <span class="k">def</span> <span class="nf">neuro_harmonize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">confounder</span><span class="o">=</span><span class="s2">&quot;SITE&quot;</span><span class="p">,</span><span class="n">covariate</span><span class="o">=</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Preprocessing.neuro_harmonize"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.neuro_harmonize">[docs]</a>    <span class="k">def</span> <span class="nf">neuro_harmonize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">confounder</span><span class="o">=</span><span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="n">covariate</span><span class="o">=</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Harmonize dataset with neuroHarmonize model:</span>
 <span class="sd">        1-Load your data and all numeric covariates;</span>
@@ -375,39 +386,50 @@
 <span class="sd">        -------</span>
 
 <span class="sd">        dataframe_harmonized: dataframe-like</span>
-<span class="sd">                    Dataframe containing harmonized data</span>
+<span class="sd">                              Dataframe containing harmonized data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">covars</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[[</span><span class="n">confounder</span><span class="p">,</span> <span class="n">covariate</span><span class="p">]]</span>
-            <span class="n">my_model</span><span class="p">,</span> <span class="n">array_neuro_harmonized</span> <span class="o">=</span> <span class="n">harmonizationLearn</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">array_neuro_harmonized</span> <span class="o">=</span> <span class="n">harmonizationLearn</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;SITE&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;DX_GROUP&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;SEX&quot;</span><span class="p">,</span>
+                        <span class="p">],</span>
+                        <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
                 <span class="n">covars</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">df_neuro_harmonized</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">array_neuro_harmonized</span><span class="p">)</span>
             <span class="n">df_neuro_harmonized</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
-                <span class="p">[</span><span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;SITE&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;DX_GROUP&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;SEX&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">columns</span>
-            <span class="n">df_neuro_harmonized</span><span class="p">[</span>
-                <span class="p">[</span>
-                    <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;DX_GROUP&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;SEX&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;SITE&quot;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span>
-                <span class="p">[</span>
-                    <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;DX_GROUP&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;SEX&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;SITE&quot;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">]</span>
+            <span class="n">df_neuro_harmonized</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">index</span>
+            <span class="n">df_neuro_harmonized</span><span class="p">[</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">AGE_AT_SCAN</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">df_neuro_harmonized</span><span class="p">[</span><span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">AGE_CLASS</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">df_neuro_harmonized</span><span class="p">[</span><span class="s2">&quot;SEX&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">SEX</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">df_neuro_harmonized</span><span class="p">[</span><span class="s2">&quot;DX_GROUP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">DX_GROUP</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">df_neuro_harmonized</span><span class="p">[</span><span class="s2">&quot;FILE_ID&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">FILE_ID</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">df_neuro_harmonized</span><span class="p">[</span><span class="s2">&quot;SITE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">SITE</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">df_neuro_harmonized</span><span class="p">[</span><span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">SITE_CLASS</span><span class="o">.</span><span class="n">values</span>
         <span class="k">except</span> <span class="ne">RuntimeWarning</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;We have a warning:&quot;</span><span class="p">,</span><span class="n">msg</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;We have a warning:&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df_neuro_harmonized</span></div>
 
 <div class="viewcode-block" id="Preprocessing.com_harmonize"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.com_harmonize">[docs]</a>    <span class="k">def</span> <span class="nf">com_harmonize</span><span class="p">(</span>
@@ -435,22 +457,45 @@
 <span class="sd">        -------</span>
 
 <span class="sd">        dataframe_harmonized: dataframe-like</span>
-<span class="sd">                    Dataframe containing harmonized data</span>
+<span class="sd">                              Dataframe containing harmonized data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">array_combat_harmonized</span> <span class="o">=</span> <span class="n">neuroCombat</span><span class="p">(</span>
-            <span class="n">dat</span><span class="o">=</span><span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span>
+            <span class="n">dat</span><span class="o">=</span><span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;SITE&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;DX_GROUP&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;SEX&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span>
             <span class="n">covars</span><span class="o">=</span><span class="n">dataframe</span><span class="p">[[</span><span class="n">confounder</span><span class="p">,</span> <span class="n">covariate</span><span class="p">]],</span>
             <span class="n">batch_col</span><span class="o">=</span><span class="n">confounder</span><span class="p">,</span>
         <span class="p">)[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="n">df_combat_harmonized</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">array_combat_harmonized</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
         <span class="n">df_combat_harmonized</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
-            <span class="p">[</span><span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;SITE&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;DX_GROUP&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;SEX&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="n">df_combat_harmonized</span><span class="p">[</span>
-            <span class="p">[</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span> <span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">,</span> <span class="s2">&quot;DX_GROUP&quot;</span><span class="p">,</span> <span class="s2">&quot;SEX&quot;</span><span class="p">,</span> <span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span>
-            <span class="p">[</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span> <span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">,</span> <span class="s2">&quot;DX_GROUP&quot;</span><span class="p">,</span> <span class="s2">&quot;SEX&quot;</span><span class="p">,</span> <span class="s2">&quot;FILE_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">]</span>
-        <span class="p">]</span>
+        <span class="n">df_combat_harmonized</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">df_combat_harmonized</span><span class="p">[</span><span class="s2">&quot;DX_GROUP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">DX_GROUP</span>
+        <span class="n">df_combat_harmonized</span><span class="p">[</span><span class="s2">&quot;SEX&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">SEX</span>
+        <span class="n">df_combat_harmonized</span><span class="p">[</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">AGE_AT_SCAN</span>
+        <span class="n">df_combat_harmonized</span><span class="p">[</span><span class="s2">&quot;AGE_CLASS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">AGE_CLASS</span>
+        <span class="n">df_combat_harmonized</span><span class="p">[</span><span class="s2">&quot;FILE_ID&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">FILE_ID</span>
+        <span class="n">df_combat_harmonized</span><span class="p">[</span><span class="s2">&quot;SITE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">SITE</span>
+        <span class="n">df_combat_harmonized</span><span class="p">[</span><span class="s2">&quot;SITE_CLASS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">SITE_CLASS</span>
         <span class="k">return</span> <span class="n">df_combat_harmonized</span></div>
 
 <div class="viewcode-block" id="Preprocessing.feature_selection"><a class="viewcode-back" href="../api.html#preprocessing.Preprocessing.feature_selection">[docs]</a>    <span class="k">def</span> <span class="nf">feature_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">,</span> <span class="n">plot_heatmap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -483,7 +528,7 @@
         <span class="n">listoffeatures</span> <span class="o">=</span> <span class="n">agecorr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">agecorr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">plot_heatmap</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">dataframe_restricted</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">listoffeatures</span><span class="p">]</span>
-            <span class="n">heatmap</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">dataframe_restricted</span><span class="o">.</span><span class="n">corr</span><span class="p">(),</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">dataframe_restricted</span><span class="o">.</span><span class="n">corr</span><span class="p">(),</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
         <span class="n">listoffeatures</span> <span class="o">=</span> <span class="n">listoffeatures</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
         <span class="n">X</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">listoffeatures</span><span class="p">]</span>
@@ -496,11 +541,11 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dataframe : dataframe-like</span>
-<span class="sd">                  Dataframe to be passed to the function.</span>
+<span class="sd">                    Dataframe to be passed to the function.</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dataframe : dataframe-like</span>
-<span class="sd">                  Dataframe withouth columns which contains strings.</span>
+<span class="sd">                    Dataframe withouth columns which contains strings.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -526,12 +571,12 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        var : type</span>
-<span class="sd">            Variable of which we want the name.</span>
+<span class="sd">              Variable of which we want the name.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        name : string-like</span>
-<span class="sd">            Name of the variable.</span>
+<span class="sd">               Name of the variable.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">callers_local_vars</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_back</span><span class="o">.</span><span class="n">f_back</span><span class="o">.</span><span class="n">f_locals</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -546,10 +591,13 @@
     <span class="n">prep</span> <span class="o">=</span> <span class="n">Preprocessing</span><span class="p">()</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;data/FS_features_ABIDE_males.csv&quot;</span><span class="p">)</span>
     <span class="n">Not_Normalized</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;not_normalized&quot;</span><span class="p">,</span> <span class="n">plot_option</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
+    <span class="nb">print</span><span class="p">(</span><span class="n">Not_Normalized</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">Normalized</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;normalized&quot;</span><span class="p">,</span> <span class="n">plot_option</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">Normalized</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">Neuro_Harmonized</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;neuro_harmonized&quot;</span><span class="p">,</span> <span class="n">plot_option</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">Neuro_Harmonized</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">Combat_Harmonized</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;combat_harmonized&quot;</span><span class="p">,</span> <span class="n">plot_option</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">Combat_Harmonized</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
     <span class="n">prep</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span><span class="n">Not_Normalized</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;AGE_AT_SCAN&quot;</span><span class="p">)</span>
     <span class="n">prep</span><span class="o">.</span><span class="n">plot_boxplot</span><span class="p">(</span><span class="n">Normalized</span><span class="p">,</span> <span class="s2">&quot;SITE&quot;</span><span class="p">,</span> <span class="s2">&quot;TotalGrayVol&quot;</span><span class="p">)</span>
@@ -597,7 +645,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -614,7 +662,7 @@
       &copy;2022, Angela Corvino & Agata Minnocci.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
