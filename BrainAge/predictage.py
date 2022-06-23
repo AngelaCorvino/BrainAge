@@ -203,7 +203,7 @@ def plot_model(predict_y, y_test, model_name, dataframe_name, harmonize_option, 
     if metric.ndim == 1:
         MSE, MAE, PR = metric[0], metric[1], metric[2]
         text = AnchoredText(
-            f"Test Dataset \n MAE= {round(MAE,3)} [years]\n MSE= {round(MSE,3)} [years]\n PR= {round(PR,3)}",
+            f"Test Dataset \n MAE= {round(MAE,3)} [years]\n MSE= {round(MSE,3)} [years^2]\n PR= {round(PR,3)}",
             prop=dict(size=14),
             frameon=True,
             loc="lower right",
@@ -212,7 +212,7 @@ def plot_model(predict_y, y_test, model_name, dataframe_name, harmonize_option, 
         MSE, MAE, PR = np.mean(metric, axis=0)
         std_MSE, std_MAE, std_PR = np.std(metric, axis=0)
         text = AnchoredText(
-            f" Train Dataset \n MAE = {round(np.mean(MAE),3)} +- {round(std_MAE,3)} [years] \n MSE = {round(MSE,3)} +- {round(std_MSE,3)} [years] \n PR = {round(PR,3)} +- {round(std_PR,3)}",
+            f" Train Dataset \n MAE = {round(np.mean(MAE),3)} +- {round(std_MAE,3)} [years] \n MSE = {round(MSE,3)} +- {round(std_MSE,3)} [years^2] \n PR = {round(PR,3)} +- {round(std_PR,3)}",
             prop=dict(size=14),
             frameon=True,
             loc="lower right",
